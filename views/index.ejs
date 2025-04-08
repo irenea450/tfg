@@ -6,6 +6,7 @@
     <%= title %>
   </title>
   <link rel="stylesheet" href="/stylesheets/bootstrap.min.css">
+  <script src="/sweetalert2/sweetalert2.all.min.js"></script>
 </head>
 
 <body>
@@ -56,11 +57,13 @@
                     <img src="/images/sala_2.jpg" class="d-block w-100" alt="...">
                   </div>
                 </div>
-                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="prev">
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleInterval"
+                  data-bs-slide="prev">
                   <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                   <span class="visually-hidden">Previous</span>
                 </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="next">
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleInterval"
+                  data-bs-slide="next">
                   <span class="carousel-control-next-icon" aria-hidden="true"></span>
                   <span class="visually-hidden">Next</span>
                 </button>
@@ -70,16 +73,34 @@
         </div>
       </div>
 
+      <!-- Color
+      background-color: #37AFE1;
+        -->
+
+      <div class="container-fluid bg-primary" >
+        <h5>Ubicación:</h5>
+        
+      </div>
+
 
 
 
 
     </div>
 
+    <% if (typeof mensaje !=='undefined' ) { %>
+      <script>
+        Swal.fire({
+          icon: '<%= mensaje.tipo %>',
+          title: '<%= mensaje.titulo %>',
+          text: '<%= mensaje.texto %>'
+        });
+      </script>
+      <% } %>
 
 
+        <script src="/javascripts/bootstrap.bundle.min.js"></script>
 
-    <script src="/javascripts/bootstrap.bundle.min.js"></script>
 
 
 

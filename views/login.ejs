@@ -1,9 +1,37 @@
-<form action="/login" method="POST">
-    <input type="text" name="correo" placeholder="correo" required>
-    <input type="password" name="contraseña" placeholder="Contraseña" required>
-    <button type="submit">Iniciar sesión</button>
-    <a href="/autenticacion/registrarse">Crear cuenta</a>
-</form>
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>
+
+    </title>
+    <link rel="stylesheet" href="/stylesheets/bootstrap.min.css">
+    <script src="/sweetalert2/sweetalert2.all.min.js"></script>
+</head>
+
+<%- include("plantillas/header_principal.ejs") %>
+
+    <form action="/autenticacion/login" method="POST">
+        <input type="text" name="correo" placeholder="correo" required>
+        <input type="password" name="contraseña" placeholder="Contraseña" required>
+        <button type="submit">Iniciar sesión</button>
+        <a href="/autenticacion/registrarse">Crear cuenta</a>
+    </form>
 
 
+    <% if (typeof mensaje !=='undefined' ) { %>
+        <script>
+            Swal.fire({
+                icon: '<%= mensaje.tipo %>',
+                title: '<%= mensaje.titulo %>',
+                text: '<%= mensaje.texto %>',
+                timer: <%= mensaje.tiempo %>,
+                showConfirmButton: false
+            }).then(() => {
+                window.location = '/<%= mensaje.ruta %>';
+            });
+        </script>
+        <% } %>
 
+
+            <script src="/javascripts/bootstrap.bundle.min.js"></script>

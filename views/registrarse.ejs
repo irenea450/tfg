@@ -1,30 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Registrarse</title>
+    <link rel="stylesheet" href="/stylesheets/bootstrap.min.css">
+    <script src="/sweetalert2/sweetalert2.all.min.js"></script>
+</head>
+
+<%- include("plantillas/header_principal.ejs") %>
+
+    <form action="/autenticacion/registrarse" method="POST">
+
+        <label for="rol">Rol</label>
+        <input type="text" name="rol" placeholder="rol" required>
+
+        <label for="nombre">Nombre</label>
+        <input type="text" name="nombre" placeholder="nombre" required>
+
+        <label for="apellidos">Apellidos</label>
+        <input type="text" name="apellidos" placeholder="apellidos" required>
+
+        <label for="correo">Correo</label>
+        <input type="text" name="correo" placeholder="correo" required>
+
+        <label for="tlf">Teléfono</label>
+        <input type="text" name="tlf" placeholder="tlf" required>
+
+        <label for="estado">Estado</label>
+        <input type="text" name="estado" placeholder="estado" required>
+
+        <label for="especialidad">Especialidad</label>
+        <input type="text" name="especialidad" placeholder="especialidad" required>
+
+        <label for="contraseña">Contraseña</label>
+        <input type="password" name="contraseña" placeholder="Contraseña" required>
+
+        <button type="submit">Registrarse</button>
+    </form>
 
 
-<form action="/autenticacion/registrarse" method="POST">
-    
-    <label for="rol">Rol</label>
-    <input type="text" name="rol" placeholder="rol" required>
+    <% if (typeof mensaje !=='undefined' ) { %>
+        <script>
+            Swal.fire({
+                icon: '<%= mensaje.tipo %>',
+                title: '<%= mensaje.titulo %>',
+                text: '<%= mensaje.texto %>'
+            });
+        </script>
+        <% } %>
 
-    <label for="nombre">Nombre</label>
-    <input type="text" name="nombre" placeholder="nombre" required>
-
-    <label for="apellidos">Apellidos</label>
-    <input type="text" name="apellidos" placeholder="apellidos" required>
-
-    <label for="correo">Correo</label>
-    <input type="text" name="correo" placeholder="correo" required>
-
-    <label for="tlf">Teléfono</label>
-    <input type="text" name="tlf" placeholder="tlf" required>
-
-    <label for="estado">Estado</label>
-    <input type="text" name="estado" placeholder="estado" required>
-
-    <label for="especialidad">Especialidad</label>
-    <input type="text" name="especialidad" placeholder="especialidad" required>
-
-    <label for="contraseña">Contraseña</label>
-    <input type="password" name="contraseña" placeholder="Contraseña" required>
-
-    <button type="submit">Registrarse</button>
-</form>
+            <script src="/javascripts/bootstrap.bundle.min.js"></script>

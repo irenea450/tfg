@@ -4,17 +4,17 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const session = require('express-session'); //sesion
-const dotenv = require('dotenv'); //dotnv
 const bcrypt = require("bcryptjs"); // Para encriptar y comparar contraseñas
 const conectarDB = require("./conexion/conexion"); // Conexión a la base de datos
 
 
-const passport = require("./config/passport"); // ✅ Importa passport bien
 
-//importaciónes
+//* Importaciónes de routes
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var autenticacionRouter = require('./routes/autenticacion'); // Asegúrate de que esta línea esté presente
+var zonaPacienteRouter = require('./routes/paciente');
+var zonaTrabajadorRouter = require('./routes/trabajador');
 const { env } = require('process');
 
 
@@ -35,6 +35,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+//& cargar sweet alerts
+app.use('/sweetalert2', express.static(__dirname + '/node_modules/sweetalert2/dist'));
+
+
 //configurar sesiones (cambiado a true)
 app.use(session({
   secret: 'mysecretsession',
@@ -42,21 +46,16 @@ app.use(session({
   saveUninitialized: true
 }));
 
-//? Inicializa passport **después** de configurar las sesiones
-app.use(passport.initialize()); // ✅ Inicializa passport
-app.use(passport.session()); // ✅ Habilita sesiones si las usas
-
-//& configrar dotenv
-dotenv.config({path:'./env/.env'})
 
 
 //* DIRECTORIOS
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-
-//?Autenticación
+//Autenticación
 app.use('/autenticacion', autenticacionRouter);
-
+//zonas
+app.use('/zona/paciente', zonaPacienteRouter);
+app.use('/zona/trabajador', zonaTrabajadorRouter);
 
 
 // catch 404 and forward to error handler

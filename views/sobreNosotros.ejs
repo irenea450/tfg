@@ -11,7 +11,13 @@
     <%- include("plantillas/header_principal.ejs") %>
 
 
-
+    <% if(login){ %>
+        <h2>El usuario conetado es: <%= name %> </h2>
+        <a href="/autenticacion/logout" class="a-logout">Logout</a>
+    <% }else{ %>
+        <h2>El usuario conetado es: <%= name %> </h2>
+        <a href="login" class="a-login">Login</a>
+    <% } %>
 
         <script src="/javascripts/bootstrap.bundle.min.js"></script>
 
