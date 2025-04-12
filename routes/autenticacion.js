@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const { registrarTrabajador, loginTrabajador } = require('../models/trabajador');
+const { registrarPaciente, loginPaciente } = require('../models/paciente');
 
 
 // GET login
 // Ruta para el login
 router.get('/login', (req, res) => {
-    res.render('login', {title: 'Didadent'});
+    res.render('login', { title: 'Didadent' });
 });
 
 // POST login
@@ -16,14 +17,35 @@ router.post('/login', async (req, res) => {
 
     try {
         let usuario = await loginTrabajador(correo, contraseña);
-        let tipoUsuario = 'trabajador';
 
-        if (!usuario) {
+
+        if (!usuario || usuario.error) {
             usuario = await loginPaciente(correo, contraseña);
-            tipoUsuario = 'paciente';
         }
+        
+        let tipoUsuario;
+        //define el tipo de usuario que se ha registrado según su rol
+        if (usuario.rol === 1) {
+            tipoUsuario = 'paciente';
+        } else {
+            tipoUsuario = 'trabajador';
+        }
+        console.log("soy de tipo" + tipoUsuario);
 
-        if (usuario) {
+        //En caso de que la autenticación sea rechazada lanzar mensaje de error de autenticación
+        if (usuario.error) {
+            res.render('login', {
+                title: 'Didadent',
+                mensaje: {
+                    tipo: 'error',
+                    titulo: 'Error de autenticación!',
+                    texto: "Revise el usuario y la contraseña",
+                    tiempo: 3000,
+                    ruta: 'autenticacion/login'
+                }
+            });
+        } else {
+            //* Sesión iniciada con éxito
             //? variables de sesión
             req.session.loggedin = true;
             req.session.name = usuario.nombre;
@@ -39,19 +61,9 @@ router.post('/login', async (req, res) => {
                     ruta: tipoUsuario === 'paciente' ? 'zona/paciente/pedirCita' : 'zona/trabajador/horario' //según el tipo de usuario mandar a la zona determinada
                 }
             });
-        } else {
-            res.render('login', {
-                title: 'Didadent',
-                mensaje: {
-                    tipo: 'error',
-                    titulo: 'Error!',
-                    texto: 'Revise el usuario u contarseña introducidos',
-                    tiempo: 3000,
-                    ruta: 'autenticacion/login'
-                }
-            });
         }
     } catch (err) {
+        //En caso de error en la base de datos o en el registro
         res.render('login', {
             title: 'Didadent',
             mensaje: {
@@ -67,15 +79,88 @@ router.post('/login', async (req, res) => {
 
 });
 
-
-// GET registro
-// Ruta para registrarse
-router.get('/registrarse', (req, res) => {
-    res.render('registrarse', {title: 'Didadent'});
+/* ------------------------------ Para paciente ----------------------------- */
+/* ----------------------------- Para trabajador ---------------------------- */
+// GET registrarTrabajador
+// Ruta para registrarTrabajador
+router.get('/registrarPaciente', (req, res) => {
+    res.render('registrarPaciente', { title: 'Didadent' });
 });
 
 // POST registro
-router.post('/registrarse', async (req, res) => {
+router.post('/registrarPaciente', async (req, res) => {
+
+    const rol = 1; //. todos los pacientes son rol 1
+    const nombre = req.body.nombre;
+    const apellidos = req.body.apellidos;
+    const correo = req.body.correo;
+    const tlf = req.body.tlf;
+    const fecha_nacimiento = req.body.fecha_nacimiento;
+    const sexo = req.body.sexo;
+    const contraseña = req.body.contraseña;
+
+    const calle = req.body.calle;
+    const numero = req.body.numero;
+    const puerta = req.body.puerta;
+    const cp = req.body.cp;
+    const domicilio = calle + ", " + numero + ", " + puerta + ", cp:" + cp;
+
+    console.log("He recogidos los datos del usuario " + correo);
+
+
+    // Llamamos al modelo para registrar al trabajador
+    try {
+        const resultado = await registrarPaciente(rol, nombre, apellidos, correo, tlf, domicilio, fecha_nacimiento, sexo, contraseña);
+
+        if (resultado.error) {
+            // Error si ya existe ese correo
+            return res.render('registrarPaciente', {
+                title: 'Didadent',
+                mensaje: {
+                    tipo: 'error',
+                    titulo: 'Error en el registro!',
+                    texto: resultado.error,  // El error de correo duplicado
+                    tiempo: 3000,
+                    ruta: 'autenticacion/registrarPaciente'  // Ruta para volver al formulario
+                }
+            });
+        } else {
+            // si Todo correcto
+            res.render('registrarPaciente', {
+                title: 'Didadent',
+                mensaje: {
+                    tipo: 'success',
+                    titulo: 'Registro exitoso',
+                    texto: 'El usuario ha sido registrado correctamente.',
+                    tiempo: 3000,
+                    ruta: 'autenticacion/login'  // mandar al login una vez se crea la cuenta
+                }
+            });
+        }
+    } catch (err) {
+        // Error del sistema
+        res.render('registrarPaciente', {
+            title: 'Didadent',
+            mensaje: {
+                tipo: 'error',
+                titulo: 'Error del sistema',
+                texto: 'Hubo un problema al registrar al usuario. Inténtalo más tarde.',
+                tiempo: 3000,
+                ruta: 'autenticacion/registrarPaciente'
+            }
+        });
+    }
+});
+
+/* ----------------------------- Para trabajador ---------------------------- */
+// GET registrarTrabajador
+// Ruta para registrarTrabajador
+router.get('/registrarTrabajador', (req, res) => {
+    res.render('registrarTrabajador', { title: 'Didadent' });
+});
+
+// POST registro
+router.post('/registrarTrabajador', async (req, res) => {
 
     const rol = req.body.rol;
     const nombre = req.body.nombre;
@@ -95,39 +180,39 @@ router.post('/registrarse', async (req, res) => {
 
         if (resultado.error) {
             // Error si ya existe ese correo
-            return res.render('registrarse', {
+            return res.render('registrarTrabajador', {
                 title: 'Didadent',
                 mensaje: {
                     tipo: 'error',
-                    titulo: 'Error!',
+                    titulo: 'Correo en uso!',
                     texto: resultado.error,  // El error de correo duplicado
                     tiempo: 3000,
-                    ruta: 'autenticacion/registrarse'  // Ruta para volver al formulario
+                    ruta: 'autenticacion/registrarTrabajador'  // Ruta para volver al formulario
                 }
             });
         } else {
             // si Todo correcto
-            res.render('registrarse', {
+            res.render('registrarTrabajador', {
                 title: 'Didadent',
                 mensaje: {
                     tipo: 'success',
                     titulo: 'Registro exitoso',
                     texto: 'El trabajador ha sido registrado correctamente.',
                     tiempo: 3000,
-                    ruta: 'autenticacion/login'  
+                    ruta: 'autenticacion/login'  //! mandar a un sitio que no sea el login
                 }
             });
         }
     } catch (err) {
         // Error del sistema
-        res.render('registrarse', {
+        res.render('registrarTrabajador', {
             title: 'Didadent',
             mensaje: {
                 tipo: 'error',
                 titulo: 'Error del sistema',
                 texto: 'Hubo un problema al registrar al trabajador. Inténtalo más tarde.',
                 tiempo: 3000,
-                ruta: 'autenticacion/registrarse'
+                ruta: 'autenticacion/registrarTrabajador'
             }
         });
     }
@@ -138,7 +223,7 @@ router.post('/registrarse', async (req, res) => {
 
 // GET logout (si quieres activarlo)
 router.get('/logout', (req, res) => {
-    req.session.destroy(()=>{
+    req.session.destroy(() => {
         res.redirect('/')
     })
 });

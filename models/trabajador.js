@@ -23,33 +23,24 @@ const registrarTrabajador = async (rol, nombre, apellidos, correo, tlf, estado, 
             "SELECT * FROM trabajador WHERE correo = ?",
             [correo]
         );
-        errorExiste;
+
         // Si el correo ya existe, devolver un error
         if (rows.length > 0) {
-            errorExiste = true;
-            return { error: "⚠️ El correo ya está en uso" };  // El correo ya existe
+            return { error: "El correo introducido ya está en uso" };  // El correo ya existe
         }
 
         // Encriptar la contraseña antes de guardarla
         const contraseñaHaash = await bcrypt.hash(contraseña, 8);
 
-        console.log("he llegado hasta la funcion de registrar")
+        //console.log("Esta en models/trabajador.js en la funcion de registrar")
 
         const query = "INSERT INTO trabajador (rol, nombre, apellidos, correo, tlf, estado, especialidad, contraseña) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        const [result] = await connection.execute(query, [rol, nombre, apellidos, correo, tlf, estado, especialidad, contraseñaHaash], async (error, results) => {
-            if (error) {
-                console.log(error);
-            }
+        const [result] = await connection.execute(query, [rol, nombre, apellidos, correo, tlf, estado, especialidad, contraseñaHaash]);
 
-        });
+        
+        return  result;  // Devolver el resultado de la inserción si todo fue bien
 
-        if(errorExiste){
-            
-        }else{
-            return  result;  // Devolver el resultado de la inserción si todo fue bien
-        }
-
-    } catch (error) {
+    }catch (error) {
         console.error("❌ Error al insertar trabajador:", error.message);
         throw error;
     }
@@ -63,19 +54,13 @@ const loginTrabajador = async (correo, contraseña) => {
 
         console.log("comprobando en login trabajador");
 
-        // Encriptar la contraseña antes de guardarla
-        /* const contraseñaHaash = await bcrypt.hash(contraseña, 8); */
-
         //? comporbar si existe el usuario y contraseña introducidos son correctos
         const [results] = await connection.execute("SELECT * FROM trabajador WHERE correo = ?", [correo]);
 
-        /* const consultarExistencia = "SELECT * FROM trabajador WHERE ?";
-        const [result] = await connection.execute(consultarExistencia, [correo]); */
-
-        //comprobar si existe el usuario
+        //comprobar si existe el usuario con el correo introducido
         if (results.length == 0) {
-            console.log("usuario incorrecto ❌");
-            return null;
+            console.log("usuario trabajador con correo: " + correo + " incorrecto ❌");
+            return { error: "El correo introducido no esta registrado" };
         }
 
         const usuario = results[0];
@@ -85,7 +70,7 @@ const loginTrabajador = async (correo, contraseña) => {
 
         if (!compararContarseña) {
             console.log("Contraseña incorrecta ❌");
-            return null;
+            return { error: " contraseña incorrecta, vuelve a intentarlo" }; 
         }
 
         // Todo correcto

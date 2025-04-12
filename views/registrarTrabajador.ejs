@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Registrarse</title>
+    <link rel="stylesheet" href="/stylesheets/bootstrap.min.css">
+    <script src="/sweetalert2/sweetalert2.all.min.js"></script>
+</head>
+
+<%- include("plantillas/header_principal.ejs") %>
+
+    <div class="container-fluid ">
+
+        <form action="/autenticacion/registrarTrabajador" method="POST">
+
+            <div class="row my-2">
+
+                <div class="col">
+                    <label for="rol">Rol del trabajador</label>
+                    <select class="col my-1 form-select" name="rol">
+                        <option selected>Selecciona el tipo de trabajador</option>
+                        <option value="2" selected>Trabajador</option>
+                        <option value="3">Trabajador - Administrador</option>
+                    </select>
+                </div>
+                
+                <div class="col">
+                    <label for="estado">Estado del trabajador</label>
+                    <select class="col my-1 form-select" name="estado" required>
+                        <option value="activo" selected>Activo</option>
+                        <option value="inactivo">Inactivo</option>
+                    </select>
+                </div>
+                
+        
+            </div>
+
+            <div class="row">
+
+                <div class="col">
+                    <label for="nombre">Nombre</label>
+                    <input type="text" class="form-control my-1" name="nombre" placeholder="Nombre" required>
+                </div>
+                <div class="col">
+                    <label for="apellidos">Apellidos</label>
+                    <input type="text" class="form-control my-1" name="apellidos" placeholder="Apellido 1 Apellido 2" required>
+                </div>
+
+            </div>
+
+            <div class="row my-3">
+
+                <div class="col input-group ">
+                    <input type="text" class="form-control " placeholder="Correo" name="correo" required>
+                    <span class="input-group-text " id="basic-addon2">@didadent.com</span>
+                </div>
+
+                <div class="col">
+                    <input type="number" class="form-control" name="tlf" placeholder="Teléfono" required>
+                </div>
+
+            </div>
+
+            <div class="mb-3">
+                <label for="especialidad" class="form-label">Especialidad</label>
+                <textarea class="form-control" name="especialidad" id="especialidad" rows="3"></textarea>
+            </div>
+
+            <div class="row g-3 align-items-center p-0 m-0">
+                <div class="col-auto">
+                    <label for="contraseña" class="col-form-label">Contraseña</label>
+                </div>
+                <div class="col-auto">
+                    <input type="password" name="contraseña" id="contraseña" class="form-control"
+                        aria-describedby="passwordHelpInline">
+                </div>
+                <div class="col-auto">
+                    <span id="passwordHelpInline" class="form-text">
+                        Establece una contraseña segura
+                    </span>
+                </div>
+
+            </div>
+
+
+            <div class="row p-0 my-5">
+                <div class="d-grid gap-2 col-6 mx-auto">
+                    <button type="submit" class="btn btn-primary">Crear usuario</button>
+                </div>
+            </div>
+
+
+        </form>
+
+    </div>
+
+    <% if (typeof mensaje !=='undefined' ) { %>
+        <script>
+            Swal.fire({
+                icon: '<%= mensaje.tipo %>',
+                title: '<%= mensaje.titulo %>',
+                text: '<%= mensaje.texto %>',
+                timer: '<%= mensaje.tiempo %>',
+                showConfirmButton: false
+            }).then(() => {
+                window.location = '/<%= mensaje.ruta %>';
+            });
+        </script>
+        <% } %>
+
+            <script src="/javascripts/bootstrap.bundle.min.js"></script>
