@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const session = require('express-session'); //sesion
 const { registrarTrabajador, loginTrabajador } = require('../models/trabajador');
 const { registrarPaciente, loginPaciente } = require('../models/paciente');
 
@@ -48,6 +49,8 @@ router.post('/login', async (req, res) => {
             //* Sesión iniciada con éxito
             //? variables de sesión
             req.session.loggedin = true;
+            req.session.usuarioId = usuario.id_trabajador;
+            console.log("autenticado con el usuario con id: " + req.session.usuarioId);
             req.session.name = usuario.nombre;
             req.session.tipo = tipoUsuario; // tipo de usuario en la app
             //alert de confirmación de  inicio de sesión
@@ -80,9 +83,8 @@ router.post('/login', async (req, res) => {
 });
 
 /* ------------------------------ Para paciente ----------------------------- */
-/* ----------------------------- Para trabajador ---------------------------- */
-// GET registrarTrabajador
-// Ruta para registrarTrabajador
+// GET registrar paciente
+// Ruta para registrar paciente
 router.get('/registrarPaciente', (req, res) => {
     res.render('registrarPaciente', { title: 'Didadent' });
 });

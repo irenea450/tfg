@@ -37,10 +37,10 @@ const registrarTrabajador = async (rol, nombre, apellidos, correo, tlf, estado, 
         const query = "INSERT INTO trabajador (rol, nombre, apellidos, correo, tlf, estado, especialidad, contraseña) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         const [result] = await connection.execute(query, [rol, nombre, apellidos, correo, tlf, estado, especialidad, contraseñaHaash]);
 
-        
-        return  result;  // Devolver el resultado de la inserción si todo fue bien
 
-    }catch (error) {
+        return result;  // Devolver el resultado de la inserción si todo fue bien
+
+    } catch (error) {
         console.error("❌ Error al insertar trabajador:", error.message);
         throw error;
     }
@@ -70,9 +70,9 @@ const loginTrabajador = async (correo, contraseña) => {
 
         if (!compararContarseña) {
             console.log("Contraseña incorrecta ❌");
-            return { error: " contraseña incorrecta, vuelve a intentarlo" }; 
+            return { error: " contraseña incorrecta, vuelve a intentarlo" };
         }
-
+        console.log(usuario);
         // Todo correcto
         return usuario;
 
@@ -83,8 +83,97 @@ const loginTrabajador = async (correo, contraseña) => {
     }
 }
 
+/* --------------------------- horarios trabajador -------------------------- */
+const horarioTrabajador = async (id) => {
+
+    try {
+        const connection = await conectarDB(); // Conectar a la BBDD
+
+        console.log("estoy en horarioTrabajador: " + id);
+
+        //? sacar el horario de ese trabajador
+        const [rows] = await connection.execute("SELECT * FROM horarios WHERE id_trabajador = ?", [id]);
+
+        console.log("Usuario con horario:", rows);
+
+        return rows;
+
+
+    } catch (error) {
+        console.error("❌ Error al obtener el horario del trabajador:", error.message);
+        throw error;
+    }
+}
+
+//todo función para saber si ese día es festivo
+// Función para verificar si el día es festivo
+const festivosTrabajador = async (diasLaborablesSemanaActual) => {
+    try {
+        const connection = await conectarDB(); // Conectar a la BBDD
+
+        console.log("Estoy en festivosTrabajador");
+
+        // Crear un string de placeholders ?,?,?,...? dependiendo del número de fechas
+        const placeholders = Array(diasLaborablesSemanaActual.length).fill('?').join(',');
+
+        // Aquí pasamos las fechas en formato YYYY-MM-DD
+        const query = `SELECT * FROM festivos WHERE fecha IN (${placeholders})`;
+
+        // Asegurarnos de que las fechas estén en formato YYYY-MM-DD
+        const diasLaborablesFormateados = diasLaborablesSemanaActual.map(fecha => {
+            const [day, month, year] = fecha.split('/');
+            return `${year}-${month}-${day}`; // Convertimos a YYYY-MM-DD
+        });
+
+        // Ejecutar la consulta con las fechas formateadas
+        const [rows] = await connection.execute(query, diasLaborablesFormateados);
+
+        // Aquí devolvemos las fechas como 'DD/MM/YYYY' para mostrar en el frontend
+        const festivosFiltrados = rows.map(f => {
+            const localDate = new Date(f.fecha);
+            return localDate.toLocaleDateString('es-ES'); // Formato DD/MM/YYYY
+        });
+
+        return festivosFiltrados;
+
+    } catch (error) {
+        console.error("❌ Error al obtener el horario del trabajador:", error.message);
+        throw error;
+    }
+}
+
+
+
+//todo obtener los días de la semana actual, pues queremos ver el horario actual de la semana presente 
+// Función para obtener los días laborables de la semana actual
+function obtenerDiasLaborablesSemanaActual() {
+    const hoy = new Date();
+    const diaSemana = hoy.getDay(); // 0 (domingo) a 6 (sábado)
+    const lunesOffset = diaSemana === 0 ? -6 : 1 - diaSemana;
+
+    const diasLaborables = [];
+
+    for (let i = 0; i < 5; i++) {
+        const fecha = new Date(hoy);
+        fecha.setDate(hoy.getDate() + lunesOffset + i);
+
+        // Convertir la fecha a formato 'DD/MM/YYYY' usando la zona horaria local
+        const fechaFormateada = fecha.toLocaleDateString('es-ES'); // Formato DD/MM/YYYY
+        diasLaborables.push(fechaFormateada);
+    }
+
+    return diasLaborables;
+}
+
+
+
+
+
+
+
+
 
 
 
 //* Exportar las funciones para usarlas en otros archivos
-module.exports = { registrarTrabajador, loginTrabajador };
+module.exports = { registrarTrabajador, loginTrabajador, horarioTrabajador, festivosTrabajador, obtenerDiasLaborablesSemanaActual };
