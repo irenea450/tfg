@@ -166,14 +166,132 @@ function obtenerDiasLaborablesSemanaActual() {
 }
 
 
+//todo obtener citas donde participa el trabajador logueado
+const citasTrabajador = async (id) => {
+    try {
+        const connection = await conectarDB();
+        console.log("estoy en citasTrabajador: " + id);
+
+        // obtenemos realcionadas con el trabaajdor logueado
+        const [relaciones] = await connection.execute(
+            "SELECT id_cita FROM cita_trabajador WHERE id_trabajador = ?", [id]);
+
+        const idsCitas = relaciones.map(r => r.id_cita);
+
+        if (idsCitas.length === 0) {
+            console.log("No se encuntran citas relacionadas");
+            return []; // No hay citas relacionadas
+        }
+
+        // Creamos los placeholders (?, ?, ...) dinámicamente
+        const placeholders = idsCitas.map(() => '?').join(',');
+
+        const [citas] = await connection.execute(
+            `SELECT * FROM cita WHERE id_cita IN (${placeholders}) AND estado = 'Pendiente'`,
+            idsCitas
+        );
+
+        console.log("Citas pendientes:", citas);
+        return citas;
+
+    } catch (error) {
+        console.error("❌ Error al obtener las citas del trabajador:", error.message);
+        throw error;
+    }
+};
 
 
+const consultarCita = async (id) => {
+    try {
+        const connection = await conectarDB();
+        console.log("estoy consultando una cita con id: " + id);
 
 
+        //buscamos cita con el id
+        const [cita] = await connection.execute(`SELECT * FROM cita WHERE id_cita = ? `, [id]);
 
+        console.log("Cita obtenida en la funcion:", cita);
+        return cita;
+
+    } catch (error) {
+        console.error("❌ Error al obtener las citas del trabajador:", error.message);
+        throw error;
+    }
+};
+
+const obtenerPaciente = async (id) => {
+    try {
+        const connection = await conectarDB();
+        console.log("estoy consultando un paciente con id: " + id);
+
+
+        //buscamos cita con el id
+        const [paciente] = await connection.execute(`SELECT * FROM paciente WHERE id_paciente = ? `, [id]);
+
+        console.log("paciente obtenido en la funcion:", paciente);
+        return paciente;
+
+    } catch (error) {
+        console.error("❌ Error al obtener el paceinte:", error.message);
+        throw error;
+    }
+};
+
+//funciones de modificar las citas de los pacientes
+const actualizarCita = async (id, motivo, hora_inicio, hora_fin) => {
+    //conexión  a la bbdd
+    const connection = await conectarDB();
+
+    //modificamos en la base de datos
+    const [update] = await connection.execute(`UPDATE cita SET motivo = ?, hora_inicio = ?, hora_fin = ? WHERE id_cita = ?`, 
+        [motivo,hora_inicio,hora_fin, id]);
+    
+    console.log("Se ha relaixado la actualizacion" + update)
+
+}
+
+const anularCita = async (id) => {
+    //conexión  a la bbdd
+    const connection = await conectarDB();
+
+    //modificamos en la base de datos
+    const [anular] = await connection.execute(`UPDATE cita SET estado = 'Anulada' WHERE id_cita = ?`, 
+        [id]);
+    
+    console.log("Se ha realizado la anulación" + anular)
+
+}
+
+const completarCita = async (id) => {
+    //conexión  a la bbdd
+    const connection = await conectarDB();
+
+    //modificamos en la base de datos
+    /* const [completada] = await connection.execute(`UPDATE cita SET estado = 'Completada' WHERE id_cita = ?`,
+        [id]
+    ); */
+    const [completada] = await connection.execute(`UPDATE cita SET estado = 'Completada' WHERE cita.id_cita = ?`,
+        [id]
+    );
+    
+    console.log("Se ha completado la cita" + completada)
+
+}
 
 
 
 
 //* Exportar las funciones para usarlas en otros archivos
-module.exports = { registrarTrabajador, loginTrabajador, horarioTrabajador, festivosTrabajador, obtenerDiasLaborablesSemanaActual };
+module.exports = { 
+    registrarTrabajador, 
+    loginTrabajador, 
+    horarioTrabajador, 
+    festivosTrabajador, 
+    obtenerDiasLaborablesSemanaActual , 
+    citasTrabajador, 
+    consultarCita, 
+    obtenerPaciente,
+    actualizarCita,
+    anularCita,
+    completarCita
+};

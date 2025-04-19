@@ -1,0 +1,28 @@
+table, th, td {
+    border: 1px solid black;
+    text-align: center;
+    padding: 1px 40px;
+}
+/* Quitar la lineas del medio para unir todo */
+.horario-activo,
+.festivo,
+.cita{
+    border: none;
+}
+
+.horario-activo {
+    background-color: #8df59d; /* verde clarito */
+}
+.descanso{
+    background-color: rgb(222, 222, 222);
+    border-left: none; /* Elimina el borde izquierdo */
+    border-right: none; /* Elimina el borde derecho */
+}
+
+.festivo {
+    background-color: #e73330; /* Un rojo para los festivos */
+}
+
+.cita {
+    background-color: #add8e6; /* azul claro */
+}

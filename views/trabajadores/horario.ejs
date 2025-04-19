@@ -5,22 +5,8 @@
     <title>Sobre <%= title %>
     </title>
     <link rel="stylesheet" href="/stylesheets/bootstrap.min.css">
-    <style>
-        table, th, td {
-            border: 1px solid black;
-            text-align: center;
-            padding: 1px 40px;
-        }
-        .horario-activo {
-            background-color: #8df59d; /* verde clarito */
-        }
-        .descanso{
-            background-color: pink;
-        }
-        .festivo {
-            background-color: #e73330; /* Un rojo para los festivos */
-        }
-    </style>
+    <link rel="stylesheet" href="/stylesheets/estilos_horario.css"> <!-- Estilos del horario en public -->
+    <script src="/sweetalert2/sweetalert2.all.min.js"></script> <!-- Alertas -->
 </head>
 
 <body>
@@ -66,37 +52,60 @@
                 <% horasDelDia.forEach(horaActual => { %>
                     <tr>
                         <!-- Columna de la hora -->
-                        <td><%= horaActual.substring(0, 5) %></td> <!-- Poner en formato de 10:00 -->
-        
+                        <td><%= horaActual.substring(0, 5) %></td>
+                
                         <% diasLaborables.forEach((diaActual, index) => {
-                            // Comprobar si el trabajador está trabajando en esa hora y ese día.
-                            const trabajaEnEstaHora = horarioTrabajador.find(turno => 
-                                turno.dia === diaActual && // ver si ese día trabaja
-                                horaActual >= turno.hora_inicio && // Verificar si la hora está dentro del turno comprobando el inicio de hora
-                                horaActual <= turno.hora_fin && // Verificar si la hora está dentro del turno comprobando el fin de hora
-                                !horasDeDescanso.includes(horaActual) // Descontar horas de descanso
+                            // Buscar si hay una cita en esta fecha y hora
+                            const cita = citasSemana.find(c =>
+                                new Date(c.fecha).toLocaleDateString('es-ES') === diasLaborablesSemanaActual[index] &&
+                                c.hora_inicio <= horaActual && // La hora de inicio de la cita es antes o igual a la hora actual
+                                c.hora_fin > horaActual // La hora de fin de la cita es después de la hora actual
                             );
-        
-                            // Comprobar si el día es festivo
-                            const esFestivo = festivosSemana.some(festivo => {
-                                // Compara solo la fecha (sin la hora)
-                                return festivo.slice(0, 10) === diasLaborablesSemanaActual[index]; // Compara solo la parte de la fecha
-                            });
+            
+                            // Establecer la clase para la celda
+                            let claseCelda = '';
+            
+                            if (cita) {
+                                // Si hay una cita, marcar la celda con la clase "cita"
+                                claseCelda = 'cita';
+                            } else {
+                                // Si no hay cita, comprobar otras condiciones como descanso, festivo, etc.
+                                const trabajaEnEstaHora = horarioTrabajador.find(turno =>
+                                    turno.dia === diaActual &&
+                                    horaActual >= turno.hora_inicio &&
+                                    horaActual <= turno.hora_fin &&
+                                    !horasDeDescanso.includes(horaActual)
+                                );
+                
+                                const esFestivo = festivosSemana.some(festivo => 
+                                    festivo.slice(0, 10) === diasLaborablesSemanaActual[index]
+                                );
+                
+                                claseCelda = horasDeDescanso.includes(horaActual)
+                                    ? 'descanso'
+                                    : (trabajaEnEstaHora ? 'horario-activo' : '') + (esFestivo ? ' festivo' : '');
+                            }
+            
                         %>
-                            <td class="<%= 
-                                horasDeDescanso.includes(horaActual) ? 'descanso' : 
-                                (trabajaEnEstaHora ? 'horario-activo' : '') + 
-                                (esFestivo ? ' festivo' : '') 
-                            %>"></td>
+
+                        <td class="<%= claseCelda %>" <%= cita ? `data-id=${cita.id_cita}` : '' %>>
+                            <%= (cita && horaActual === cita.hora_inicio) ? cita.motivo : '' %>
+                        </td>
+
+
+
                         <% }) %>
                     </tr>
                 <% }) %>
             </tbody>
             
+            
+            
         
 
 
         <script src="/javascripts/bootstrap.bundle.min.js"></script>
+        <script src="/javascripts/funcionesHorarioCitas.js"></script> <!-- Para hacer que aparezca dinamicamente la infromación de la cita en el lateral -->
 
 </body>
 

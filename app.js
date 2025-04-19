@@ -58,6 +58,12 @@ app.use('/zona/paciente', zonaPacienteRouter);
 app.use('/zona/trabajador', zonaTrabajadorRouter);
 
 
+//para limpiar cache
+app.use((req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store');
+  next();
+});
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
