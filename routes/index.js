@@ -1,5 +1,6 @@
 var express = require('express');
 const mysql = require('mysql');
+const session = require('express-session'); //sesion
 var router = express.Router();
 
 var bd=require("../conexion/conexion"); //importar bbdd

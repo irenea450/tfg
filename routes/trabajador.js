@@ -1,8 +1,8 @@
 const express = require('express');
 const session = require('express-session'); //sesion
 const router = express.Router();
-const { horarioTrabajador, festivosTrabajador , obtenerDiasLaborablesSemanaActual, citasTrabajador , consultarCita, obtenerPaciente,
-    actualizarCita, anularCita, completarCita
+const { horarioTrabajador, festivosTrabajador, vacacionesTrabajador , obtenerDiasLaborablesSemanaActual, citasTrabajador , consultarCita, obtenerPaciente,
+    actualizarCita, anularCita, completarCita, crearInforme
 } = require('../models/trabajador');
 
 //Rutas desde aqui empiezan con --> /zona/trabajador
@@ -13,26 +13,29 @@ const { horarioTrabajador, festivosTrabajador , obtenerDiasLaborablesSemanaActua
 router.get('/horario', async (req, res) => {
     console.log("con el usaurio de id: " + req.session.usuarioId);
 
-    //sacar horario semanal del trabajador
+    //?sacar horario semanal del trabajador
     let horario = await horarioTrabajador(req.session.usuarioId);
 
-    //obtener los dias laborables de las semana actual , para impirmirlo en el horario
+    //?obtener los dias laborables de las semana actual , para impirmirlo en el horario
     let diasLaborablesSemanaActual = await obtenerDiasLaborablesSemanaActual();
-    console.log("Fechas de la semana actual:", diasLaborablesSemanaActual);
+    //console.log("Fechas de la semana actual:", diasLaborablesSemanaActual);
 
-    //obtener los festivos que tiene la clínica y si coinciden con los dias de esa semana marcar
+    //?obtener los festivos que tiene la clínica y si coinciden con los dias de esa semana marcar
     let festivos = await festivosTrabajador(diasLaborablesSemanaActual);
-    console.log(festivos);
+    //console.log(festivos);
+    //?obtener los días de vacaciones del trabajador y si coinciden con los dias de esa semana marcar
+    let vacaciones = await vacacionesTrabajador(diasLaborablesSemanaActual);
+    //console.log("Vacaciones que se van a mostrar " + vacaciones);
 
-    //obtener citas que tiene pendientes el trabajador
+    //?obtener citas que tiene pendientes el trabajador
     let citas = await citasTrabajador(req.session.usuarioId)
 
-    //filtramos las citas que estan dentro de la semana actual
+    //~filtramos las citas que estan dentro de la semana actual
     const citasSemana = citas.filter(cita => {
         const fechaCita = new Date(cita.fecha).toLocaleDateString('es-ES'); //poner formato DD/MM/YYYY
         return diasLaborablesSemanaActual.includes(fechaCita);
     });
-    console.log("citas pendientes esta semana" + citasSemana);
+    //console.log("citas pendientes esta semana" + citasSemana);
 
     res.render('trabajadores/horario', {
         title: 'Didadent',
@@ -41,16 +44,11 @@ router.get('/horario', async (req, res) => {
         horarioTrabajador: horario,//paso el horario
         diasLaborablesSemanaActual: diasLaborablesSemanaActual, //dias de la semana
         festivosSemana: festivos, //festivos
+        vacacionesSemana: vacaciones, //vacaciones
         citasSemana: citasSemana  //citas de la semana actual 
     })
 });
 
-// POST horario
-router.post('/horario', async (req, res) => {
-
-//no se necesita el post hasta que no haga un formulario
-
-});
 
 // GET consultra cita
 // Ruta para consultra la cita que se seleccione
@@ -84,10 +82,10 @@ router.get('/consultar-cita/:id', async (req, res) => {
 
 // POST guardar cambios en la cita
 router.post('/editar-cita', async (req, res) => {
-    const { id_cita, motivo, hora_inicio, hora_fin } = req.body;
+    const { id_cita, fecha, motivo, hora_inicio, hora_fin } = req.body;
     try {
         // Aquí llamarías a una función de modelo que actualice esos campos en la BBDD
-        await actualizarCita(id_cita, motivo, hora_inicio, hora_fin);
+        await actualizarCita(id_cita,fecha, motivo, hora_inicio, hora_fin);
         res.json({ mensaje: 'Cita actualizada correctamente' });
     } catch (err) {
         console.error('Error al editar la cita:', err);
@@ -116,6 +114,23 @@ router.post('/completar-cita/:id', async (req, res) => {
     } catch (err) {
         console.error('Error al completar la cita:', err);
         res.status(500).json({ error: 'Error al completar la cita' });
+    }
+});
+
+// POST para generar informe de cita
+router.post('/generar-informe/:idPaciente/:idCita', async (req, res) => {
+    //ids
+    const idCita = req.params.idCita;
+    const idPaciente = req.params.idPaciente;
+    //descripción y fecha
+    const descripcion = req.body.descripcion;
+    const fecha = req.body.fecha;
+    try {
+        await crearInforme(idPaciente,idCita,descripcion,fecha); //función para crear el informe en la bbdd
+        res.json({ mensaje: 'Informe generado con éxito' });
+    } catch (err) {
+        console.error('Error al generar el informe:', err);
+        res.status(500).json({ error: 'Error al generar informe' });
     }
 });
 

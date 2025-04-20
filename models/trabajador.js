@@ -143,6 +143,43 @@ const festivosTrabajador = async (diasLaborablesSemanaActual) => {
 }
 
 
+//todo función para saber si ese día de vacaciones
+const vacacionesTrabajador = async (diasLaborablesSemanaActual) => {
+    try {
+        const connection = await conectarDB(); // Conectar a la BBDD
+
+        console.log("Buscando las vacaciones del trabajador");
+
+        // Crear un string de placeholders ?,?,?,...? dependiendo del número de fechas
+        const placeholders = Array(diasLaborablesSemanaActual.length).fill('?').join(',');
+
+        // Aquí pasamos las fechas en formato YYYY-MM-DD
+        const query = `SELECT * FROM vacaciones WHERE fecha IN (${placeholders})`;
+
+        // Asegurarnos de que las fechas estén en formato YYYY-MM-DD
+        const diasLaborablesFormateados = diasLaborablesSemanaActual.map(fecha => {
+            const [day, month, year] = fecha.split('/');
+            return `${year}-${month}-${day}`; // Convertimos a YYYY-MM-DD
+        });
+
+        // Ejecutar la consulta con las fechas formateadas
+        const [rows] = await connection.execute(query, diasLaborablesFormateados);
+
+        // Aquí devolvemos las fechas como 'DD/MM/YYYY' para mostrar en el frontend
+        const vacacionesFiltrados = rows.map(f => {
+            const localDate = new Date(f.fecha);
+            return localDate.toLocaleDateString('es-ES'); // Formato DD/MM/YYYY
+        });
+
+        return vacacionesFiltrados;
+
+    } catch (error) {
+        console.error("❌ Error al obtener las vacaciones del trabajador:", error.message);
+        throw error;
+    }
+}
+
+
 
 //todo obtener los días de la semana actual, pues queremos ver el horario actual de la semana presente 
 // Función para obtener los días laborables de la semana actual
@@ -187,11 +224,11 @@ const citasTrabajador = async (id) => {
         const placeholders = idsCitas.map(() => '?').join(',');
 
         const [citas] = await connection.execute(
-            `SELECT * FROM cita WHERE id_cita IN (${placeholders}) AND estado = 'Pendiente'`,
+            `SELECT * FROM cita WHERE id_cita IN (${placeholders}) AND estado = 'Pendiente' OR estado = 'Completada'`,
             idsCitas
         );
 
-        console.log("Citas pendientes:", citas);
+        //console.log("Citas pendientes:", citas);
         return citas;
 
     } catch (error) {
@@ -210,7 +247,7 @@ const consultarCita = async (id) => {
         //buscamos cita con el id
         const [cita] = await connection.execute(`SELECT * FROM cita WHERE id_cita = ? `, [id]);
 
-        console.log("Cita obtenida en la funcion:", cita);
+        //console.log("Cita obtenida en la funcion:", cita);
         return cita;
 
     } catch (error) {
@@ -228,7 +265,7 @@ const obtenerPaciente = async (id) => {
         //buscamos cita con el id
         const [paciente] = await connection.execute(`SELECT * FROM paciente WHERE id_paciente = ? `, [id]);
 
-        console.log("paciente obtenido en la funcion:", paciente);
+        //console.log("paciente obtenido en la funcion:", paciente);
         return paciente;
 
     } catch (error) {
@@ -238,15 +275,15 @@ const obtenerPaciente = async (id) => {
 };
 
 //funciones de modificar las citas de los pacientes
-const actualizarCita = async (id, motivo, hora_inicio, hora_fin) => {
+const actualizarCita = async (id, fecha, motivo, hora_inicio, hora_fin) => {
     //conexión  a la bbdd
     const connection = await conectarDB();
 
     //modificamos en la base de datos
-    const [update] = await connection.execute(`UPDATE cita SET motivo = ?, hora_inicio = ?, hora_fin = ? WHERE id_cita = ?`, 
-        [motivo,hora_inicio,hora_fin, id]);
+    const [update] = await connection.execute(`UPDATE cita SET fecha = ?, motivo = ?, hora_inicio = ?, hora_fin = ? WHERE id_cita = ?`, 
+        [fecha,motivo,hora_inicio,hora_fin, id]);
     
-    console.log("Se ha relaixado la actualizacion" + update)
+    console.log("Se ha realizado la actualizacion" + update)
 
 }
 
@@ -267,9 +304,6 @@ const completarCita = async (id) => {
     const connection = await conectarDB();
 
     //modificamos en la base de datos
-    /* const [completada] = await connection.execute(`UPDATE cita SET estado = 'Completada' WHERE id_cita = ?`,
-        [id]
-    ); */
     const [completada] = await connection.execute(`UPDATE cita SET estado = 'Completada' WHERE cita.id_cita = ?`,
         [id]
     );
@@ -277,6 +311,21 @@ const completarCita = async (id) => {
     console.log("Se ha completado la cita" + completada)
 
 }
+
+//función para crear informes sobre la cita realizada
+const crearInforme = async (idPaciente,idCita,descripcion,fecha) => {
+    //conexión  a la bbdd
+    const connection = await conectarDB();
+
+    //consulta
+    const [informe] = await connection.execute(`INSERT INTO informes (id_paciente,id_cita,descripcion,fecha) VALUES (?, ?, ?, ?)`,
+        [idPaciente,idCita,descripcion,fecha]
+    );
+    
+    console.log("Se ha generado el infroma:" + informe)
+
+}
+
 
 
 
@@ -286,12 +335,14 @@ module.exports = {
     registrarTrabajador, 
     loginTrabajador, 
     horarioTrabajador, 
-    festivosTrabajador, 
+    festivosTrabajador,
+    vacacionesTrabajador,
     obtenerDiasLaborablesSemanaActual , 
     citasTrabajador, 
     consultarCita, 
     obtenerPaciente,
     actualizarCita,
     anularCita,
-    completarCita
+    completarCita,
+    crearInforme
 };

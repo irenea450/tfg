@@ -4,12 +4,24 @@ table, th, td {
     padding: 1px 40px;
 }
 /* Quitar la lineas del medio para unir todo */
-.horario-activo,
-.festivo,
+/* .horario-activo,
+.festivo, */
 .cita{
     border: none;
 }
 
+
+.horario-activo-con-cita {
+    background-color: green;
+    /* Otros estilos que desees aplicar */
+}
+
+/* Asegúrate de que la clase .cita tenga un color diferente */
+.cita {
+    background-color: #add8e6 !important; /* Ejemplo: amarillo */
+}
+
+/* Asegúrate de que la clase .horario-activo tenga un color */
 .horario-activo {
     background-color: #8df59d; /* verde clarito */
 }
@@ -20,9 +32,10 @@ table, th, td {
 }
 
 .festivo {
-    background-color: #e73330; /* Un rojo para los festivos */
+    background-color: #e73330; 
 }
 
-.cita {
-    background-color: #add8e6; /* azul claro */
+.vacaciones {
+    background-color: #e730b6; 
 }
+

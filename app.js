@@ -42,8 +42,8 @@ app.use('/sweetalert2', express.static(__dirname + '/node_modules/sweetalert2/di
 //configurar sesiones (cambiado a true)
 app.use(session({
   secret: 'mysecretsession',
-  resave: true,
-  saveUninitialized: true
+  resave: false,
+  saveUninitialized: false
 }));
 
 

@@ -51,49 +51,51 @@
             <tbody>
                 <% horasDelDia.forEach(horaActual => { %>
                     <tr>
-                        <!-- Columna de la hora -->
                         <td><%= horaActual.substring(0, 5) %></td>
-                
                         <% diasLaborables.forEach((diaActual, index) => {
-                            // Buscar si hay una cita en esta fecha y hora
-                            const cita = citasSemana.find(c =>
-                                new Date(c.fecha).toLocaleDateString('es-ES') === diasLaborablesSemanaActual[index] &&
-                                c.hora_inicio <= horaActual && // La hora de inicio de la cita es antes o igual a la hora actual
-                                c.hora_fin > horaActual // La hora de fin de la cita es después de la hora actual
+                            const fechaActual = diasLaborablesSemanaActual[index];
+                            let clases = [];
+                            let contenidoCelda = '';
+            
+                            const trabajaEnEstaHora = horarioTrabajador.find(turno =>
+                                turno.dia === diaActual &&
+                                horaActual >= turno.hora_inicio &&
+                                horaActual <= turno.hora_fin // estrictamente menor al fin
                             );
             
-                            // Establecer la clase para la celda
-                            let claseCelda = '';
-            
-                            if (cita) {
-                                // Si hay una cita, marcar la celda con la clase "cita"
-                                claseCelda = 'cita';
-                            } else {
-                                // Si no hay cita, comprobar otras condiciones como descanso, festivo, etc.
-                                const trabajaEnEstaHora = horarioTrabajador.find(turno =>
-                                    turno.dia === diaActual &&
-                                    horaActual >= turno.hora_inicio &&
-                                    horaActual <= turno.hora_fin &&
-                                    !horasDeDescanso.includes(horaActual)
-                                );
-                
-                                const esFestivo = festivosSemana.some(festivo => 
-                                    festivo.slice(0, 10) === diasLaborablesSemanaActual[index]
-                                );
-                
-                                claseCelda = horasDeDescanso.includes(horaActual)
-                                    ? 'descanso'
-                                    : (trabajaEnEstaHora ? 'horario-activo' : '') + (esFestivo ? ' festivo' : '');
+                            if (trabajaEnEstaHora) {
+                                clases.push('horario-activo');
                             }
             
+                            if (horasDeDescanso.includes(horaActual)) {
+                                clases.push('descanso');
+                            }
+            
+                            const esVacaciones = vacacionesSemana.includes(fechaActual);
+                            const esFestivo = festivosSemana.includes(fechaActual);
+            
+                            if (esVacaciones) {
+                                clases.push('vacaciones');
+                                contenidoCelda = 'Vacaciones';
+                            } else if (esFestivo) {
+                                clases.push('festivo');
+                                contenidoCelda = 'Festivo';
+                            }
+            
+                            const cita = citasSemana.find(c =>
+                                new Date(c.fecha).toLocaleDateString('es-ES') === fechaActual &&
+                                c.hora_inicio <= horaActual &&
+                                c.hora_fin > horaActual
+                            );
+            
+                            if (cita) {
+                                clases.push('cita');
+                                contenidoCelda = (horaActual === cita.hora_inicio) ? cita.motivo : contenidoCelda;
+                            }
                         %>
-
-                        <td class="<%= claseCelda %>" <%= cita ? `data-id=${cita.id_cita}` : '' %>>
-                            <%= (cita && horaActual === cita.hora_inicio) ? cita.motivo : '' %>
+                        <td class="<%= clases.join(' ') %>" <%= cita ? `data-id=${cita.id_cita}` : '' %>>
+                            <%= contenidoCelda %>
                         </td>
-
-
-
                         <% }) %>
                     </tr>
                 <% }) %>
@@ -101,6 +103,10 @@
             
             
             
+            </table>
+            <div id="contenedorInforme">
+
+            </div>
         
 
 
