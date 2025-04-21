@@ -50,6 +50,14 @@ router.get('/horario', async (req, res) => {
 });
 
 
+// POST de horario (para que funcione correctamente formulario de informe)
+router.post('/horario', async (req, res) => {
+
+        // Lógica para manejar la petición POST a /zona/trabajador/horario
+        res.send('Petición POST recibida en /zona/trabajador/horario');
+
+});
+
 // GET consultra cita
 // Ruta para consultra la cita que se seleccione
 // Ruta para consultar la cita

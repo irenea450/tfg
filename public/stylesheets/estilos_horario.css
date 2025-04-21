@@ -1,11 +1,22 @@
+
+:root {
+    --color-primario: #56adf7; 
+}
+
+
+
 table, th, td {
     border: 1px solid black;
     text-align: center;
     padding: 1px 40px;
+    margin: 5px 20px;
 }
+
+h1{
+    margin: 5px 20px;
+}
+
 /* Quitar la lineas del medio para unir todo */
-/* .horario-activo,
-.festivo, */
 .cita{
     border: none;
 }
@@ -39,3 +50,104 @@ table, th, td {
     background-color: #e730b6; 
 }
 
+/* caudro de citas */
+#cuadroCitas {
+    display: none;
+    height: auto;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+
+}
+
+/* cuadro de infromes */
+#contenedorInforme {
+    display: none;
+    height: auto;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+
+}
+
+/* Media query para hacer que tabla y formulario de citas se bajen al cambiar el tamaño de la pantalla a aprtir de 768 */
+@media (min-width: 1500px) {
+
+
+    #cuadroCitas {
+        position: absolute; 
+        top: 100px;
+        right: 0;
+        width: 600px;
+        height: auto;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        order: 2;
+    }
+
+}
+
+
+
+
+/* Boton crear citas */
+#crearCita{
+    position: fixed;
+    height: 50px;
+    width: 50px;
+    top: 100px;
+    right: 0;
+    margin: 20px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    text-align: center;
+
+    border: solid 1px gainsboro;
+    border-radius: 50px;
+
+    background-color: var(--color-primario);
+}
+#crearCita p.amplio{
+    display: none;
+    margin: 0;
+    font-size: large;
+}
+#crearCita p.cerrado{
+    margin: 0;
+    font-size: x-large; 
+}
+
+#crearCita:hover{
+    height: 40px;
+    width: 130px;
+
+    border-radius: 10px;
+    
+}
+/* Cando s ehaga grande solo mostrar elk texto y no el + */
+#crearCita:hover p.amplio{
+    display: block;
+    margin: 0;
+}
+#crearCita:hover p.cerrado{
+    display: none;
+    margin: 0;
+}
+
+@media (max-width: 1500px) {
+    /* Poner abajo en caso de ser pantalla pequeña */
+    #crearCita{
+        top: 90%;
+    }
+
+}

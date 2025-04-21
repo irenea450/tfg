@@ -94,7 +94,7 @@ const horarioTrabajador = async (id) => {
         //? sacar el horario de ese trabajador
         const [rows] = await connection.execute("SELECT * FROM horarios WHERE id_trabajador = ?", [id]);
 
-        console.log("Usuario con horario:", rows);
+        //console.log("Usuario con horario:", rows);
 
         return rows;
 

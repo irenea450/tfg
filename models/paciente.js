@@ -1,7 +1,7 @@
 const conectarDB = require('../conexion/conexion'); // Importar la conexión
 const bcrypt = require("bcryptjs"); // Para encriptar y comparar contraseñas
 
-const registrarPaciente = async (rol, nombre, apellidos, correo, tlf, domicilio, fecha_nacimiento, sexo, contraseña) => {
+const registrarPaciente = async (rol,id, nombre, apellidos, correo, tlf, domicilio, fecha_nacimiento, sexo, contraseña) => {
     try {
         const connection = await conectarDB();
 
@@ -22,8 +22,8 @@ const registrarPaciente = async (rol, nombre, apellidos, correo, tlf, domicilio,
         const contraseñaHaash = await bcrypt.hash(contraseña, 8);
 
 
-        const query = "INSERT INTO paciente (rol, nombre, apellidos, correo, tlf, domicilio, fecha_nacimiento, sexo, contraseña) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        const [result] = await connection.execute(query, [rol, nombre, apellidos, correo, tlf, domicilio, fecha_nacimiento, sexo, contraseñaHaash]);
+        const query = "INSERT INTO paciente (rol, id_paciente, nombre, apellidos, correo, tlf, domicilio, fecha_nacimiento, sexo, contraseña) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        const [result] = await connection.execute(query, [rol, id , nombre, apellidos, correo, tlf, domicilio, fecha_nacimiento, sexo, contraseñaHaash]);
 
         
         return  result;  // Devolver el resultado de la inserción si todo fue bien

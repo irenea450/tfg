@@ -93,6 +93,7 @@ router.get('/registrarPaciente', (req, res) => {
 router.post('/registrarPaciente', async (req, res) => {
 
     const rol = 1; //. todos los pacientes son rol 1
+    const id = req.body.dni;
     const nombre = req.body.nombre;
     const apellidos = req.body.apellidos;
     const correo = req.body.correo;
@@ -112,7 +113,7 @@ router.post('/registrarPaciente', async (req, res) => {
 
     // Llamamos al modelo para registrar al trabajador
     try {
-        const resultado = await registrarPaciente(rol, nombre, apellidos, correo, tlf, domicilio, fecha_nacimiento, sexo, contraseña);
+        const resultado = await registrarPaciente(rol,id, nombre, apellidos, correo, tlf, domicilio, fecha_nacimiento, sexo, contraseña);
 
         if (resultado.error) {
             // Error si ya existe ese correo

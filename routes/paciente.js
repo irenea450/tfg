@@ -4,7 +4,7 @@ const router = express.Router();
 // GET pedirCita
 // Ruta para pedirCita por parte del paciente
 router.get('/pedirCita', (req, res) => {
-    res.render('pedirCita', {title: 'Didadent'});
+    res.render('pacientes/pedirCita', {title: 'Didadent'});
 });
 
 

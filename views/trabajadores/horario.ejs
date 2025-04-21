@@ -15,26 +15,28 @@
         <h1>Horario del trabajador</h1>
 
         <% 
-        const algo = ['10:00:00', '11:00:00', '12:00:00', '13:00:00', '14:00:00','14:30:00', '15:00:00', '16:00:00', '17:00:00', '18:00:00', '19:00:00', '20:00:00'];
-        const horasDelDia = [
-        '10:00:00', '10:30:00',
-        '11:00:00', '11:30:00',
-        '12:00:00', '12:30:00',
-        '13:00:00', '13:30:00',
-        '14:00:00', '14:30:00',
-        '15:00:00', '15:30:00',
-        '16:00:00', '16:30:00',
-        '17:00:00', '17:30:00',
-        '18:00:00', '18:30:00',
-        '19:00:00', '19:30:00',
-        '20:00:00'
-];
-        const diasLaborables = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
-        const horasDeDescanso = ['15:00:00','15:30:00', '16:00:00']; // Estas horas no se trabajan
+            const algo = ['10:00:00', '11:00:00', '12:00:00', '13:00:00', '14:00:00','14:30:00', '15:00:00', '16:00:00', '17:00:00', '18:00:00', '19:00:00', '20:00:00'];
+            const horasDelDia = [
+            '10:00:00', '10:30:00',
+            '11:00:00', '11:30:00',
+            '12:00:00', '12:30:00',
+            '13:00:00', '13:30:00',
+            '14:00:00', '14:30:00',
+            '15:00:00', '15:30:00',
+            '16:00:00', '16:30:00',
+            '17:00:00', '17:30:00',
+            '18:00:00', '18:30:00',
+            '19:00:00', '19:30:00',
+            '20:00:00'
+            ];
+            const diasLaborables = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
+            const horasDeDescanso = ['15:00:00','15:30:00', '16:00:00']; // Estas horas no se trabajan
 
-    %>
+        %>
 
-        <table>
+
+    
+        <table class="tabla-citas">
             <thead>
                 <tr>
                     <th>Hora</th>
@@ -76,10 +78,10 @@
             
                             if (esVacaciones) {
                                 clases.push('vacaciones');
-                                contenidoCelda = 'Vacaciones';
+                                //contenidoCelda = 'Vacaciones';
                             } else if (esFestivo) {
                                 clases.push('festivo');
-                                contenidoCelda = 'Festivo';
+                                //contenidoCelda = 'Festivo';
                             }
             
                             const cita = citasSemana.find(c =>
@@ -87,31 +89,72 @@
                                 c.hora_inicio <= horaActual &&
                                 c.hora_fin > horaActual
                             );
+
+
             
                             if (cita) {
                                 clases.push('cita');
-                                contenidoCelda = (horaActual === cita.hora_inicio) ? cita.motivo : contenidoCelda;
+                                contenidoCelda = ''; // vacio y rellenamos en el script de abajo
                             }
+
+
                         %>
                         <td class="<%= clases.join(' ') %>" <%= cita ? `data-id=${cita.id_cita}` : '' %>>
                             <%= contenidoCelda %>
                         </td>
                         <% }) %>
                     </tr>
+
+
                 <% }) %>
+
+
             </tbody>
+        </table>
             
             
             
-            </table>
-            <div id="contenedorInforme">
-
+            <div id="cuadroCitas">
             </div>
-        
 
 
-        <script src="/javascripts/bootstrap.bundle.min.js"></script>
-        <script src="/javascripts/funcionesHorarioCitas.js"></script> <!-- Para hacer que aparezca dinamicamente la infromación de la cita en el lateral -->
+            <div id="contenedorInforme">
+            </div>
+
+            <div id="crearCita">
+                <p class="cerrado"><strong>+</strong></p>
+                <p class="amplio"><strong>Crear Cita</strong></p>
+            </div>
+
+
+
+            <script src="/javascripts/bootstrap.bundle.min.js"></script>
+            <script src="/javascripts/funcionesHorarioCitas.js"></script>
+            <!-- Para hacer que aparezca dinamicamente la infromación de la cita en el lateral -->
+
+    <script>
+        // Inicializamos el Set para almacenar los IDs de citas que ya han sido escritas
+        const idsEscritos = new Set();
+
+        // Función que solo escribe el motivo una vez por ID
+        function escribirMotivoUnaVez(id, motivo) {
+            if (idsEscritos.has(id)) return; // No escribir si ya se ha escrito antes
+
+            // Buscamos la celda con el data-id correspondiente
+            const celda = document.querySelector(`[data-id='${id}']`);
+            if (celda) {
+                celda.textContent = motivo; // Asignamos el motivo a la celda
+                idsEscritos.add(id); // Marcamos este ID como escrito
+            }
+        }
+
+        // Llamamos a la función para cada cita en citasSemana
+        const citasSemana = <%- JSON.stringify(citasSemana) %>;
+        citasSemana.forEach(cita => {
+            escribirMotivoUnaVez(cita.id_cita, cita.motivo); // Escribimos el motivo solo una vez
+        });
+    </script>
+
 
 </body>
 
