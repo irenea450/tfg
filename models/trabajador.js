@@ -1,15 +1,29 @@
 const conectarDB = require('../conexion/conexion'); // Importar la conexión
 const bcrypt = require("bcryptjs"); // Para encriptar y comparar contraseñas
 
-
+//obtener los datos de todos los trabajadores
 async function obtenerTrabajadores() {
     try {
         const connection = await conectarDB(); // Conectar a la BBDD
-        const [rows] = await connection.execute("SELECT * FROM trabajador"); // Ejecutar consulta
+        const [rows] = await connection.execute("SELECT * FROM trabajador"); // consulta con todos los datos de todos los trabajadores
         await connection.end(); // Cerrar la conexión
         return rows; // Retornar los resultados
     } catch (error) {
         console.error("❌ Error al obtener trabajadores:", error.message);
+        throw error;
+    }
+}
+
+//todo obtener trabajador por el id
+//obtener los datos de todos los trabajadores
+const obtenerTrabajadorId = async (id) => {
+    try {
+        const connection = await conectarDB(); // Conectar a la BBDD
+        const [rows] = await connection.execute("SELECT * FROM trabajador WHERE id_trabajador = ?" , [id]); // consulta el traabjador que se pasa el id
+
+        return rows; 
+    } catch (error) {
+        console.error("❌ Error al obtener el trabajador:", error.message);
         throw error;
     }
 }
@@ -82,6 +96,53 @@ const loginTrabajador = async (correo, contraseña) => {
         throw error;
     }
 }
+
+//todo actualizar datos del trabajador
+const guardarDatosTrabajador = async (id,rol, nombre, apellidos, correo, tlf, estado, especialidad) => {
+    try {
+        const connection = await conectarDB();
+
+        // Verificar si el correo ya está registrado por otro trabajador
+/*         const [rows] = await connection.execute(
+            "SELECT * FROM trabajador WHERE correo = ? AND id_trabajador != ?",
+            [correo, id]
+        );
+
+        if (rows.length > 0) {
+            return { error: "El correo introducido ya está en uso por otro trabajador" };
+        } */
+
+        const query = 'UPDATE trabajador SET rol = ?, nombre = ?, apellidos = ?, correo = ?, tlf = ?, estado = ?, especialidad = ? WHERE id_trabajador = ?';
+        const [result] = await connection.execute(query, [rol, nombre, apellidos, correo, tlf, estado, especialidad, id]);
+
+
+        return result;  // Devolver el resultado del update si todo esta bien
+
+    } catch (error) {
+        console.error("❌ Error al insertar trabajador:", error.message);
+        throw error;
+    }
+}
+
+//todo actualizar contarseñas
+const guardarContraseñaTrabajador = async (id,nuevaContraseña) => {
+    try {
+        const connection = await conectarDB();
+
+        const contraseñaHash = await bcrypt.hash(nuevaContraseña, 10);
+
+        const query = 'UPDATE trabajador SET contraseña = ? WHERE id_trabajador = ?';
+        const [result] = await connection.execute(query, [contraseñaHash, id]);
+
+
+        return result;
+
+    } catch (error) {
+        console.error("❌ Error al cambiar la contarseña del trabajador:", error.message);
+        throw error;
+    }
+}
+
 
 /* --------------------------- horarios trabajador -------------------------- */
 const horarioTrabajador = async (id) => {
@@ -326,14 +387,55 @@ const crearInforme = async (idPaciente,idCita,descripcion,fecha) => {
 
 }
 
+/* -------------------------------------------------------------------------- */
+/*                          vacaciones del trabajador                         */
+/* -------------------------------------------------------------------------- */
+//función para insertar vacaciones
+const solicitarVacaciones = async (idTrabajador, fecha) => {
+    //conexión  a la bbdd
+    const connection = await conectarDB();
+
+    //consulta
+    const [vacaciones] = await connection.execute(`INSERT INTO vacaciones (id_trabajador,fecha) VALUES (?, ?)`,
+        [idTrabajador,fecha]
+    );
+    
+    console.log("Se ha insrtado el día de vacaciones :" + vacaciones);
+    //return vacaciones;
+
+}
+
+
+//todo obtener vacaiones del trabajador por el id
+const obtenerVacacionesId = async (id) => {
+    try {
+        const connection = await conectarDB(); // Conectar a la BBDD
+        const [rows] = await connection.execute("SELECT * FROM vacaciones WHERE id_trabajador = ?" , [id]); // consulta vacaciones del trabajador que se pasa el id
+
+        return rows; 
+    } catch (error) {
+        console.error("❌ Error al obtener el trabajador:", error.message);
+        throw error;
+    }
+}
+
+//todo eliminar vacaciones
+const eliminarVacacion = async (id) => {
+    const connection = await conectarDB(); // Conectar a la BBDD
+    const [rows] = await connection.execute('DELETE FROM `vacaciones` WHERE `vacaciones`.`id_vacaciones` = ?', [id]);
+    console.log("Se ha eliminado el día de vacaiones: " + rows);
+
+}
 
 
 
 
 //* Exportar las funciones para usarlas en otros archivos
 module.exports = { 
+    obtenerTrabajadorId,
     registrarTrabajador, 
-    loginTrabajador, 
+    loginTrabajador,
+    guardarDatosTrabajador,
     horarioTrabajador, 
     festivosTrabajador,
     vacacionesTrabajador,
@@ -344,5 +446,7 @@ module.exports = {
     actualizarCita,
     anularCita,
     completarCita,
-    crearInforme
+    crearInforme,
+    guardarContraseñaTrabajador,
+    solicitarVacaciones, obtenerVacacionesId, eliminarVacacion
 };

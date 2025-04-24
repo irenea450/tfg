@@ -1,3 +1,6 @@
+
+<script src="/sweetalert2/sweetalert2.all.min.js"></script> <!-- Alertas -->
+
 <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="/zona/trabajador/horario">
@@ -23,9 +26,9 @@
                     Área <%= name %>
                 </button>
                 <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="/zona/trabajador/pacientes">Cerrar sesión</a></li>
-                    <li><a class="dropdown-item" href="/zona/trabajador/pacientes">Mis datos</a></li>
-                    <li><a class="dropdown-item" href="/zona/trabajador/pacientes">Configuración</a></li>
+                    <li><a class="dropdown-item" href="/zona/trabajador/datos">Mis datos</a></li>
+                    <li><a class="dropdown-item" href="/zona/trabajador/configuracion">Configuración</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="confirmarLogout()" >Cerrar sesión</a></li> <!-- te pide confrimación de cerrar sesión -->
                 </ul>
             </div>
 
@@ -57,4 +60,21 @@
         cambiarDireccionDrop();
         window.addEventListener('resize', cambiarDireccionDrop);
     });
+
+
+    //? Función para confrimar el cerrar sesión
+    function confirmarLogout() {
+    Swal.fire({
+        title: 'Cerrar sesión',
+        text: "¿Estás seguro de que quieres cerrar tu sesión?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, cerrar sesión',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = '/autenticacion/logout';
+        }
+    });
+}
 </script>

@@ -1,16 +1,19 @@
 const express = require('express');
 const session = require('express-session'); //sesion
 const router = express.Router();
-const { horarioTrabajador, festivosTrabajador, vacacionesTrabajador , obtenerDiasLaborablesSemanaActual, citasTrabajador , consultarCita, obtenerPaciente,
-    actualizarCita, anularCita, completarCita, crearInforme
+const { obtenerTrabajadorId,guardarDatosTrabajador, horarioTrabajador, festivosTrabajador, vacacionesTrabajador , obtenerDiasLaborablesSemanaActual, citasTrabajador , consultarCita, obtenerPaciente,
+    actualizarCita, anularCita, completarCita, crearInforme, guardarContraseñaTrabajador, solicitarVacaciones, obtenerVacacionesId, eliminarVacacion
 } = require('../models/trabajador');
+
+//para proteger las routes
+const { estaLogueado, soloTrabajadores } = require('../middlewares/acceso.js');
 
 //Rutas desde aqui empiezan con --> /zona/trabajador
 
 
 // GET horario
 // Ruta para el horario del trabajador
-router.get('/horario', async (req, res) => {
+router.get('/horario',estaLogueado, soloTrabajadores, async (req, res) => {
     console.log("con el usaurio de id: " + req.session.usuarioId);
 
     //?sacar horario semanal del trabajador
@@ -61,7 +64,7 @@ router.post('/horario', async (req, res) => {
 // GET consultra cita
 // Ruta para consultra la cita que se seleccione
 // Ruta para consultar la cita
-router.get('/consultar-cita/:id', async (req, res) => {
+router.get('/consultar-cita/:id',estaLogueado, soloTrabajadores, async (req, res) => {
     const id = req.params.id;
     try {
         // Obtener los datos de la cita
@@ -89,7 +92,7 @@ router.get('/consultar-cita/:id', async (req, res) => {
 });
 
 // POST guardar cambios en la cita
-router.post('/editar-cita', async (req, res) => {
+router.post('/editar-cita',estaLogueado, soloTrabajadores, async (req, res) => {
     const { id_cita, fecha, motivo, hora_inicio, hora_fin } = req.body;
     try {
         // Aquí llamarías a una función de modelo que actualice esos campos en la BBDD
@@ -114,7 +117,7 @@ router.post('/anular-cita/:id', async (req, res) => {
 });
 
 // POST para completar cita
-router.post('/completar-cita/:id', async (req, res) => {
+router.post('/completar-cita/:id',estaLogueado, soloTrabajadores, async (req, res) => {
     const id = req.params.id;
     try {
         await completarCita(id); // Función que cambia el estado a "Completada"
@@ -126,7 +129,7 @@ router.post('/completar-cita/:id', async (req, res) => {
 });
 
 // POST para generar informe de cita
-router.post('/generar-informe/:idPaciente/:idCita', async (req, res) => {
+router.post('/generar-informe/:idPaciente/:idCita',estaLogueado, soloTrabajadores, async (req, res) => {
     //ids
     const idCita = req.params.idCita;
     const idPaciente = req.params.idPaciente;
@@ -148,7 +151,7 @@ router.post('/generar-informe/:idPaciente/:idCita', async (req, res) => {
 
 // GET buscador pacientes
 // Ruta para el buscador de pacientes
-router.get('/pacientes', (req, res) => {
+router.get('/pacientes',estaLogueado, soloTrabajadores, (req, res) => {
     res.render('trabajadores/buscadorPacientes', {title: 'Didadent',
         login: true,
         name: req.session.name});
@@ -164,6 +167,179 @@ router.get('/pacientes', (req, res) => {
 
 }); */
 
+// GET datos trabajador
+// Ruta para ver los datos del trabajador
+router.get('/datos',estaLogueado, soloTrabajadores, async (req, res) => {
+
+    let trabajador = (await obtenerTrabajadorId(req.session.usuarioId))[0]; //para acceder al primer objetoq eu es nuestro trabajador
+    //console.log('Trabajador recuperado:', JSON.stringify(trabajador, null, 2));
+
+    res.render('trabajadores/datosTrabajador', {title: 'Didadent',
+        name: req.session.name,
+        trabajador: trabajador
+    });
+});
+// POST datos trabajador
+router.post('/datos', async (req, res) => {
+
+    const id = req.session.usuarioId;
+    const rol = req.body.rol;
+    const nombre = req.body.nombre;
+    const apellidos = req.body.apellidos;
+    const correo = req.body.correo;
+    const tlf = req.body.tlf;
+    const estado = req.body.estado;
+    const especialidad = req.body.especialidad;
+    const contraseña = req.body.contraseña;
+
+    //console.log({ id, rol, nombre, apellidos, correo, tlf, estado, especialidad });
+
+    const guadarDatos = guardarDatosTrabajador(id,rol,nombre,apellidos,correo,tlf,estado,especialidad);
+    //console.log('datos guardados recuperado:', JSON.stringify(guadarDatos, null, 2));
+
+    //Una vez realizado voover a hacer la consulta para ver los datos
+    let trabajador = (await obtenerTrabajadorId(id))[0]; //para acceder al primer objeto que es nuestro trabajador
+    //console.log('Trabajador recuperado:', JSON.stringify(trabajador, null, 2));
+
+    res.render('trabajadores/datosTrabajador', {
+        title: 'Didadent',
+        name: req.session.name,
+        trabajador: trabajador,
+        mensajeExito: 'Datos actualizados correctamente.'
+    })
+});
+// POST cambiar contarseña
+router.post('/contrasena', async (req, res) => {
+    const id = req.session.usuarioId;
+    const nuevaContraseña = req.body.contraseña;
+    const confirmarContraseña = req.body.confrimarContraseña; // ojo: typo en "confrimarContraseña"
+
+    let trabajador = (await obtenerTrabajadorId(id))[0];
+
+
+    if (nuevaContraseña !== confirmarContraseña) {
+        return res.render('trabajadores/datosTrabajador', {
+            title: 'Didadent',
+            name: req.session.name,
+            trabajador,
+            mensajeError: 'Las contraseñas no coinciden.' //mensaje de confirmación
+        });
+    }
+
+    try {
+
+        //llamamos a la función para guaradar las contarseñas
+        const guardarContraseña = guardarContraseñaTrabajador(id,nuevaContraseña);
+
+        res.render('trabajadores/datosTrabajador', {
+            title: 'Didadent',
+            name: req.session.name,
+            trabajador,
+            mensajeExito: 'Contraseña actualizada correctamente.'
+        });
+
+    } catch (error) {
+        console.error("❌ Error al cambiar contraseña:", error.message);
+        res.render('trabajadores/datosTrabajador', {
+            title: 'Didadent',
+            name: req.session.name,
+            trabajador,
+            mensajeError: 'Ha ocurrido un error al actualizar la contraseña.'
+        });
+    }
+});
+
+
+
+
+// GET configuracion
+// Ruta para la configuracion personal
+router.get('/configuracion',estaLogueado, soloTrabajadores, (req, res) => {
+    res.render('trabajadores/configuracionTrabajador', {title: 'Didadent',
+        login: true,
+        name: req.session.name
+    });
+});
+
+
+// POST agregar vacaciones
+router.post('/vacaciones', async (req, res) => {
+    const id = req.session.usuarioId;
+    const dia = req.body.dia;
+    //console.log("dia:" + dia);
+
+    // Convertimos el string a Date para comparar
+    const hoy = new Date();
+    const diaSolicitado = new Date(dia);
+
+    // Poner misma hora para evitar errores
+    hoy.setHours(0, 0, 0, 0);
+    diaSolicitado.setHours(0, 0, 0, 0);
+
+    // comprobamos que la fecha solicitada no es anterior al día de hoy
+    if (diaSolicitado < hoy) {
+        return res.render('trabajadores/configuracionTrabajador', {
+            title: 'Didadent',
+            name: req.session.name,
+            mensajeError: 'No puedes solicitar un día anterior al actual.'
+        });
+    }
+
+    try {
+
+        //llamar a funcíon de insert
+        let diaVacaciones = await solicitarVacaciones(id, dia);
+
+        res.render('trabajadores/configuracionTrabajador', {
+            title: 'Didadent',
+            name: req.session.name,
+            mensajeExito: 'Se ha solicitado con éxito.'
+        });
+
+    } catch (error) {
+        console.error("❌ Error al solicitar día de vacaciones:", error.message);
+        res.render('trabajadores/configuracionTrabajador', {
+            title: 'Didadent',
+            name: req.session.name,
+            mensajeError: 'No se ha podido solicitar.'
+        });
+    }
+});
+
+
+// GET vacaciones del trabajador
+router.get('/vacaciones/obtenerVacaciones', async (req, res) => {
+    const id = req.session.usuarioId;
+
+    try {
+        const vacaciones = await obtenerVacacionesId(id); // devuelve [{id: 5, dia: '2025-06-01'}, ...]
+        res.json(vacaciones);
+    } catch (error) {
+        console.error("❌ Error al obtener vacaciones:", error.message);
+        res.status(500).json({ error: "Error al obtener las vacaciones" });
+    }
+});
+
+//Eliminar vacaciones
+router.post('/vacaciones/eliminar', async (req, res) => {
+    const { idVacacion } = req.body;
+
+    try {
+        await eliminarVacacion(idVacacion);
+        res.render('trabajadores/configuracionTrabajador', {
+            title: 'Didadent',
+            name: req.session.name,
+            mensajeExito: 'se ha eliminado el día selecionado de tus vacaciones.'
+        });
+    } catch (error) {
+        console.error("❌ Error al eliminar vacaciones:", error.message);
+        res.render('trabajadores/configuracionTrabajador', {
+            title: 'Didadent',
+            name: req.session.name,
+            mensajeError: 'No se pudo eliminar la vacación.'
+        });
+    }
+});
 
 
 module.exports = router;

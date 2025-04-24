@@ -8,21 +8,21 @@ function soloPacientes(req, res, next) {
     if (req.session.loggedin && req.session.tipo === 'paciente') {
         return next();
     }
-    res.redirect('/login');
+    res.redirect('/autenticacion/login');
 }
 
 function soloTrabajadores(req, res, next) {
     if (req.session.loggedin && req.session.tipo === 'trabajador') {
         return next();
     }
-    res.redirect('/login');
+    res.redirect('/autenticacion/login');
 }
 
 function estaLogueado(req, res, next) {
     if (req.session.loggedin) {
         return next();
     }
-    res.redirect('/login');
+    res.redirect('/autenticacion/login');
 }
 
 module.exports = {

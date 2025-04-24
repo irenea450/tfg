@@ -224,7 +224,7 @@ router.post('/registrarTrabajador', async (req, res) => {
 
 
 
-// GET logout (si quieres activarlo)
+// GET logout
 router.get('/logout', (req, res) => {
     req.session.destroy(() => {
         res.redirect('/')

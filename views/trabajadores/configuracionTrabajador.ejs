@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Clínica <%= title %>
+    </title>
+    <link rel="stylesheet" href="/stylesheets/bootstrap.min.css">
+    <script src="/sweetalert2/sweetalert2.all.min.js"></script> <!-- Alertas -->
+    <style>
+        /* poner aquí la vartiable de color y poer fodos */
+    </style>
+</head>
+
+<body>
+    <%- include("../plantillas/header_trabajadores.ejs") %>
+        <h1>Configuración del trabajador</h1>
+
+        <div class="container p-2" style="background-color: #a1d2fe;">
+            <h2>Solicitar vacaciones</h2>
+            <form action="/zona/trabajador/vacaciones" method="POST">
+
+                <div class="row">
+    
+                    <div class="col col-xl-1">
+                        <label for="nombre">Seleccionar:</label>
+                    </div>
+                    <div class="col col-xl-3">
+                        <input type="date" class="form-control" name="dia"  required>
+                    </div>
+
+                    <div class="col col-xl-1">
+                        <button type="submit" class="btn btn-success">Solicitar</button>
+                    </div>
+                    
+                    <div class="col col-xl-2">
+                        <button type="button" name="verVacaciones" id="verVacaciones" class="btn btn-primary">Ver Mis Vacaciones</button>
+                    </div>
+
+                </div>
+
+            </form>
+
+            <!-- Contenedor donde mostrar dinamicamente las vacaciones -->
+            <div id="contenedorVacaciones" class="">
+                
+            </div>
+
+        </div>
+        
+        
+
+        <script>
+            //para mostrar las vacaiones
+            let visible = false;
+        
+            document.getElementById('verVacaciones').addEventListener('click', async () => {
+                const contenedor = document.getElementById('contenedorVacaciones');
+                contenedor.className= "container my-1 px-5"; //poner estilos de bootrap
+        
+                if (!visible) {
+                    try {
+                        const response = await fetch('/zona/trabajador/vacaciones/obtenerVacaciones');
+                        const vacaciones = await response.json();
+        
+                        if (Array.isArray(vacaciones) && vacaciones.length > 0) {
+
+                            // Ordenamos array de fecha más procima a más lejana para mostrar en orden
+                            vacaciones.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+    
+                            const lista = vacaciones.map(v => {
+                                const fecha = new Date(v.fecha);
+                                console.log('Fecha cruda:', v.fecha); // Esto te mostrará el formato real
+                                const fechaFormateada = !isNaN(fecha) ? fecha.toLocaleDateString() : 'Fecha inválida';
+        
+                                return `
+                                    <li class="d-flex justify-content-between align-items-center my-1 ps-2 rounded" style="background-color: #ededed; ">
+                                        <span>${fechaFormateada}</span>
+                                        <form method="POST" action="/zona/trabajador/vacaciones/eliminar" class="m-0">
+                                            <input type="hidden" name="idVacacion" value="${v.id_vacaciones}">
+                                            <button type="submit" class="btn btn-danger btn-sm">Eliminar día</button>
+                                        </form>
+                                    </li>`;
+                            }).join('');
+        
+                            contenedor.innerHTML = `<ul class="list-group">${lista}</ul>`;
+                        } else {
+                            contenedor.innerHTML = `<p>No tienes vacaciones solicitadas.</p>`;
+                        }
+                    } catch (error) {
+                        contenedor.innerHTML = `<p style="color: red;">Error al cargar las vacaciones.</p>`;
+                    }
+        
+                    visible = true;
+                } else {
+                    contenedor.innerHTML = '';
+                    visible = false;
+                }
+            });
+        </script>
+        
+        
+
+        <!-- Alertas -->
+        <% if (typeof mensajeExito !== 'undefined') { %>
+            <script>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Éxito',
+                    text: '<%= mensajeExito %>',
+                    timer: 2500,
+                    showConfirmButton: false,
+                    confirmButtonColor: '#3085d6'
+                });
+            </script>
+        <% } %>
+        
+        <% if (typeof mensajeError !== 'undefined') { %>
+            <script>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: '<%= mensajeError %>',
+                    timer: 2500,
+                    showConfirmButton: false,
+                    confirmButtonColor: '#d33'
+                });
+            </script>
+        <% } %>
+
+        <script src="/javascripts/bootstrap.bundle.min.js"></script>
+</body>
+</html>
