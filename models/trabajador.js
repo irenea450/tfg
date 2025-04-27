@@ -390,7 +390,7 @@ const crearInforme = async (idPaciente,idCita,descripcion,fecha) => {
 /* -------------------------------------------------------------------------- */
 /*                          vacaciones del trabajador                         */
 /* -------------------------------------------------------------------------- */
-//función para insertar vacaciones
+//todo función para insertar vacaciones
 const solicitarVacaciones = async (idTrabajador, fecha) => {
     //conexión  a la bbdd
     const connection = await conectarDB();
@@ -427,8 +427,92 @@ const eliminarVacacion = async (id) => {
 
 }
 
+/* -------------------------------------------------------------------------- */
+/*                     horarios de turno de los trabjadores                    */
+/* -------------------------------------------------------------------------- */
+const obtenerHorarioTrabajador = async (id) => {
+    try {
+        const connection = await conectarDB(); // Conectar a la BBDD
+        const [rows] = await connection.execute("SELECT * FROM horarios WHERE id_trabajador = ?" , [id]);
+
+        return rows; 
+    } catch (error) {
+        console.error("❌ Error al obtener horario del trabajador:", error.message);
+        throw error;
+    }
+}
+
+const insertarHorarioTrabajador = async (id, dia, hora_inicio, hora_fin) => {
+        //conexión  a la bbdd
+        const connection = await conectarDB();
+
+        //consulta
+        const [horario] = await connection.execute(`INSERT INTO horarios (id_trabajador,dia, hora_inicio, hora_fin) VALUES (?, ?, ?, ?)`,
+            [id, dia, hora_inicio , hora_fin]
+        );
+        
+        console.log("Se ha insertado un horario nuevo :" + horario);
+        return horario;
+}
+
+const actualizarHorario = async (hora_inicio, hora_fin ,id) => {
+    try {
+        const connection = await conectarDB(); // Conectar a la BBDD
+        const [rows] = await connection.execute("UPDATE horarios SET hora_inicio = ?, hora_fin = ? WHERE id_horarios = ? " , [hora_inicio, hora_fin ,id]);
+
+        return rows; 
+    } catch (error) {
+        console.error("❌ Error al obtener horario del trabajador:", error.message);
+        throw error;
+    }
+}
+
+const eliminarHorario = async (id) => {
+    const connection = await conectarDB(); // Conectar a la BBDD
+    const [rows] = await connection.execute('DELETE FROM `horarios` WHERE `horarios`.`id_horarios` = ?', [id]);
+    console.log("Se ha eliminado el turnop de horario: " + rows);
+
+}
+
+/* -------------------------------------------------------------------------- */
+/*                           Festivos de la clinica                           */
+/* -------------------------------------------------------------------------- */
+//todo función para insertar vacaciones
+const solicitarFestivos = async (id, fecha ,descripcion) => {
+    //conexión  a la bbdd
+    const connection = await conectarDB();
+
+    //consulta
+    const [festivos] = await connection.execute(`INSERT INTO festivos (id,fecha, descripcion) VALUES (?, ?, ?)`,
+        [id,fecha,descripcion]
+    );
+    
+    console.log("Se ha insrtado el día de festivo :" + festivos);
+    //return vacaciones;
+
+}
 
 
+//todo obtener vacaiones del trabajador por el id
+const obtenerFestivos = async (id) => {
+    try {
+        const connection = await conectarDB(); // Conectar a la BBDD
+        const [rows] = await connection.execute("SELECT * FROM festivos "); // obtener festivos de la clinica
+
+        return rows; 
+    } catch (error) {
+        console.error("❌ Error al obtener festivos:", error.message);
+        throw error;
+    }
+}
+
+//todo eliminar vacaciones
+const eliminarFestivos = async (id) => {
+    const connection = await conectarDB(); // Conectar a la BBDD
+    const [rows] = await connection.execute('DELETE FROM `festivos` WHERE `festivos`.`id` = ?', [id]);
+    console.log("Se ha eliminado el día de festivos: " + rows);
+
+}
 
 //* Exportar las funciones para usarlas en otros archivos
 module.exports = { 
@@ -448,5 +532,7 @@ module.exports = {
     completarCita,
     crearInforme,
     guardarContraseñaTrabajador,
-    solicitarVacaciones, obtenerVacacionesId, eliminarVacacion
+    solicitarVacaciones, obtenerVacacionesId, eliminarVacacion,
+    obtenerHorarioTrabajador, insertarHorarioTrabajador, actualizarHorario, eliminarHorario,
+    solicitarFestivos, obtenerFestivos, eliminarFestivos
 };

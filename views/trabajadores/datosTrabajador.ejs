@@ -22,7 +22,7 @@
                         <label for="rol">Rol del trabajador</label>
                         <select class="col my-1 form-select" name="rol">
                             <option selected>Selecciona el tipo de trabajador</option>
-                            <option value="2" <%= trabajador.rol === 2 ? 'selected' : '' %>>Trabajador</option>
+                            <option value="2" <%= trabajador.rol === 2 ? 'selected' : '' %> <%= trabajador.rol === 3 ? 'disabled' : '' %>>Trabajador</option>
                             <!-- La opción de administrador solo la van a poder marcar los administradores, de modo qeu los empleados no puedan tener esos privilegios -->
                             <option value="3" <%= trabajador.rol === 3 ? 'selected' : '' %> <%= trabajador.rol === 2 ? 'disabled' : '' %>>Trabajador - Administrador</option>
                         </select>

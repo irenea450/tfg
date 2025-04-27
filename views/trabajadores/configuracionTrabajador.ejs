@@ -33,7 +33,7 @@
                     </div>
                     
                     <div class="col col-xl-2">
-                        <button type="button" name="verVacaciones" id="verVacaciones" class="btn btn-primary">Ver Mis Vacaciones</button>
+                        <button type="button" name="verVacaciones" id="verVacaciones" class="btn btn-primary ">Ver Mis Vacaciones</button>
                     </div>
 
                 </div>
@@ -46,60 +46,91 @@
             </div>
 
         </div>
-        
-        
 
-        <script>
-            //para mostrar las vacaiones
-            let visible = false;
-        
-            document.getElementById('verVacaciones').addEventListener('click', async () => {
-                const contenedor = document.getElementById('contenedorVacaciones');
-                contenedor.className= "container my-1 px-5"; //poner estilos de bootrap
-        
-                if (!visible) {
-                    try {
-                        const response = await fetch('/zona/trabajador/vacaciones/obtenerVacaciones');
-                        const vacaciones = await response.json();
-        
-                        if (Array.isArray(vacaciones) && vacaciones.length > 0) {
+        <!-- Horario de trabajo -->
+        <div class="container p-2" style="background-color: #a1d2fe;">
+            <h2>Horarios de trabajo</h2>
+            <form action="/zona/trabajador/insertar-horario-trabajo" method="POST">
 
-                            // Ordenamos array de fecha más procima a más lejana para mostrar en orden
-                            vacaciones.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+                <div class="row">
+                    <div class="col col-xl-1">
+                        <label for="dia">Día de la semana:</label>
+                    </div>
+                    <div class="col col-xl-2">
+                        <select class="form-control" name="dia" required>
+                            <option value="">Selecciona un día</option>
+                            <option value="Lunes">Lunes</option>
+                            <option value="Martes">Martes</option>
+                            <option value="Miércoles">Miércoles</option>
+                            <option value="Jueves">Jueves</option>
+                            <option value="Viernes">Viernes</option>
+                        </select>
+                    </div>
+                    <div class="col col-xl-1">
+                        <label for="hora_inicio">Hora Entrada:</label>
+                    </div>
+                    <div class="col col-xl-2">
+                        <input type="time" class="form-control" name="hora_inicio" value="">
+                    </div>
+                    <div class="col col-xl-1">
+                        <label for="hora_fin">Hora Salida:</label>
+                    </div>
+                    <div class="col col-xl-2">
+                        <input type="time" class="form-control" name="hora_fin" value="">
+                    </div>
+
+                    <div class="col col-xl-1">
+                        <button type="submit" class="btn btn-success">Guardar</button>
+                    </div>
+
+                    <div class="col col-xl-2">
+                        <button type="button" name="verHorarios" id="verHorarios" class="btn btn-primary">Ver Mis Horarios</button>
+                    </div>
+
+                </div>
+
+            </form>
+
+
+        
+            <div id="contenedorHorarios" style="background-color:  #ededed;">
+
+            </div>
+
+            <h2>Solicitar Festivo</h2>
+            <form action="/zona/trabajador/festivos" method="POST">
+
+                <div class="row">
     
-                            const lista = vacaciones.map(v => {
-                                const fecha = new Date(v.fecha);
-                                console.log('Fecha cruda:', v.fecha); // Esto te mostrará el formato real
-                                const fechaFormateada = !isNaN(fecha) ? fecha.toLocaleDateString() : 'Fecha inválida';
-        
-                                return `
-                                    <li class="d-flex justify-content-between align-items-center my-1 ps-2 rounded" style="background-color: #ededed; ">
-                                        <span>${fechaFormateada}</span>
-                                        <form method="POST" action="/zona/trabajador/vacaciones/eliminar" class="m-0">
-                                            <input type="hidden" name="idVacacion" value="${v.id_vacaciones}">
-                                            <button type="submit" class="btn btn-danger btn-sm">Eliminar día</button>
-                                        </form>
-                                    </li>`;
-                            }).join('');
-        
-                            contenedor.innerHTML = `<ul class="list-group">${lista}</ul>`;
-                        } else {
-                            contenedor.innerHTML = `<p>No tienes vacaciones solicitadas.</p>`;
-                        }
-                    } catch (error) {
-                        contenedor.innerHTML = `<p style="color: red;">Error al cargar las vacaciones.</p>`;
-                    }
-        
-                    visible = true;
-                } else {
-                    contenedor.innerHTML = '';
-                    visible = false;
-                }
-            });
-        </script>
-        
-        
+                    <div class="col col-xl-1">
+                        <label for="dia">Seleccionar:</label>
+                    </div>
+                    <div class="col col-xl-3">
+                        <input type="date" class="form-control" name="dia"  required>
+                    </div>
 
+                    <div class="col col-xl-3">
+                        <input type="text" class="form-control" name="descripcion" placeholder="descripción" required>
+                    </div>
+
+                    <div class="col col-xl-1">
+                        <button type="submit" class="btn btn-success">Solicitar</button>
+                    </div>
+                    
+                    <div class="col col-xl-2">
+                        <button type="button" name="verFestivos" id="verFestivos" class="btn btn-primary ">Ver Festivos</button>
+                    </div>
+
+                </div>
+
+            </form>
+        
+            <!-- Contenedor donde mostrar dinamicamente los festivos -->
+            <div id="contenedorFestivos" class="">
+                
+            </div>
+
+        
         <!-- Alertas -->
         <% if (typeof mensajeExito !== 'undefined') { %>
             <script>
@@ -127,6 +158,7 @@
             </script>
         <% } %>
 
+        <script src="/javascripts/horariosTurnosTrabajadores.js"></script>
         <script src="/javascripts/bootstrap.bundle.min.js"></script>
 </body>
 </html>

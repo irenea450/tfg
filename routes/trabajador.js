@@ -2,7 +2,8 @@ const express = require('express');
 const session = require('express-session'); //sesion
 const router = express.Router();
 const { obtenerTrabajadorId,guardarDatosTrabajador, horarioTrabajador, festivosTrabajador, vacacionesTrabajador , obtenerDiasLaborablesSemanaActual, citasTrabajador , consultarCita, obtenerPaciente,
-    actualizarCita, anularCita, completarCita, crearInforme, guardarContraseñaTrabajador, solicitarVacaciones, obtenerVacacionesId, eliminarVacacion
+    actualizarCita, anularCita, completarCita, crearInforme, guardarContraseñaTrabajador, solicitarVacaciones, obtenerVacacionesId, eliminarVacacion,
+    obtenerHorarioTrabajador, insertarHorarioTrabajador, actualizarHorario, eliminarHorario, solicitarFestivos, obtenerFestivos, eliminarFestivos
 } = require('../models/trabajador');
 
 //para proteger las routes
@@ -250,7 +251,9 @@ router.post('/contrasena', async (req, res) => {
 });
 
 
-
+/* -------------------------------------------------------------------------- */
+/*                        Configuracion del trabajador                        */
+/* -------------------------------------------------------------------------- */
 
 // GET configuracion
 // Ruta para la configuracion personal
@@ -261,6 +264,7 @@ router.get('/configuracion',estaLogueado, soloTrabajadores, (req, res) => {
     });
 });
 
+/* ------------------------ Vacaciones del trabajador ----------------------- */
 
 // POST agregar vacaciones
 router.post('/vacaciones', async (req, res) => {
@@ -336,7 +340,190 @@ router.post('/vacaciones/eliminar', async (req, res) => {
         res.render('trabajadores/configuracionTrabajador', {
             title: 'Didadent',
             name: req.session.name,
-            mensajeError: 'No se pudo eliminar la vacación.'
+            mensajeError: 'No se pudo eliminar el día de vacaiones.'
+        });
+    }
+});
+
+/* -------------------------------------------------------------------------- */
+/*                      horarios de turnos del trabajador                     */
+/* -------------------------------------------------------------------------- */
+
+//insertqr horario de trabajo nuevo
+router.post('/insertar-horario-trabajo', async (req, res) => {
+    const id = req.session.usuarioId;
+    const dia = req.body.dia;
+    const hora_inicio = req.body.hora_inicio;
+    const hora_fin = req.body.hora_fin;
+
+    try {
+
+        console.log(id + dia + hora_inicio + hora_fin)
+        //llamar a funcíon de insert
+        let insertarDiaHora = await insertarHorarioTrabajador(id, dia,hora_inicio, hora_fin );
+
+        res.render('trabajadores/configuracionTrabajador', {
+            title: 'Didadent',
+            name: req.session.name,
+            mensajeExito: 'Se ha insertado el nuevo horario.'
+        });
+
+    } catch (error) {
+        console.error("❌ Error al insertar el nuevo horario:", error.message);
+        res.render('trabajadores/configuracionTrabajador', {
+            title: 'Didadent',
+            name: req.session.name,
+            mensajeError: 'No se ha podido insertar.'
+        });
+    }
+
+});
+
+//? Obtener los datos del horario del trabajador
+router.get('/obtener-horario-trabajo', async (req, res) => {
+
+    const id = req.session.usuarioId;
+    
+    let horarios = await obtenerHorarioTrabajador(id);
+    //console.log(horarios);
+    res.json(horarios);
+
+});
+//actualizar horario del trabajador
+router.post('/actualizar-horario-trabajo', async (req, res) => {
+    const id_horarios = req.body.id_horarios;
+    const dia = req.body.dia;
+    const hora_inicio = req.body.hora_inicio;
+    const hora_fin = req.body.hora_fin;
+
+    console.log(id_horarios + dia + hora_inicio + hora_fin)
+
+    let horarios = await obtenerHorarioTrabajador(id_horarios, dia,hora_inicio, hora_fin );
+
+    try {
+        if (Array.isArray(id_horarios)) {
+            for (let i = 0; i < id_horarios.length; i++) {
+                const id = id_horarios[i];
+                const nuevoDia = dia[i];
+                const nuevaHoraInicio = hora_inicio[i];
+                const nuevaHoraFin = hora_fin[i];
+
+                // función de actualizar loa datos
+                await actualizarHorario( nuevaHoraInicio, nuevaHoraFin, id);
+            }
+        } else {
+            // en caso de ser solo un horario y no un array pasar directamnete
+            await actualizarHorario(hora_inicio, hora_fin, id_horarios);
+        }
+
+        res.render('trabajadores/configuracionTrabajador', {
+            title: 'Didadent',
+            name: req.session.name,
+            mensajeExito: 'Se ha insertado el nuevo horario.'
+
+        });
+    } catch (error) {
+        console.error('Error al actualizar horarios:', error);
+        res.status(500).send('Error actualizando horarios');
+    }
+});
+
+router.post('/eliminar-horario-trabajo', async (req, res) => {
+    const id_horarios = req.body.id_horarios;
+
+    try {
+        await eliminarHorario(id_horarios);
+        res.render('trabajadores/configuracionTrabajador', {
+            title: 'Didadent',
+            name: req.session.name,
+            mensajeExito: 'se ha eliminado con éxito'
+        });
+    } catch (error) {
+        console.error("❌ Error al eliminar vacaciones:", error.message);
+        res.render('trabajadores/configuracionTrabajador', {
+            title: 'Didadent',
+            name: req.session.name,
+            mensajeError: 'No se pudo eliminar el tuno del horario.'
+        });
+    }
+});
+
+/* ----------- Festivos de la clinica acceso solo administradores ----------- */
+// POST agregar festivos
+router.post('/festivos', async (req, res) => {
+    const id = req.session.usuarioId;
+    const dia = req.body.dia;
+    const descripcion = req.body.descripcion;
+    //console.log("dia:" + dia);
+
+/*     // Convertimos el string a Date para comparar
+    const hoy = new Date();
+    const diaSolicitado = new Date(dia);
+
+    // Poner misma hora para evitar errores
+    hoy.setHours(0, 0, 0, 0);
+    diaSolicitado.setHours(0, 0, 0, 0);
+
+    // comprobamos que la fecha solicitada no es anterior al día de hoy
+    if (diaSolicitado < hoy) {
+        return res.render('trabajadores/configuracionTrabajador', {
+            title: 'Didadent',
+            name: req.session.name,
+            mensajeError: 'No puedes solicitar un día anterior al actual.'
+        });
+    } */
+
+    try {
+
+        //llamar a funcíon de insert
+        let diaFestivos = await solicitarFestivos(id, dia, descripcion);
+
+        res.render('trabajadores/configuracionTrabajador', {
+            title: 'Didadent',
+            name: req.session.name,
+            mensajeExito: 'Se ha solicitado el festivo con éxito.'
+        });
+
+    } catch (error) {
+        console.error("❌ Error al solicitar día festivo:", error.message);
+        res.render('trabajadores/configuracionTrabajador', {
+            title: 'Didadent',
+            name: req.session.name,
+            mensajeError: 'No se ha podido solicitar.'
+        });
+    }
+});
+
+
+// GET festivos de la clinica
+router.get('/vacaciones/obtenerFestivos', async (req, res) => {
+
+    try {
+        const festivos = await obtenerFestivos(); 
+        res.json(festivos);
+    } catch (error) {
+        console.error("❌ Error al obtener festivos:", error.message);
+        res.status(500).json({ error: "Error al obtener los festivos" });
+    }
+});
+
+//Eliminar vacaciones
+router.post('/festivos/eliminar', async (req, res) => {
+    const { idFestivos } = req.body;
+
+    try {
+        await eliminarFestivos(idFestivos);
+        res.render('trabajadores/configuracionTrabajador', {
+            title: 'Didadent',
+            name: req.session.name,
+            mensajeExito: 'se ha eliminado el día selecionado de los festivos.'
+        });
+    } catch (error) {
+        console.error("❌ Error al eliminar festivo:", error.message);
+        res.render('trabajadores/configuracionTrabajador', {
+            title: 'Didadent',
+            name: req.session.name,
+            mensajeError: 'No se pudo eliminar el festivo.'
         });
     }
 });
