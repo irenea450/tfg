@@ -49,8 +49,9 @@ router.post('/login', async (req, res) => {
             //* Sesión iniciada con éxito
             //? variables de sesión
             req.session.loggedin = true;
-            req.session.usuarioId = usuario.id_trabajador;
+            req.session.usuarioId = usuario.id_trabajador || usuario.id_paciente  ;
             console.log("autenticado con el usuario con id: " + req.session.usuarioId);
+            req.session.rol = usuario.rol;
             req.session.name = usuario.nombre;
             req.session.tipo = tipoUsuario; // tipo de usuario en la app
             //alert de confirmación de  inicio de sesión

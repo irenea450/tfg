@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (botonVacaciones) {
         botonVacaciones.addEventListener('click', async () => {
-            contenedorVacaciones.className = "container my-1 px-5";
+            contenedorVacaciones.className = "container my-1 px-5 rounded";
 
             if (!vacacionesVisibles) {
                 try {
@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                         contenedorVacaciones.innerHTML = `<ul class="list-group">${lista}</ul>`;
                     } else {
-                        contenedorVacaciones.innerHTML = `<p>No tienes vacaciones solicitadas.</p>`;
+                        contenedorVacaciones.innerHTML = `<p class="fw-bold" >No tienes vacaciones solicitadas.</p>`;
                     }
                 } catch (error) {
                     contenedorVacaciones.innerHTML = `<p style="color: red;">Error al cargar las vacaciones.</p>`;
@@ -153,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             });
                         });
                     } else {
-                        contenedorHorarios.innerHTML = `<p>No tienes horarios registrados.</p>`;
+                        contenedorHorarios.innerHTML = `<p class="fw-bold" >No tienes horarios registrados.</p>`;
                         contenedorHorarios.style.display = "block";
                     }
                 } catch (error) {
@@ -187,7 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (!festivosVisibles) {
                 try {
-                    const response = await fetch('/zona/trabajador/vacaciones/obtenerFestivos');
+                    const response = await fetch('/zona/trabajador/festivos/obtenerFestivos');
                     const festivos = await response.json();
 
                     if (Array.isArray(festivos) && festivos.length > 0) {
@@ -217,7 +217,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                         contenedorFestivos.innerHTML = `<ul class="list-group">${lista}</ul>`;
                     } else {
-                        contenedorFestivos.innerHTML = `<p>No tienes festivos solicitados.</p>`;
+                        contenedorFestivos.innerHTML = `<p class="fw-bold">No tienes festivos solicitados.</p>`;
                     }
                 } catch (error) {
                     contenedorFestivos.innerHTML = `<p style="color: red;">Error al cargar los festivos.</p>`;

@@ -25,8 +25,18 @@ function estaLogueado(req, res, next) {
     res.redirect('/autenticacion/login');
 }
 
+//Rol de admin, solo usuarios de rol 3
+function accesoAdmin(req, res, next) {
+    if (req.session.usuarioId && req.session.rol === 3) {
+        return next();
+    } else {
+        res.redirect('/zona/trabajador/');
+    }
+}
+
 module.exports = {
     soloPacientes,
     soloTrabajadores,
-    estaLogueado
+    estaLogueado,
+    accesoAdmin
 };

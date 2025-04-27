@@ -41,7 +41,7 @@
             </form>
 
             <!-- Contenedor donde mostrar dinamicamente las vacaciones -->
-            <div id="contenedorVacaciones" class="">
+            <div id="contenedorVacaciones" class="rounded" style="background-color:  #ededed;">
                 
             </div>
 
@@ -96,40 +96,47 @@
             <div id="contenedorHorarios" style="background-color:  #ededed;">
 
             </div>
+        </div>
 
+        <div class="container p-2" style="background-color: #a1d2fe;">
+            <!-- la parte de festivos solo tienen acceso los adminisatrdores -->
             <h2>Solicitar Festivo</h2>
-            <form action="/zona/trabajador/festivos" method="POST">
+            <% if (rol === 3) { %> 
+                <form action="/zona/trabajador/festivos" method="POST">
 
-                <div class="row">
-    
-                    <div class="col col-xl-1">
-                        <label for="dia">Seleccionar:</label>
-                    </div>
-                    <div class="col col-xl-3">
-                        <input type="date" class="form-control" name="dia"  required>
+                    <div class="row">
+        
+                        <div class="col col-xl-1">
+                            <label for="dia">Seleccionar:</label>
+                        </div>
+                        <div class="col col-xl-3">
+                            <input type="date" class="form-control" name="dia"  required>
+                        </div>
+
+                        <div class="col col-xl-3">
+                            <input type="text" class="form-control" name="descripcion" placeholder="descripción" required>
+                        </div>
+
+                        <div class="col col-xl-1">
+                            <button type="submit" class="btn btn-success">Solicitar</button>
+                        </div>
+                        
+                        <div class="col col-xl-2">
+                            <button type="button" name="verFestivos" id="verFestivos" class="btn btn-primary ">Ver Festivos</button>
+                        </div>
+
                     </div>
 
-                    <div class="col col-xl-3">
-                        <input type="text" class="form-control" name="descripcion" placeholder="descripción" required>
-                    </div>
-
-                    <div class="col col-xl-1">
-                        <button type="submit" class="btn btn-success">Solicitar</button>
-                    </div>
-                    
-                    <div class="col col-xl-2">
-                        <button type="button" name="verFestivos" id="verFestivos" class="btn btn-primary ">Ver Festivos</button>
-                    </div>
-
-                </div>
-
-            </form>
+                </form>
+            <% } else { %>
+                <p class="fw-bold" >No tienes permisos para acceder a la solicitud de festivos.</p>
+            <% } %>
         
             <!-- Contenedor donde mostrar dinamicamente los festivos -->
             <div id="contenedorFestivos" class="">
                 
             </div>
-
+        </div>
         
         <!-- Alertas -->
         <% if (typeof mensajeExito !== 'undefined') { %>

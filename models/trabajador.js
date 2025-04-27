@@ -205,7 +205,7 @@ const festivosTrabajador = async (diasLaborablesSemanaActual) => {
 
 
 //todo función para saber si ese día de vacaciones
-const vacacionesTrabajador = async (diasLaborablesSemanaActual) => {
+const vacacionesTrabajador = async (diasLaborablesSemanaActual, id_trabajador) => {
     try {
         const connection = await conectarDB(); // Conectar a la BBDD
 
@@ -215,7 +215,8 @@ const vacacionesTrabajador = async (diasLaborablesSemanaActual) => {
         const placeholders = Array(diasLaborablesSemanaActual.length).fill('?').join(',');
 
         // Aquí pasamos las fechas en formato YYYY-MM-DD
-        const query = `SELECT * FROM vacaciones WHERE fecha IN (${placeholders})`;
+        const query = `SELECT * FROM vacaciones WHERE fecha IN (${placeholders}) AND id_trabajador = ?`;
+
 
         // Asegurarnos de que las fechas estén en formato YYYY-MM-DD
         const diasLaborablesFormateados = diasLaborablesSemanaActual.map(fecha => {
@@ -224,7 +225,7 @@ const vacacionesTrabajador = async (diasLaborablesSemanaActual) => {
         });
 
         // Ejecutar la consulta con las fechas formateadas
-        const [rows] = await connection.execute(query, diasLaborablesFormateados);
+        const [rows] = await connection.execute(query, [...diasLaborablesFormateados, id_trabajador]);
 
         // Aquí devolvemos las fechas como 'DD/MM/YYYY' para mostrar en el frontend
         const vacacionesFiltrados = rows.map(f => {

@@ -7,7 +7,7 @@ const { obtenerTrabajadorId,guardarDatosTrabajador, horarioTrabajador, festivosT
 } = require('../models/trabajador');
 
 //para proteger las routes
-const { estaLogueado, soloTrabajadores } = require('../middlewares/acceso.js');
+const { estaLogueado, soloTrabajadores , accesoAdmin } = require('../middlewares/acceso.js');
 
 //Rutas desde aqui empiezan con --> /zona/trabajador
 
@@ -28,7 +28,7 @@ router.get('/horario',estaLogueado, soloTrabajadores, async (req, res) => {
     let festivos = await festivosTrabajador(diasLaborablesSemanaActual);
     //console.log(festivos);
     //?obtener los días de vacaciones del trabajador y si coinciden con los dias de esa semana marcar
-    let vacaciones = await vacacionesTrabajador(diasLaborablesSemanaActual);
+    let vacaciones = await vacacionesTrabajador(diasLaborablesSemanaActual , req.session.usuarioId);
     //console.log("Vacaciones que se van a mostrar " + vacaciones);
 
     //?obtener citas que tiene pendientes el trabajador
@@ -260,7 +260,8 @@ router.post('/contrasena', async (req, res) => {
 router.get('/configuracion',estaLogueado, soloTrabajadores, (req, res) => {
     res.render('trabajadores/configuracionTrabajador', {title: 'Didadent',
         login: true,
-        name: req.session.name
+        name: req.session.name,
+        rol: req.session.rol
     });
 });
 
@@ -285,6 +286,7 @@ router.post('/vacaciones', async (req, res) => {
         return res.render('trabajadores/configuracionTrabajador', {
             title: 'Didadent',
             name: req.session.name,
+            rol: req.session.rol,
             mensajeError: 'No puedes solicitar un día anterior al actual.'
         });
     }
@@ -297,6 +299,7 @@ router.post('/vacaciones', async (req, res) => {
         res.render('trabajadores/configuracionTrabajador', {
             title: 'Didadent',
             name: req.session.name,
+            rol: req.session.rol,
             mensajeExito: 'Se ha solicitado con éxito.'
         });
 
@@ -305,6 +308,7 @@ router.post('/vacaciones', async (req, res) => {
         res.render('trabajadores/configuracionTrabajador', {
             title: 'Didadent',
             name: req.session.name,
+            rol: req.session.rol,
             mensajeError: 'No se ha podido solicitar.'
         });
     }
@@ -333,6 +337,7 @@ router.post('/vacaciones/eliminar', async (req, res) => {
         res.render('trabajadores/configuracionTrabajador', {
             title: 'Didadent',
             name: req.session.name,
+            rol: req.session.rol,
             mensajeExito: 'se ha eliminado el día selecionado de tus vacaciones.'
         });
     } catch (error) {
@@ -340,6 +345,7 @@ router.post('/vacaciones/eliminar', async (req, res) => {
         res.render('trabajadores/configuracionTrabajador', {
             title: 'Didadent',
             name: req.session.name,
+            rol: req.session.rol,
             mensajeError: 'No se pudo eliminar el día de vacaiones.'
         });
     }
@@ -365,6 +371,7 @@ router.post('/insertar-horario-trabajo', async (req, res) => {
         res.render('trabajadores/configuracionTrabajador', {
             title: 'Didadent',
             name: req.session.name,
+            rol: req.session.rol,
             mensajeExito: 'Se ha insertado el nuevo horario.'
         });
 
@@ -373,6 +380,7 @@ router.post('/insertar-horario-trabajo', async (req, res) => {
         res.render('trabajadores/configuracionTrabajador', {
             title: 'Didadent',
             name: req.session.name,
+            rol: req.session.rol,
             mensajeError: 'No se ha podido insertar.'
         });
     }
@@ -419,6 +427,7 @@ router.post('/actualizar-horario-trabajo', async (req, res) => {
         res.render('trabajadores/configuracionTrabajador', {
             title: 'Didadent',
             name: req.session.name,
+            rol: req.session.rol,
             mensajeExito: 'Se ha insertado el nuevo horario.'
 
         });
@@ -436,6 +445,7 @@ router.post('/eliminar-horario-trabajo', async (req, res) => {
         res.render('trabajadores/configuracionTrabajador', {
             title: 'Didadent',
             name: req.session.name,
+            rol: req.session.rol,
             mensajeExito: 'se ha eliminado con éxito'
         });
     } catch (error) {
@@ -443,6 +453,7 @@ router.post('/eliminar-horario-trabajo', async (req, res) => {
         res.render('trabajadores/configuracionTrabajador', {
             title: 'Didadent',
             name: req.session.name,
+            rol: req.session.rol,
             mensajeError: 'No se pudo eliminar el tuno del horario.'
         });
     }
@@ -450,28 +461,12 @@ router.post('/eliminar-horario-trabajo', async (req, res) => {
 
 /* ----------- Festivos de la clinica acceso solo administradores ----------- */
 // POST agregar festivos
-router.post('/festivos', async (req, res) => {
+router.post('/festivos',accesoAdmin, async (req, res) => {
     const id = req.session.usuarioId;
     const dia = req.body.dia;
     const descripcion = req.body.descripcion;
     //console.log("dia:" + dia);
 
-/*     // Convertimos el string a Date para comparar
-    const hoy = new Date();
-    const diaSolicitado = new Date(dia);
-
-    // Poner misma hora para evitar errores
-    hoy.setHours(0, 0, 0, 0);
-    diaSolicitado.setHours(0, 0, 0, 0);
-
-    // comprobamos que la fecha solicitada no es anterior al día de hoy
-    if (diaSolicitado < hoy) {
-        return res.render('trabajadores/configuracionTrabajador', {
-            title: 'Didadent',
-            name: req.session.name,
-            mensajeError: 'No puedes solicitar un día anterior al actual.'
-        });
-    } */
 
     try {
 
@@ -481,6 +476,7 @@ router.post('/festivos', async (req, res) => {
         res.render('trabajadores/configuracionTrabajador', {
             title: 'Didadent',
             name: req.session.name,
+            rol: req.session.rol,
             mensajeExito: 'Se ha solicitado el festivo con éxito.'
         });
 
@@ -489,6 +485,7 @@ router.post('/festivos', async (req, res) => {
         res.render('trabajadores/configuracionTrabajador', {
             title: 'Didadent',
             name: req.session.name,
+            rol: req.session.rol,
             mensajeError: 'No se ha podido solicitar.'
         });
     }
@@ -496,7 +493,7 @@ router.post('/festivos', async (req, res) => {
 
 
 // GET festivos de la clinica
-router.get('/vacaciones/obtenerFestivos', async (req, res) => {
+router.get('/festivos/obtenerFestivos', async (req, res) => {
 
     try {
         const festivos = await obtenerFestivos(); 
@@ -508,7 +505,7 @@ router.get('/vacaciones/obtenerFestivos', async (req, res) => {
 });
 
 //Eliminar vacaciones
-router.post('/festivos/eliminar', async (req, res) => {
+router.post('/festivos/eliminar',accesoAdmin , async (req, res) => {
     const { idFestivos } = req.body;
 
     try {
@@ -516,6 +513,7 @@ router.post('/festivos/eliminar', async (req, res) => {
         res.render('trabajadores/configuracionTrabajador', {
             title: 'Didadent',
             name: req.session.name,
+            rol: req.session.rol,
             mensajeExito: 'se ha eliminado el día selecionado de los festivos.'
         });
     } catch (error) {
@@ -523,6 +521,7 @@ router.post('/festivos/eliminar', async (req, res) => {
         res.render('trabajadores/configuracionTrabajador', {
             title: 'Didadent',
             name: req.session.name,
+            rol: req.session.rol,
             mensajeError: 'No se pudo eliminar el festivo.'
         });
     }
