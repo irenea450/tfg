@@ -62,7 +62,7 @@ router.post('/login', async (req, res) => {
                     titulo: 'Sesión iniciada',
                     texto: 'Bienvenido, ' + usuario.nombre,
                     tiempo: 2000,
-                    ruta: tipoUsuario === 'paciente' ? 'zona/paciente/pedirCita' : 'zona/trabajador/horario' //según el tipo de usuario mandar a la zona determinada
+                    ruta: tipoUsuario === 'paciente' ? 'zona/paciente/inicio' : 'zona/trabajador/horario' //según el tipo de usuario mandar a la zona determinada
                 }
             });
         }
@@ -160,7 +160,7 @@ router.post('/registrarPaciente', async (req, res) => {
 // GET registrarTrabajador
 // Ruta para registrarTrabajador
 router.get('/registrarTrabajador', (req, res) => {
-    res.render('registrarTrabajador', { title: 'Didadent' });
+    res.render('registrarTrabajador', { title: 'Didadent', name: req.session.name  });
 });
 
 // POST registro
@@ -203,7 +203,7 @@ router.post('/registrarTrabajador', async (req, res) => {
                     titulo: 'Registro exitoso',
                     texto: 'El trabajador ha sido registrado correctamente.',
                     tiempo: 3000,
-                    ruta: 'autenticacion/login'  //! mandar a un sitio que no sea el login
+                    ruta: 'trabajadores/configuracionTrabajador'  // redirigir a configuración en caso de exito
                 }
             });
         }

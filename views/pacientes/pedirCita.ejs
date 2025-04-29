@@ -2,18 +2,61 @@
 <html lang="en">
 
 <head>
-    <title>Sobre <%= title %>
+    <title>Pedir cita <%= title %>
     </title>
     <link rel="stylesheet" href="/stylesheets/bootstrap.min.css">
+    <script src="/sweetalert2/sweetalert2.all.min.js"></script> <!-- Alertas -->
 </head>
 
 <body>
-    <%- include("../plantillas/header_principal.ejs") %>
+    <%- include("../plantillas/header_pacientes.ejs") %>
 
         <h1>Pedir cita por parte del paciente</h1>
 
+        <div class="container-fluid ">
+
+            <form action="/zona/paciente/pedirCitaPaciente" method="POST">
+    
+    
+                <div class="row">
+    
+                    <div class="col">
+                        <label for="id_Paciente">DNI:</label>
+                        <input type="text" class="form-control my-1" name="id_Paciente" value="<%= id %>" required>
+                    </div>
+    
+                    <div class="col">
+                        <label for="motivoSelect">Motivo</label>
+                        <select class="col my-1 form-select" name="motivoSelect" id="motivoSelect">
+                            <option selected>Selecciona el motivo de la consulta</option>
+                            <option value="Primera Cita">Primera Cita</option>
+                            <option value="Revisión">Revisión</option>
+                            <option value="Limpieza">Limpieza</option>
+                            <option value="Radiografia">Radiografía</option>
+                        </select>
+                    </div>
+    
+                </div>
+    
+                
+                <div id="generarInputs" class="mt-3">
+
+                </div>
+    
+                <div class="row p-0 my-5">
+                    <div class="d-grid gap-2 col-6 mx-auto">
+                        <button type="submit" class="btn btn-primary">Solicitar cita</button>
+                    </div>
+                </div>
+    
+    
+            </form>
+    
+        </div>
+
 
         <script src="/javascripts/bootstrap.bundle.min.js"></script>
+        <script src="/javascripts/pedirCita.js"></script> <!-- scrip donde se crean los inputs -->
 
 </body>
 

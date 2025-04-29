@@ -6,9 +6,6 @@
     </title>
     <link rel="stylesheet" href="/stylesheets/bootstrap.min.css">
     <script src="/sweetalert2/sweetalert2.all.min.js"></script> <!-- Alertas -->
-    <style>
-        /* poner aquí la vartiable de color y poer fodos */
-    </style>
 </head>
 
 <body>
@@ -41,7 +38,7 @@
             </form>
 
             <!-- Contenedor donde mostrar dinamicamente las vacaciones -->
-            <div id="contenedorVacaciones" class="rounded" style="background-color:  #ededed;">
+            <div id="contenedorVacaciones" class="rounded" >
                 
             </div>
 
@@ -133,10 +130,23 @@
             <% } %>
         
             <!-- Contenedor donde mostrar dinamicamente los festivos -->
-            <div id="contenedorFestivos" class="">
+            <div id="contenedorFestivos" >
                 
             </div>
         </div>
+
+        <div class="container p-2" style="background-color: #a1d2fe;">
+            <!-- la parte de festivos solo tienen acceso los adminisatrdores -->
+            <h2>Agregar nuevo trabajador</h2>
+            <% if (rol === 3) { %> 
+                <div class="row">
+                    
+                    <div class="col">
+                        <a href="/autenticacion/registrarTrabajador" class="btn btn-primary">Agregar</a>                    
+                    </div>
+
+                </div>
+            <% } %> 
         
         <!-- Alertas -->
         <% if (typeof mensajeExito !== 'undefined') { %>

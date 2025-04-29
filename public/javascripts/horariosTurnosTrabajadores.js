@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (botonVacaciones) {
         botonVacaciones.addEventListener('click', async () => {
-            contenedorVacaciones.className = "container my-1 px-5 rounded";
+            contenedorVacaciones.className = "container my-1 px-5";
 
             if (!vacacionesVisibles) {
                 try {
@@ -24,8 +24,8 @@ document.addEventListener('DOMContentLoaded', () => {
                             const fechaFormateada = !isNaN(fecha) ? fecha.toLocaleDateString() : 'Fecha inválida';
 
                             return `
-                                <li class="d-flex justify-content-between align-items-center my-1 ps-2 rounded" style="background-color: #ededed;">
-                                    <span>${fechaFormateada}</span>
+                                <li class="list-group-item d-flex justify-content-between align-items-center my-2 rounded" style="background-color: #ededed;">
+                                    <strong class="mb-0">${fechaFormateada}</strong>
                                     <form method="POST" action="/zona/trabajador/vacaciones/eliminar" class="m-0">
                                         <input type="hidden" name="idVacacion" value="${v.id_vacaciones}">
                                         <button type="submit" class="btn btn-danger btn-sm">Eliminar día</button>
