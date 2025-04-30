@@ -6,7 +6,8 @@ const { citasPendientesId ,anularCita
 } = require('../models/funciones');
 
 //improtar funciones de paciente.js
-const { obtenerPacienteId, obtenerTrabajadoresParaCita , obtenerDisponibilidadDelTrabajador
+const { obtenerPacienteId, obtenerTrabajadoresParaCita , obtenerDisponibilidadDelTrabajador , obtenerHorasDisponibles ,
+    calcularHoraFinCita, insertarCitaPaciente , insertarCitaTrabajador
 } = require('../models/paciente');
 
 //controles de acceso
@@ -61,11 +62,38 @@ router.get('/pedirCita',estaLogueado, async(req, res) => {
     res.render('pacientes/pedirCita', {title: 'Didadent', name: req.session.name , id:id});
 });
 
-router.post('/pedirCita',estaLogueado, async(req, res) => {
-    id = req.session.usuarioId;
+router.post('/pedirCitaPaciente', estaLogueado, async (req, res) => {
+    try {
+        const id_paciente = req.session.usuarioId;
+        const {
+            motivoSelect,
+            id_trabajador,
+            fecha_cita,
+            hora_cita,
+            duracion
+        } = req.body;
 
-    
-    res.render('pacientes/pedirCita', {title: 'Didadent', name: req.session.name , id:id});
+        console.log("Recibo al enviar el formualrio lo siguinete: " + " IdPaciente: " + id_paciente + " IdTrabajador: " + id_trabajador 
+            + " motivo: " + motivoSelect + " fecha: " + fecha_cita + " hora: " + hora_cita + " duración: " + duracion);
+
+        // Validar los datos recibidos
+        if (!id_paciente || !motivoSelect || !id_trabajador || !fecha_cita || !hora_cita) {
+            return res.status(400).send("Faltan datos obligatorios");
+        }
+
+
+        //llamamos a la función de insertar la cita (dentro va a calcular las horas final, por lo que hay que pasar la duración)
+        const cita = await insertarCitaPaciente(id_paciente, fecha_cita, hora_cita, duracion, motivoSelect);
+
+        const cita_trabajador = await insertarCitaTrabajador(cita, id_trabajador);
+
+        //aqui devolver qu3e ha sido correcto
+        res.json({ mensaje: 'Se ha creado la cita con éxito' });
+        
+    } catch (error) {
+        console.error("Error al crear cita:", error);
+        res.redirect('/zona/paciente/pedirCita');
+    }
 });
 
 //? buscar trabajador
@@ -81,14 +109,27 @@ router.get('/buscar-trabajadores', async (req, res) => {
 });
 
 //? buscar la disponibilidad de ese trabajador
-router.get('/disponibilidad', async (req, res) => {
+// Ruta para obtener días disponibles
+router.get('/disponibilidad/dias', async (req, res) => {
     const { trabajador, duracion } = req.query;
     try {
         const disponibilidad = await obtenerDisponibilidadDelTrabajador(trabajador, duracion);
-        res.json(disponibilidad); // { fechas: [...], horas: [...] }
+        res.json(disponibilidad.fechas);
     } catch (err) {
-        console.error("❌ Error obteniendo disponibilidad:", err);
-        res.status(500).json({ error: "Error obteniendo disponibilidad" });
+        console.error("Error en /disponibilidad/dias:", err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Ruta para obtener horas de un día específico
+router.get('/disponibilidad/horas', async (req, res) => {
+    const { trabajador, fecha, duracion } = req.query;
+    try {
+        const horas = await obtenerHorasDisponibles(trabajador, fecha, duracion);
+        res.json(horas);
+    } catch (err) {
+        console.error("Error en /disponibilidad/horas:", err);
+        res.status(500).json({ error: err.message });
     }
 });
 

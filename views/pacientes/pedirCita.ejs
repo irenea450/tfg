@@ -15,14 +15,14 @@
 
         <div class="container-fluid ">
 
-            <form action="/zona/paciente/pedirCitaPaciente" method="POST">
+            <form action="/zona/paciente/pedirCitaPaciente" id="formPedirCita" method="POST">
     
     
                 <div class="row">
     
                     <div class="col">
                         <label for="id_Paciente">DNI:</label>
-                        <input type="text" class="form-control my-1" name="id_Paciente" value="<%= id %>" required>
+                        <input type="text" class="form-control my-1" name="id_Paciente" value="<%= id %>" required readonly>
                     </div>
     
                     <div class="col">
@@ -42,7 +42,9 @@
                 <div id="generarInputs" class="mt-3">
 
                 </div>
-    
+
+                <input type="hidden" id="duracionInput" name="duracion" value="">
+                
                 <div class="row p-0 my-5">
                     <div class="d-grid gap-2 col-6 mx-auto">
                         <button type="submit" class="btn btn-primary">Solicitar cita</button>

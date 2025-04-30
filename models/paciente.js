@@ -107,113 +107,241 @@ const obtenerTrabajadoresParaCita = async (trabajador1 , trabajador2=null) => {
 }
 
 //todo saca los días disponibles y horas donde ese tipoo de cita con esa duración pueden darse
+    // Modifica la función obtenerDisponibilidadDelTrabajador
 const obtenerDisponibilidadDelTrabajador = async (idTrabajador, duracionMinutos) => {
     const connection = await conectarDB();
+    const resultados = { fechas: [] }; // Cambiamos la estructura
 
-    // 1. Obtener horario laboral
-const [horariosRows] = await connection.execute(
-    "SELECT dia, hora_inicio, hora_fin FROM horarios WHERE id_trabajador = ?",
-    [idTrabajador]
-);
-    if (horariosRows.length === 0) throw new Error("Trabajador no encontrado");
+    // 1. Obtener horarios del trabajador
+    const [horariosRows] = await connection.execute(
+        "SELECT dia, hora_inicio, hora_fin FROM horarios WHERE id_trabajador = ?",
+        [idTrabajador]
+    );
 
-    console.log('Horarios del trabajador:', horariosRows);
+    if (horariosRows.length === 0) throw new Error("Trabajador no tiene horarios definidos");
 
-    const { hora_inicio_jornada, hora_fin_jornada } = horariosRows[0];
-
-    //variable donde guardar los reusltado y en este formato
-    const resultados = { fechas: [], horas: [] };
-
-    const hoy = new Date(); //día presente
+    const diasSemanaTexto = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+    const hoy = new Date();
     let diasProcesados = 0;
 
-    while (diasProcesados < 5) {
+    while (diasProcesados < 14) { // Buscamos en 14 días hacia adelante
         hoy.setDate(hoy.getDate() + 1);
         const fechaStr = hoy.toISOString().split('T')[0];
         const diaSemana = hoy.getDay();
+        const nombreDiaSemana = diasSemanaTexto[diaSemana];
 
-        if (diaSemana === 0 || diaSemana === 6) continue; // Saltar sábados y domingos
+        if (diaSemana === 0 || diaSemana === 6) continue; // Saltar fines de semana
 
-        // 2. Verificar si es festivo
-        const [esFestivo] = await connection.execute(
-            "SELECT * FROM festivos WHERE fecha = ?",
-            [fechaStr]
-        );
-        if (esFestivo.length > 0) continue;
+        const horarioDelDia = horariosRows.find(h => h.dia === nombreDiaSemana);
+        if (!horarioDelDia) continue;
 
-        // 3. Verificar si el trabajador está de vacaciones ese día
+        // Verificar festivo y vacaciones
+        const [esFestivo] = await connection.execute("SELECT * FROM festivos WHERE fecha = ?", [fechaStr]);
         const [estaDeVacaciones] = await connection.execute(
             `SELECT * FROM vacaciones WHERE id_trabajador = ? AND fecha = ?`,
             [idTrabajador, fechaStr]
         );
-        if (estaDeVacaciones.length > 0) continue;
 
-        // 4. Obtener citas existentes
-        const [citas] = await connection.execute(
-            `SELECT c.hora_inicio, c.hora_fin 
-            FROM cita c
-            JOIN cita_trabajador ct ON c.id_cita = ct.id_cita
-            WHERE ct.id_trabajador = ? AND c.fecha = ?`,
-            [idTrabajador, fechaStr]
-        );
+        if (esFestivo.length > 0 || estaDeVacaciones.length > 0) continue;
 
-        console.log('Citas del trabajador:', citas);
-
-        const bloquesLibres = generarBloquesDisponibles(hora_inicio_jornada, hora_fin_jornada, duracionMinutos, citas);
-
-        if (bloquesLibres.length > 0) {
-            resultados.fechas.push(fechaStr);
-            resultados.horas.push(...bloquesLibres.map(hora => ({ fecha: fechaStr, hora })));
-        }
-
+        resultados.fechas.push({
+            fecha: fechaStr,
+            dia: nombreDiaSemana,
+            hora_inicio: horarioDelDia.hora_inicio,
+            hora_fin: horarioDelDia.hora_fin
+        });
         diasProcesados++;
     }
 
     return resultados;
 };
 
-// Función para generar bloques de tiempo disponibles
-function generarBloquesDisponibles(horaInicio, horaFin, duracionMinutos, citasExistentes) {
+// Nueva función para obtener horas de un día específico
+async function obtenerHorasDisponibles(idTrabajador, fecha, duracionMinutos) {
+    const connection = await conectarDB();
+    
+    try {
+        // 1. Obtener el día de la semana (0=Domingo, 1=Lunes, etc.)
+        const fechaObj = new Date(fecha);
+        const diaSemana = fechaObj.getDay();
+        const diasSemanaTexto = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+        const nombreDiaSemana = diasSemanaTexto[diaSemana];
+        
+        // 2. Obtener horario para ese día
+        const [horario] = await connection.execute(
+            "SELECT hora_inicio, hora_fin FROM horarios WHERE id_trabajador = ? AND dia = ?",
+            [idTrabajador, nombreDiaSemana]
+        );
+        
+        if (horario.length === 0) {
+            throw new Error("No hay horario definido para este día");
+        }
+        
+        // 3. Obtener citas existentes
+        const [citas] = await connection.execute(
+            `SELECT c.hora_inicio, c.hora_fin 
+             FROM cita c
+             JOIN cita_trabajador ct ON c.id_cita = ct.id_cita
+             WHERE ct.id_trabajador = ? AND c.fecha = ?`,
+            [idTrabajador, fecha]
+        );
+        
+        console.log('Citas existentes:', citas);
+        
+        // 4. Generar bloques disponibles
+
+        const horasDeDescanso = generarHorasDescanso('14:30', '16:00', 1);
+        // Resultado: ['14:30:00', '14:50:00', '15:10:00', '15:30:00', '15:50:00']
+
+        const bloques = generarBloquesDisponibles(
+            horario[0].hora_inicio,
+            horario[0].hora_fin,
+            duracionMinutos,
+            citas,
+            horasDeDescanso
+        );
+        
+        return bloques;
+    } finally {
+        if (connection) await connection.end();
+    }
+}
+
+// Añade esto en tu archivo paciente.js, preferiblemente al principio o con las otras funciones
+function generarBloquesDisponibles(horaInicio, horaFin, duracionMinutos, citasExistentes, horasDeDescanso) {
     const bloques = [];
-    let horaActual = new Date(`2025-01-01T${horaInicio}`); // Usamos una fecha arbitraria para manipular solo la hora.
-    const horaFinal = new Date(`2025-01-01T${horaFin}`);
-
-    // Mientras no llegue a la hora de fin
-    while (horaActual < horaFinal) {
-        const horaFinalBloque = new Date(horaActual.getTime() + duracionMinutos * 60000); // Añadir la duración al bloque
-        if (horaFinalBloque > horaFinal) break; // No permitir bloques que excedan el final del horario
-
-        // Convertir las horas a formato HH:mm para que sea más fácil compararlo con las citas
-        const horaInicioStr = horaActual.toTimeString().slice(0, 5);
-        const horaFinStr = horaFinalBloque.toTimeString().slice(0, 5);
-
-        // Comprobar si la hora está ocupada por una cita
-        const citaOcupada = citasExistentes.some(cita => {
-            const horaCitaInicio = cita.hora_inicio.slice(0, 5);
-            const horaCitaFin = cita.hora_fin.slice(0, 5);
-            return (horaCitaInicio < horaFinStr && horaCitaFin > horaInicioStr); // Superposición
+    const duracionMs = duracionMinutos * 60000;
+    const fechaBase = '1970-01-01'; // Fecha base para comparaciones
+    
+    let horaActual = new Date(`${fechaBase}T${horaInicio}`);
+    const horaFinalObj = new Date(`${fechaBase}T${horaFin}`);
+    
+    // Convertir horas de descanso a objetos Date
+    const descansos = horasDeDescanso.map(h => new Date(`${fechaBase}T${h}`));
+    
+    while (horaActual < horaFinalObj) {
+        const horaFinalBloque = new Date(horaActual.getTime() + duracionMs);
+        
+        // No sobrepasar el horario de fin
+        if (horaFinalBloque > horaFinalObj) break;
+        
+        const horaInicioStr = horaActual.toTimeString().substring(0, 5);
+        const horaFinStr = horaFinalBloque.toTimeString().substring(0, 5);
+        
+        // Verificar si está en horas de descanso
+        const enDescanso = descansos.some(descanso => {
+            return horaActual.getHours() === descanso.getHours() && 
+                   horaActual.getMinutes() === descanso.getMinutes();
         });
-
+        
+        if (enDescanso) {
+            horaActual = horaFinalBloque;
+            continue;
+        }
+        
+        // Verificar colisión con citas existentes
+        const citaOcupada = citasExistentes.some(cita => {
+            const citaInicio = new Date(`${fechaBase}T${cita.hora_inicio}`);
+            const citaFin = new Date(`${fechaBase}T${cita.hora_fin}`);
+            
+            return (
+                (horaActual >= citaInicio && horaActual < citaFin) ||
+                (horaFinalBloque > citaInicio && horaFinalBloque <= citaFin) ||
+                (horaActual <= citaInicio && horaFinalBloque >= citaFin)
+            );
+        });
+        
         if (!citaOcupada) {
             bloques.push({ hora: horaInicioStr });
         }
-
-        // Mover la hora al siguiente bloque
+        
         horaActual = horaFinalBloque;
     }
-
+    
     return bloques;
 }
 
+function generarHorasDescanso(inicio, fin, duracionCita) {
+    const horasDescanso = [];
+    let [horaActual, minutoActual] = inicio.split(':').map(Number);
+    const [horaFin, minutoFin] = fin.split(':').map(Number);
+    
+    while (horaActual < horaFin || (horaActual === horaFin && minutoActual < minutoFin)) {
+        horasDescanso.push(
+            `${horaActual.toString().padStart(2, '0')}:${minutoActual.toString().padStart(2, '0')}:00`
+        );
+        
+        minutoActual += duracionCita;
+        if (minutoActual >= 60) {
+            minutoActual -= 60;
+            horaActual++;
+        }
+    }
+    
+    return horasDescanso;
+}
+
+/* ----------------------------- insertar citas ----------------------------- */
+//todo función donde se inserta la cita del paciente
+const insertarCitaPaciente = async (id_paciente, fecha_cita, hora_cita, duracion, motivoSelect) => {
+    try {
+
+        const estado = 'Pendiente'; //establezco el estado predeterminado de las citas
+
+        const connection = await conectarDB(); // Conectar a la BBDD
+        const [rows] = await connection.execute("INSERT INTO cita ( id_paciente, fecha, hora_inicio, motivo, estado, hora_fin)  VALUES (?, ?, ?, ?, ?, ?)" ,
+            [                
+                id_paciente,
+                fecha_cita,
+                hora_cita, //hora de inicio
+                motivoSelect,
+                estado,
+                calcularHoraFinCita(hora_cita, duracion)
+            ]);
+
+            // guardamos el id de la cita qeu acabamos de introducir
+            const idCita = rows.insertId;
+
+            //console.log(idCita);
+            //console.log(calcularHoraFinCita(hora_cita, duracion));
+
+        return idCita; //devulve el id de la cita, para ahroa insertar en cita_trabajador
+    } catch (error) {
+        console.error("❌ Error al insertar cita:", error.message);
+        throw error;
+    }
+}
+
+// Función  para calcular hora_fin según la duración de la cita
+function calcularHoraFinCita(horaInicio, duracionMinutos) {
+    const [horas, minutos] = horaInicio.split(':').map(Number);
+    const fecha = new Date();
+    fecha.setHours(horas, minutos + duracionMinutos, 0, 0);
+    return fecha.toTimeString().substring(0, 5);
+}
+
+//todo función donde se inserta en la tabla cita_trabajador
+const insertarCitaTrabajador = async (cita, id_trabajador) => {
+    try {
+
+        const connection = await conectarDB(); // Conectar a la BBDD
+        const [rows] = await connection.execute("INSERT INTO cita_trabajador ( id_cita, id_trabajador)  VALUES (?, ?)" ,
+            [ cita , id_trabajador]);
 
 
-
+        return rows;
+    } catch (error) {
+        console.error("❌ Error al insertar cita_trabajador:", error.message);
+        throw error;
+    }
+}
 
 
 
 module.exports = { 
     registrarPaciente, loginPaciente,
     obtenerPacienteId , obtenerTrabajadoresParaCita,
-    obtenerDisponibilidadDelTrabajador
+    obtenerDisponibilidadDelTrabajador , obtenerHorasDisponibles , calcularHoraFinCita,
+    insertarCitaPaciente , insertarCitaTrabajador
 
 };
