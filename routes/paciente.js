@@ -70,7 +70,8 @@ router.post('/pedirCitaPaciente', estaLogueado, async (req, res) => {
             id_trabajador,
             fecha_cita,
             hora_cita,
-            duracion
+            duracion,
+            id_auxiliar //en caso de ser una ortodoncia
         } = req.body;
 
         console.log("Recibo al enviar el formualrio lo siguinete: " + " IdPaciente: " + id_paciente + " IdTrabajador: " + id_trabajador 
@@ -81,13 +82,23 @@ router.post('/pedirCitaPaciente', estaLogueado, async (req, res) => {
             return res.status(400).send("Faltan datos obligatorios");
         }
 
+        // Validación especial para ortodoncia
+        if (motivoSelect === "Ortodoncia" && !id_auxiliar) {
+            return res.status(400).send("Para ortodoncia se requiere un auxiliar");
+        }
+
 
         //llamamos a la función de insertar la cita (dentro va a calcular las horas final, por lo que hay que pasar la duración)
         const cita = await insertarCitaPaciente(id_paciente, fecha_cita, hora_cita, duracion, motivoSelect);
 
         const cita_trabajador = await insertarCitaTrabajador(cita, id_trabajador);
 
-        //aqui devolver qu3e ha sido correcto
+        // Si es ortodoncia, insertar relación con el auxiliar
+        if (motivoSelect === "Ortodoncia" && id_auxiliar) {
+            await insertarCitaTrabajador(cita, id_auxiliar);
+        }
+
+        //aqui devolver que ha sido correcto
         res.json({ mensaje: 'Se ha creado la cita con éxito' });
         
     } catch (error) {

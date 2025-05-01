@@ -89,13 +89,15 @@ const obtenerTrabajadoresParaCita = async (trabajador1 , trabajador2=null) => {
         const connection = await conectarDB(); // Conectar a la BBDD
 
         //hacemos la consulta y añadimos el parametro
-        let consulta = "SELECT * FROM trabajador WHERE especialidad LIKE ?";
+        let consulta = "SELECT * FROM trabajador WHERE (especialidad LIKE ?"; 
         let parametros = [`%${trabajador1}%`];
-        // en caso de haber trabajador 2 tambien s eincorpora a la consulta
+
         if (trabajador2) {
             consulta += " OR especialidad LIKE ?";
             parametros.push(`%${trabajador2}%`);
         }
+
+        consulta += ") AND estado = 'activo'"; // solo los activos
 
         const [rows] = await connection.execute(consulta, parametros);
         console.log("En obtener tarabajador encuentro a " + rows);

@@ -146,7 +146,9 @@
                     </div>
 
                 </div>
-            <% } %> 
+                <% } else { %>
+                    <p class="fw-bold" >No tienes permisos para agregar nuevos usuarios a la plataforma.</p>
+                <% } %>
         
         <!-- Alertas -->
         <% if (typeof mensajeExito !== 'undefined') { %>

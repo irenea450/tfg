@@ -4,6 +4,8 @@ const session = require('express-session'); //sesion
 const { registrarTrabajador, loginTrabajador } = require('../models/trabajador');
 const { registrarPaciente, loginPaciente } = require('../models/paciente');
 
+const { estaLogueado } = require('../middlewares/acceso.js');
+
 
 // GET login
 // Ruta para el login
@@ -159,7 +161,7 @@ router.post('/registrarPaciente', async (req, res) => {
 /* ----------------------------- Para trabajador ---------------------------- */
 // GET registrarTrabajador
 // Ruta para registrarTrabajador
-router.get('/registrarTrabajador', (req, res) => {
+router.get('/registrarTrabajador',estaLogueado, (req, res) => {
     res.render('registrarTrabajador', { title: 'Didadent', name: req.session.name  });
 });
 
@@ -169,14 +171,13 @@ router.post('/registrarTrabajador', async (req, res) => {
     const rol = req.body.rol;
     const nombre = req.body.nombre;
     const apellidos = req.body.apellidos;
-    const correo = req.body.correo;
+    const correo = req.body.correo + "@didadent.com"; //añadimos terminación
     const tlf = req.body.tlf;
     const estado = req.body.estado;
     const especialidad = req.body.especialidad;
     const contraseña = req.body.contraseña;
 
     //console.log("Estoy en registro con" + correo);
-
 
     // Llamamos al modelo para registrar al trabajador
     try {
@@ -186,6 +187,7 @@ router.post('/registrarTrabajador', async (req, res) => {
             // Error si ya existe ese correo
             return res.render('registrarTrabajador', {
                 title: 'Didadent',
+                name: req.session.name,
                 mensaje: {
                     tipo: 'error',
                     titulo: 'Correo en uso!',
@@ -198,12 +200,13 @@ router.post('/registrarTrabajador', async (req, res) => {
             // si Todo correcto
             res.render('registrarTrabajador', {
                 title: 'Didadent',
+                name: req.session.name,
                 mensaje: {
                     tipo: 'success',
                     titulo: 'Registro exitoso',
                     texto: 'El trabajador ha sido registrado correctamente.',
                     tiempo: 3000,
-                    ruta: 'trabajadores/configuracionTrabajador'  // redirigir a configuración en caso de exito
+                    ruta: 'zona/trabajador/configuracion'  // redirigir a configuración en caso de exito
                 }
             });
         }
@@ -211,6 +214,7 @@ router.post('/registrarTrabajador', async (req, res) => {
         // Error del sistema
         res.render('registrarTrabajador', {
             title: 'Didadent',
+            name: req.session.name,
             mensaje: {
                 tipo: 'error',
                 titulo: 'Error del sistema',
