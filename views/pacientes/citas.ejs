@@ -1,113 +1,131 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
-    <title>Citas <%= title %>
-    </title>
+    <title>Citas <%= title %></title>
     <link rel="stylesheet" href="/stylesheets/bootstrap.min.css">
-    <script src="/sweetalert2/sweetalert2.all.min.js"></script> <!-- Alertas -->
+    <link rel="stylesheet" href="/stylesheets/estilos_pacientes.css"><!-- estilos comunes en ejs de pacientes -->
+    <script src="/sweetalert2/sweetalert2.all.min.js"></script> <!-- alertas -->
+
 </head>
 
 <body>
     <%- include("../plantillas/header_pacientes.ejs") %>
 
-        <h1>Citas</h1>
+    <main class="container my-4">
+        <h1 class="mb-4 text-primary">Mis Citas</h1>
 
-        <div class="container mt-4">
-            <h2 class="mb-4">Citas pendientes</h2>
+        <!-- Sección de Citas Pendientes -->
+        <section class="mb-5">
+            <h2 class="titulo bg-primary text-white p-2 rounded">Citas Pendientes</h2>
+            
             <% if (citas && citas.length > 0) { %>
-                <table class="table table-bordered table-striped">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>Fecha</th>
-                            <th>Hora</th>
-                            <th>Motivo</th>
-                            <th>Acción</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% citas.forEach(cita => { 
-                            //formatear fecha
-                            const fechaFormateada = new Date(cita.fecha).toLocaleDateString('es-ES');
-                        %>
+                <div class="table-responsive">
+                    <table class="table table-hover table-bordered">
+                        <thead class="table-primary">
                             <tr>
-                                <td><%= fechaFormateada %></td>
-                                <td><%= cita.hora_inicio %></td>
-                                <td><%= cita.motivo %></td>
-                                <td>
-                                    <button type="button" class="btn btn-danger btn-sm" onclick="confirmarAnulacion('<%= cita.id_cita %>')">Anular</button>
+                                <th class="align-middle">Fecha</th>
+                                <th class="align-middle">Hora</th>
+                                <th class="align-middle">Motivo</th>
+                                <th class="align-middle text-center">Acción</th>
                             </tr>
-                        <% }) %>
-                    </tbody>
-                </table>
-        
-                <!-- Formulario oculto para enviar la anulación -->
-                <form id="formAnular" method="POST" style="display:none;"></form>
-            <% } else { %>
-                <div class="alert alert-info">No hay citas pendientes</div>
-            <% } %>
-        </div>
-
-        <div class="container mt-4">
-            <h2 class="mb-4">Pedir cita</h2>
-            
-            <a href="/zona/paciente/pedirCita" class="btn btn-primary">Pedir cita</a>
-            
-        </div>
-        
-        
-        <script>
-            function confirmarAnulacion(citaId) {
-                Swal.fire({
-                    title: '¿Anular cita?',
-                    text: 'Esta acción no se puede deshacer',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#6c757d',
-                    confirmButtonText: 'Sí, anular',
-                    cancelButtonText: 'Cancelar'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Realizar la solicitud POST para anular la cita
-                        fetch(`/zona/paciente/anular-cita/${citaId}`, {
-                            method: 'POST', // Enviar como POST
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({ idCita: citaId }) // Enviar idCita en el body
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.mensaje) {
-                                Swal.fire({
-                                    title: 'Cita anulada',
-                                    text: data.mensaje,
-                                    icon: 'success',
-                                    showCancelButton: false,
-                                    showConfirmButton: false,
-                                    timer: 2500
-                                })
-                                .then(() => {
-                                    // Recargar la página después de que el mensaje de éxito sea cerrado
-                                    location.reload(); // Recarga la página para reflejar los cambios
+                        </thead>
+                        <tbody>
+                            <% citas.forEach(cita => { 
+                                const fechaFormateada = new Date(cita.fecha).toLocaleDateString('es-ES', {
+                                    weekday: 'long',
+                                    day: 'numeric',
+                                    month: 'long',
+                                    year: 'numeric'
                                 });
-                            } else {
-                                Swal.fire('Error', 'Hubo un problema al anular la cita', 'error');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error al anular la cita:', error);
-                            Swal.fire('Error', 'Hubo un problema con la solicitud', 'error');
+                                const horaFormateada = cita.hora_inicio.substring(0, 5);
+                            %>
+                                <tr>
+                                    <td class="align-middle"><%= fechaFormateada %></td>
+                                    <td class="align-middle"><%= horaFormateada %> h</td>
+                                    <td class="align-middle"><%= cita.motivo %></td>
+                                    <td class="text-center">
+                                        <button type="button" class="btn btn-outline-danger btn-sm " style="min-width: 100px;" 
+                                            onclick="confirmarAnulacion('<%= cita.id_cita %>')">
+                                            Anular
+                                        </button>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            <% } else { %>
+                <div class="alert alert-info no-citas">
+                    <i class="bi bi-calendar-x"></i> No tienes citas pendientes actualmente
+                </div>
+            <% } %>
+        </section>
+
+        <!-- Sección de Pedir Nueva Cita -->
+        <section>
+            <h2 class="titulo bg-primary text-white p-2 rounded">Solicitar Nueva Cita</h2>
+            <div class="d-grid gap-2 col-md-6 mx-auto">
+                <a href="/zona/paciente/pedirCita" class="btn btn-success btn-lg">
+                    Pedir Cita Nueva
+                </a>
+            </div>
+        </section>
+
+        <!-- Formulario oculto para anulación -->
+        <form id="formAnular" method="POST" style="display:none;"></form>
+    </main>
+
+    <script>
+        function confirmarAnulacion(citaId) {
+            Swal.fire({
+                title: '¿Confirmas que quieres anular esta cita?',
+                text: 'Esta acción no se puede deshacer',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Sí, anular',
+                cancelButtonText: 'Cancelar',
+                backdrop: true,
+                allowOutsideClick: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/zona/paciente/anular-cita/${citaId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ idCita: citaId })
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Error en la respuesta del servidor');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        Swal.fire({
+                            title: '¡Cita anulada!',
+                            text: data.mensaje || 'La cita ha sido cancelada correctamente',
+                            icon: 'success',
+                            showConfirmButton: false,
+                            timer: 2000
+                        }).then(() => location.reload());
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'No se pudo completar la anulación: ' + error.message,
+                            icon: 'error'
                         });
-                    }
-                });
-            }
-        </script>
-        
+                    });
+                }
+            });
+        }
+    </script>
 
-        <script src="/javascripts/bootstrap.bundle.min.js"></script>
-
+    <script src="/javascripts/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>

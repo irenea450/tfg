@@ -339,11 +339,92 @@ const insertarCitaTrabajador = async (cita, id_trabajador) => {
 }
 
 
+/* -------------------------------------------------------------------------- */
+/*                                  Informes                                  */
+/* -------------------------------------------------------------------------- */
+//? obtener todos los infromes del paciente que reciba
+const obtenerInformes = async (id_paciente) => {
+    try {
+        const connection = await conectarDB(); // Conectar a la BBDD
+        
+        const query = `
+            SELECT 
+                i.id_informes,
+                i.descripcion,
+                i.fecha,
+                c.id_cita,
+                c.hora_inicio,
+                c.motivo,
+                t.id_trabajador,
+                CONCAT(t.nombre, ' ', t.apellidos) AS nombre_trabajador,
+                t.especialidad
+            FROM 
+                informes i
+            INNER JOIN 
+                cita c ON i.id_cita = c.id_cita
+            INNER JOIN 
+                cita_trabajador ct ON c.id_cita = ct.id_cita
+            INNER JOIN 
+                trabajador t ON ct.id_trabajador = t.id_trabajador
+            WHERE 
+                i.id_paciente = ?
+            ORDER BY 
+                i.fecha DESC
+        `;
+        
+        const [informes] = await connection.execute(query, [id_paciente]);
+        return informes;
+    } catch (error) {
+        console.error("❌ Error al obtener los informes:", error.message);
+        throw error;
+    }
+}
+
+/* -------------------------------------------------------------------------- */
+/*                               Datos Paciente                               */
+/* -------------------------------------------------------------------------- */
+//todo actualizar datos del paciente
+const guardarDatosPaciente = async (id,rol,nombre,apellidos,correo,tlf,domicilio,fecha_nacimiento,sexo) => {
+    try {
+        const connection = await conectarDB();
+
+        const query = 'UPDATE paciente SET rol = ?, nombre = ?, apellidos = ?, correo = ?, tlf = ?, domicilio = ?, fecha_nacimiento = ? , sexo = ? WHERE id_paciente = ?';
+        const [row] = await connection.execute(query, [rol, nombre, apellidos, correo, tlf, domicilio, fecha_nacimiento,sexo, id]);
+
+
+        return row;  // Devolver el resultado del update si todo esta bien
+
+    } catch (error) {
+        console.error("❌ Error al insertar paciente:", error.message);
+        throw error;
+    }
+}
+
+//todo función para guardar la nueva contraseña
+const guardarContraseñaPaciente = async (id,nuevaContraseña) => {
+    try {
+        const connection = await conectarDB();
+
+        const contraseñaHash = await bcrypt.hash(nuevaContraseña, 10);
+
+        const query = 'UPDATE paciente SET contraseña = ? WHERE id_paciente = ?';
+        const [row] = await connection.execute(query, [contraseñaHash, id]);
+
+        return row;
+
+    } catch (error) {
+        console.error("❌ Error al cambiar la contarseña del paciente:", error.message);
+        throw error;
+    }
+}
+
 
 module.exports = { 
     registrarPaciente, loginPaciente,
     obtenerPacienteId , obtenerTrabajadoresParaCita,
     obtenerDisponibilidadDelTrabajador , obtenerHorasDisponibles , calcularHoraFinCita,
-    insertarCitaPaciente , insertarCitaTrabajador
+    insertarCitaPaciente , insertarCitaTrabajador,
+    obtenerInformes,
+    guardarContraseñaPaciente, guardarDatosPaciente
 
 };

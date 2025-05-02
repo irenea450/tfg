@@ -315,7 +315,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-
+//? Ortodoncias  (tienen 2 trabajadores a la vez)
 async function cargarOpcionesOrtodoncia(duracion) {
     try {
         const doctores = await cargarTrabajadoresPorEspecialidad("doctor", "dentista");
@@ -354,9 +354,9 @@ async function cargarOpcionesOrtodoncia(duracion) {
 
             if (diasCoincidentes.length === 0) {
                 document.getElementById("fechaContenedor").innerHTML = `
-                    <div class="alert alert-warning">
+                    <p>
                         No hay días comunes entre doctor y auxiliar para este tratamiento.
-                    </div>`;
+                    </p>`;
                 return;
             }
 
@@ -401,7 +401,7 @@ async function cargarHorasDisponibles(idDoctor, fecha, duracion) {
             );
 
             if (horasComunes.length === 0) {
-                horasContainer.innerHTML = '<div class="alert alert-warning">No hay horas comunes entre doctor y auxiliar en este día</div>';
+                horasContainer.innerHTML = '<p">No hay horas comunes entre doctor y auxiliar en este día</p>';
                 return;
             }
 
@@ -409,14 +409,14 @@ async function cargarHorasDisponibles(idDoctor, fecha, duracion) {
         } else {
             // Si no es ortodoncia, mostramos horas del doctor directamente
             if (horasDoc.length === 0) {
-                horasContainer.innerHTML = '<div class="alert alert-warning">No hay horas disponibles para este día</div>';
+                horasContainer.innerHTML = '<p>No hay horas disponibles para este día</p>';
                 return;
             }
 
             renderizarSelectHoras(horasDoc);
         }
     } catch (err) {
-        horasContainer.innerHTML = `<div class="alert alert-danger">${err.message}</div>`;
+        horasContainer.innerHTML = `<p">${err.message}</p>`;
         console.error("Error al cargar horas:", err);
     }
 }

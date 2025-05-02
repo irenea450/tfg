@@ -97,20 +97,14 @@ const loginTrabajador = async (correo, contraseña) => {
     }
 }
 
+/* -------------------------------------------------------------------------- */
+/*                              Datos Trabajador                              */
+/* -------------------------------------------------------------------------- */
+
 //todo actualizar datos del trabajador
 const guardarDatosTrabajador = async (id,rol, nombre, apellidos, correo, tlf, estado, especialidad) => {
     try {
         const connection = await conectarDB();
-
-        // Verificar si el correo ya está registrado por otro trabajador
-/*         const [rows] = await connection.execute(
-            "SELECT * FROM trabajador WHERE correo = ? AND id_trabajador != ?",
-            [correo, id]
-        );
-
-        if (rows.length > 0) {
-            return { error: "El correo introducido ya está en uso por otro trabajador" };
-        } */
 
         const query = 'UPDATE trabajador SET rol = ?, nombre = ?, apellidos = ?, correo = ?, tlf = ?, estado = ?, especialidad = ? WHERE id_trabajador = ?';
         const [result] = await connection.execute(query, [rol, nombre, apellidos, correo, tlf, estado, especialidad, id]);

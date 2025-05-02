@@ -168,6 +168,10 @@ router.get('/pacientes',estaLogueado, soloTrabajadores, (req, res) => {
 
 }); */
 
+/* -------------------------------------------------------------------------- */
+/*                              Datos Trabajador                              */
+/* -------------------------------------------------------------------------- */
+
 // GET datos trabajador
 // Ruta para ver los datos del trabajador
 router.get('/datos',estaLogueado, soloTrabajadores, async (req, res) => {
@@ -209,6 +213,7 @@ router.post('/datos', async (req, res) => {
         mensajeExito: 'Datos actualizados correctamente.'
     })
 });
+
 // POST cambiar contarseña
 router.post('/contrasena', async (req, res) => {
     const id = req.session.usuarioId;
