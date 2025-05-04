@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Historial</title>
+    <link rel="stylesheet" href="/stylesheets/bootstrap.min.css">
+    <link rel="stylesheet" href="/stylesheets/estilos_pacientes.css"><!-- estilos comunes en ejs de pacientes -->
+
+    <script src="/sweetalert2/sweetalert2.all.min.js"></script>
+</head>
+
+<%- include("../plantillas/header_pacientes.ejs") %>
+
+    <div class="container ">
+
+        <h3 class="titulo bg-primary text-white p-2 my-4 rounded">Historial Médico Dental</h3>
+
+        <form action="/zona/paciente/historial" method="POST">
+
+            <div class="col my-3">
+                <label for="alergias" class="fw-bold">Inidicar si tiene algún tipo de alergia</label>
+                <input type="text" class="form-control my-1" name="alergias" value="<%= historial.alergias %>"
+                    placeholder="Ej: Penicilina, anestésicos locales, látex, etc.">
+            </div>
+
+            <div class="col my-3">
+                <label for="antecedentes" class="fw-bold">Indicar si tiene algún antecedente familiar </label>
+                <input type="text" class="form-control my-1" name="antecedentes"
+                    value="<%= historial.antecedentes_familiares %>"
+                    placeholder="Ej: Diabetes, hipertensión, enfermedades cardiovasculares">
+            </div>
+
+            <div class="col my-3">
+                <label for="descripcion" class="fw-bold">Algo más que indicar que considere importante :</label>
+                <input type="text" class="form-control my-1" name="descripcion" value="<%= historial.descripcion  %>"
+                    placeholder="Ej: Embarazo, medicación actual, prótesis dentales, etc.">
+            </div>
+
+            <% if (tieneHistorial && historial.fecha) { %>
+                <!-- Si existe el historial poner la fecha en al que se actualizó -->
+                <div class="row">
+                    <div class="col-3 my-3">
+                        <label class="fw-bold">Editado por última vez:</label>
+                        <% const fecha=new Date(historial.fecha); const dia=String(fecha.getDate()).padStart(2, '0' );
+                            const mes=String(fecha.getMonth() + 1).padStart(2, '0' ); const año=fecha.getFullYear();
+                            const fechaFormateada=`${año}-${mes}-${dia}`; %>
+                            <!-- Mostra la fecha formateada con el formato que se muestra en los formularios -->
+                            <input type="date" class="form-control my-1" value="<%= fechaFormateada %>" readonly>
+                    </div>
+                </div>
+                <% } %>
+
+                    <div class="row p-0 my-5">
+                        <div class="d-grid gap-2 col-6 mx-auto">
+                            <button type="submit" class="btn btn-primary">Guardar Historial</button>
+                        </div>
+                    </div>
+
+        </form>
+
+
+        <% if (typeof mensajeExito !=='undefined' ) { %>
+            <script>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Éxito',
+                    text: '<%= mensajeExito %>',
+                    timer: 2500,
+                    showConfirmButton: false
+                }).then(() => {
+                    // Limpiar parámetro de la URL
+                    window.location.href = window.location.pathname;
+                });
+            </script>
+            <% } %>
+
+            <% if (typeof mensajeError !=='undefined' ) { %>
+                <script>
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: '<%= mensajeError %>',
+                        timer: 2500,
+                        showConfirmButton: false,
+                        confirmButtonColor: '#d33'
+                    });
+                </script>
+                <% } %>
+
+
+                        <script src="/javascripts/bootstrap.bundle.min.js"></script>
+
+</html>

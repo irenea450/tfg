@@ -11,7 +11,104 @@
 <body>
     <%- include("../plantillas/header_pacientes.ejs") %>
 
-        <h1>inicio</h1>
+        <div class="card " style="border-radius: 0px; border: none;">
+            <img src="/images/silla.jpg" class="card-img" width="auto" height="550px"
+                style="border: none; border-radius: 0px;">
+            <div class="card-img-overlay"
+                style="background-color: rgba(0, 0, 0, 0.4); color: white; border: none; border-radius: 0px;"> <!-- Fondo transparente para resaltar letras -->
+                <!-- Hacer que saque un titulo y tema aleatorio -->
+                <% const numeroAleatorio = Math.floor(Math.random() * 5) + 1;
+                let titulo = "";
+                let texto = "";
+                let url = " ";
+                let textoBoton = " ";
+                switch(numeroAleatorio) {
+                    case 1:
+                        titulo = "Pedir Cita";
+                        texto = "Agenda tu próxima visita con nuestros especialistas. Un simple click y podrás seleccionar el día y hora que mejor te convenga.";
+                        url = "/pedirCita";
+                        textoBoton = "Solicitar Cita";
+                        break;
+                    case 2:
+                        titulo = "Ver Informes";
+                        texto = "Accede a tus informes médicos y resultados de pruebas. Toda tu información dental disponible cuando la necesites.";
+                        url = "/informes";
+                        textoBoton = "Ver Informes";
+                        break;
+                    case 3:
+                        titulo = "Historial Dental";
+                        texto = "Mantener actualizado tu historial dental nos permite ofrecerte un tratamiento personalizado y seguro. Revisa y actualiza tus datos.";
+                        url = "/historial";
+                        textoBoton = "Ver Historial Dental";
+                        break;
+                    case 4:
+                        titulo = "Citas Pendientes";
+                        texto = "Consulta, modifica o cancela tus próximas citas. Te recordaremos cuando se acerque la fecha de tu visita.";
+                        url = "/citas";
+                        textoBoton = "Ver Citas Pendientes";
+                        break;
+                    case 5:
+                        titulo = "Revisiones Periódicas";
+                        texto = "¿Sabías que una revisión cada 6 meses puede prevenir el 85% de problemas dentales? Programa tu próxima revisión preventiva.";
+                        url = "/pedirCita";
+                        textoBoton = "Solicitar Revisión";
+                        break;
+                }
+                %>
+                <h5 class="card-title"> <%= titulo %></h5>
+                <p class="card-text">
+                    <%= texto %>
+                </p>
+                <div>
+                    <a href="/zona/paciente<%= url %>" class="btn btn-primary btn-lg"><%= textoBoton %></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="container my-2">
+            <% 
+                // poner saludo dependiendo la hora
+                const horaActual = new Date().getHours();
+                let saludo = " ";
+                
+                if (horaActual >= 6 && horaActual < 13) {
+                    saludo = "días";
+                } else if (horaActual >= 13 && horaActual < 20) {
+                    saludo = "tardes";
+                } else {
+                    saludo = "noches";
+                }
+            %>
+
+            <h3 class="col fw-light  mb-3" style="letter-spacing: 1px; ">
+                <span class="fw-bold">Buenas <%= saludo %></span>, <%= name %>
+            </h3>
+
+
+            <% if (primeraCita) { %>
+                <h5 class="col badge bg-primary bg-opacity-10 text-primary p-2 mb-2" style="font-size: 1rem;"> Tu próxima cita es...</h5>
+                <div class="card text-bg-primary mb-3" style="max-width: 30vw;">
+                    <div class="card-header fw-bold"><%= new Date(primeraCita.fecha).toLocaleDateString('es-ES') %></div>
+                    <div class="card-body"> 
+                        <h5 class="card-title"><%= primeraCita.motivo %></h5>
+                        <p class="card-text">Hora de la citación: <%= primeraCita.hora_inicio.split(':').slice(0, 2).join(':') %></p>
+                    </div>
+                </div>
+            <% } else { %>
+                <h5 class="badge bg-primary bg-opacity-10 text-primary p-2 mb-2" style="font-size: 1rem;">No tienes citas pendientes</h5>
+                <div class="card border-primary mb-4" style="max-width: 100%; width: 30rem; border-width: 2px;">
+                    <div class="card-header bg-white  border-bottom border-primary"> ¿Quieres programar una nueva cita?</div>
+                    <div class="card-body"> 
+                        <div class="card-title"></div>
+                        <p class="card-text" style="text-align: center;"><a href="/zona/paciente/pedirCita" class="btn btn-danger w-75 w-md-50 w-lg-25"  >Pedir cita</a></p>
+                    </div>
+                    
+                </div>
+            <% } %>
+
+        </div>
+
+
 
 
         <script src="/javascripts/bootstrap.bundle.min.js"></script>

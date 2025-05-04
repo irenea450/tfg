@@ -7,7 +7,8 @@ const { citasPendientesId ,anularCita
 
 //improtar funciones de paciente.js
 const { obtenerPacienteId, obtenerTrabajadoresParaCita , obtenerDisponibilidadDelTrabajador , obtenerHorasDisponibles ,
-    calcularHoraFinCita, insertarCitaPaciente , insertarCitaTrabajador , obtenerInformes , guardarContraseñaPaciente , guardarDatosPaciente
+    calcularHoraFinCita, insertarCitaPaciente , insertarCitaTrabajador , obtenerInformes , guardarContraseñaPaciente ,eliminarCuentaPaciente,  guardarDatosPaciente,
+    obtenerHistorialPacienteId , insertarHistorialPaciente , guardarHistorialPaciente
 } = require('../models/paciente');
 
 //controles de acceso
@@ -17,7 +18,17 @@ const { estaLogueado, soloPacientes } = require('../middlewares/acceso.js');
 // GET inicio
 // Ruta de la página de inicio del paciente
 router.get('/inicio',estaLogueado, async(req, res) => {
-    res.render('pacientes/inicio', {title: 'Didadent', name: req.session.name});
+
+    let citasPendientes = await citasPendientesId(req.session.usuarioId);
+    console.log("Citas pendientes:" + citasPendientes);
+    //Sacar solo la primera cita
+    const primeraCita = citasPendientes.length > 0 ? citasPendientes[0] : null;
+
+    res.render('pacientes/inicio', {
+        title: 'Didadent', 
+        name: req.session.name,
+        primeraCita: primeraCita
+    });
 });
 
 /* -------------------------------------------------------------------------- */
@@ -188,7 +199,7 @@ router.get('/datos',estaLogueado, soloPacientes, async (req, res) => {
     });
 });
 // POST datos trabajador
-router.post('/datos', async (req, res) => {
+router.post('/datos',estaLogueado, soloPacientes, async (req, res) => {
 
     const id = req.session.usuarioId;
     const rol = 1;
@@ -219,7 +230,7 @@ router.post('/datos', async (req, res) => {
 });
 
 // POST cambiar contarseña
-router.post('/contrasena', async (req, res) => {
+router.post('/contrasena',estaLogueado, soloPacientes, async (req, res) => {
     const id = req.session.usuarioId;
     const nuevaContraseña = req.body.contraseña;
     const confirmarContraseña = req.body.confrimarContraseña;
@@ -258,6 +269,104 @@ router.post('/contrasena', async (req, res) => {
         });
     }
 });
+
+//? Eliminar la cuenta
+router.post('/eliminar-cuenta',estaLogueado, soloPacientes, async (req, res) => {
+
+    const id = req.session.usuarioId;
+
+    //llamamos función eliminar cuenta
+    const eliminar = await eliminarCuentaPaciente(id);
+
+    // 2. Destruir la sesión y redirigir
+    req.session.destroy(() => {
+        res.redirect('/');
+    });
+    
+});
+
+/* -------------------------------------------------------------------------- */
+/*                             Historial Paciente                             */
+/* -------------------------------------------------------------------------- */
+// GET historial paciente
+// Ruta para ver el historial dental del paciente
+router.get('/historial',estaLogueado, soloPacientes, async (req, res) => {
+
+    //const historial = await obtenerHistorialPacienteId(req.session.usuarioId); //para acceder al primer objeto del historial paciente
+    const historialObtener = await obtenerHistorialPacienteId(req.session.usuarioId); //para acceder al primer objeto que es nuestro paciente
+        
+    // Crear objeto historial con valores por defecto
+    const historial = historialObtener && historialObtener.length > 0 ? historialObtener[0] : {
+        alergias: '',
+        antecedentes_familiares: '',
+        descripcion: '',
+        fecha: null
+    };
+
+
+    console.log(historial);
+
+    res.render('pacientes/historial', {title: 'Didadent',
+        name: req.session.name,
+        historial: historial, //en caso de estar vacio y no tener todavía
+        tieneHistorial: historialObtener && historialObtener.length > 0 //pasar el histotorial existente
+    });
+});
+// POST historial paciente
+router.post('/historial',estaLogueado, soloPacientes, async (req, res) => {
+    try {
+        const id = req.session.usuarioId;
+        const alergias = req.body.alergias;
+        const antecedentes = req.body.antecedentes;
+        const descripcion = req.body.descripcion;
+
+        console.log("datos recogidos de los inputs" + { id, alergias,antecedentes, descripcion});
+
+        const historialObtener = await obtenerHistorialPacienteId(id);
+        const tieneHistorial = historialObtener && historialObtener.length > 0;
+
+        console.log("El historial existe? :" + tieneHistorial);
+
+        if(!tieneHistorial || tieneHistorial.length === 0){
+            //si no existe se inserta por primera vez
+            const insertarHistorial = insertarHistorialPaciente(id,alergias,antecedentes, descripcion);
+        }else{
+            //si existe solo se actualiza
+            const guadarHistorial = guardarHistorialPaciente(id,alergias,antecedentes, descripcion);
+        }
+
+        //Una vez realizado volver a hacer la consulta para ver los datos
+        const historialActualizado = await obtenerHistorialPacienteId(req.session.usuarioId);
+
+        // Historial con valores por defecto
+        const historial = historialActualizado && historialActualizado.length > 0 ? historialActualizado[0] : {
+            alergias: '',
+            antecedentes_familiares: '',
+            descripcion: '',
+            fecha: null
+        };
+
+
+
+        res.render('pacientes/historial', {
+            title: 'Didadent',
+            name: req.session.name,
+            historial: historial, //historial ya con los cambios (o con los valores por defecto si no existen)
+            tieneHistorial: historialObtener && historialObtener.length > 0, //pasar el historial si existe 
+            mensajeExito: 'Historial dental actualizado correctamente.'
+        });
+
+    } catch (error) {
+        console.error('Error en POST /historial:', error);
+        res.status(500).render('pacientes/historial', {
+            title: 'Didadent',
+            name: req.session.name,
+            mensajeError: 'Ocurrió un error al actualizar el historial'
+        });
+    }
+
+});
+
 
 
 module.exports = router;

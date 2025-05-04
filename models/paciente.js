@@ -418,6 +418,108 @@ const guardarContraseñaPaciente = async (id,nuevaContraseña) => {
     }
 }
 
+//todo eliminar la cuenta del paciente
+const eliminarCuentaPaciente = async (id) => {
+    try {
+        const connection = await conectarDB(); // Conectar a la BBDD
+        await connection.beginTransaction(); //empezar transación
+
+        //para eliminar el apciente hay qeu hacerlo de forma escalonada
+
+        // 3. Eliminar los informes médico
+        await connection.execute(
+            "DELETE FROM informes WHERE id_paciente = ?", 
+            [id]
+        );
+
+        // 1. Eliminar registros en cita_trabajador relacionados con las citas del paciente
+        await connection.execute(`
+            DELETE ct FROM cita_trabajador ct
+            INNER JOIN cita c ON ct.id_cita = c.id_cita
+            WHERE c.id_paciente = ?
+        `, [id]);
+
+        // 2. Eliminar las citas del paciente
+        await connection.execute(
+            "DELETE FROM cita WHERE id_paciente = ?", 
+            [id]
+        );
+
+        // 3. Eliminar el historial médico
+        await connection.execute(
+            "DELETE FROM historial WHERE id_paciente = ?", 
+            [id]
+        );
+
+
+
+        // 4. Finalmente eliminar al paciente
+        const [result] = await connection.execute(
+            "DELETE FROM paciente WHERE id_paciente = ?", 
+            [id]
+        );
+
+        await connection.commit();
+        return result;
+
+    } catch (error) {
+        console.error("❌ Error al eliminar la cuenta:", error.message);
+        throw error;
+    }
+}
+
+/* -------------------------------------------------------------------------- */
+/*                             Historial Paciente                             */
+/* -------------------------------------------------------------------------- */
+const obtenerHistorialPacienteId = async (id) => {
+    try {
+        const connection = await conectarDB(); // Conectar a la BBDD
+        const [rows] = await connection.execute("SELECT * FROM historial WHERE id_paciente = ?" , [id]); // consulta el historial del apcaiente que se pasa el id
+
+        return rows; 
+    } catch (error) {
+        console.error("❌ Error al obtener el historial del paciente:", error.message);
+        throw error;
+    }
+}
+
+//todo función donde se inserta el historial
+const insertarHistorialPaciente = async (id,alergias,antecedentes, descripcion) => {
+    try {
+
+        const connection = await conectarDB(); // Conectar a la BBDD
+
+        const fecha = new Date; //fecha en la que se realiza
+
+        const [rows] = await connection.execute("INSERT INTO historial ( id_paciente, alergias, descripcion, antecedentes_familiares, fecha)  VALUES (?, ?, ? , ?, ?)" ,
+            [ id, alergias, antecedentes, descripcion , fecha]);
+
+
+        return rows;
+    } catch (error) {
+        console.error("❌ Error al insertar el historial:", error.message);
+        throw error;
+    }
+}
+
+//todo función donde se inserta el historial
+const guardarHistorialPaciente = async (id,alergias,antecedentes, descripcion) => {
+    try {
+
+        const connection = await conectarDB(); // Conectar a la BBDD
+
+        const fecha = new Date; //fecha actual con la ultima actualización
+
+        const [rows] = await connection.execute("UPDATE historial SET alergias = ?, descripcion = ?, antecedentes_familiares = ?, fecha = ? WHERE id_paciente = ?" ,
+            [ alergias, descripcion, antecedentes, fecha , id ]);
+
+
+        return rows;
+    } catch (error) {
+        console.error("❌ Error al guardar los cambios del historial:", error.message);
+        throw error;
+    }
+}
 
 module.exports = { 
     registrarPaciente, loginPaciente,
@@ -425,6 +527,7 @@ module.exports = {
     obtenerDisponibilidadDelTrabajador , obtenerHorasDisponibles , calcularHoraFinCita,
     insertarCitaPaciente , insertarCitaTrabajador,
     obtenerInformes,
-    guardarContraseñaPaciente, guardarDatosPaciente
+    guardarContraseñaPaciente, guardarDatosPaciente, eliminarCuentaPaciente,
+    obtenerHistorialPacienteId , insertarHistorialPaciente , guardarHistorialPaciente
 
 };

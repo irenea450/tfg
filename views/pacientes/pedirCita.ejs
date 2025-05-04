@@ -5,15 +5,17 @@
     <title>Pedir cita <%= title %>
     </title>
     <link rel="stylesheet" href="/stylesheets/bootstrap.min.css">
+    <link rel="stylesheet" href="/stylesheets/estilos_pacientes.css"><!-- estilos comunes en ejs de pacientes -->
+
     <script src="/sweetalert2/sweetalert2.all.min.js"></script> <!-- Alertas -->
 </head>
 
 <body>
     <%- include("../plantillas/header_pacientes.ejs") %>
 
-        <h1>Pedir cita por parte del paciente</h1>
-
         <div class="container ">
+
+            <h2 class="titulo bg-primary text-white p-2 my-4 rounded">Solicitar Cita</h2>
 
             <form action="/zona/paciente/pedirCitaPaciente" id="formPedirCita" method="POST">
     

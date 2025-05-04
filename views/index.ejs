@@ -14,19 +14,51 @@
 
     <!-- Card inicial con foto d ela clinica -->
     <div class="card " style="border-radius: 0px; border: none;">
-      <img src="/images/sala_espera2.jpg" class="card-img" width="auto" height="600" alt="image-tienda"
-        style="border: none; border-radius: 0px;">
+      <img src="/images/silla.jpg" class="card-img" width="auto" height="700" alt="image-tienda"
+          style="border: none; border-radius: 0px;">
       <div class="card-img-overlay"
-        style="background-color: rgba(0, 0, 0, 0.4); color: white; border: none; border-radius: 0px;">
-        <!-- Fondo transparente para resaltar letras -->
-        <h5 class="card-title">CLÍNICA DENTAL</h5>
-        <p class="card-text">
-          En <strong>Clínica Dental Didadent</strong> cuidamos tu sonrisa con tecnología de vanguardia y un equipo de
-          profesionales comprometidos con tu salud bucal.
-          Ofrecemos tratamientos personalizados en un ambiente cómodo y seguro. ¡Tu bienestar es nuestra prioridad!
-        </p>
+          style="background-color: rgba(0, 0, 0, 0.4); color: white; border: none; border-radius: 0px;"> <!-- Fondo transparente para resaltar letras -->
+          <!-- Hacer que saque un titulo y tema aleatorio -->
+          <% const numeroAleatorio = Math.floor(Math.random() * 5) + 1;
+          let titulo = "";
+          let texto = "";
+          switch(numeroAleatorio) {
+              case 1:
+                  titulo = "¡Primera revisión gratuita!";
+                  texto = "En Didadent, tu primera consulta es completamente gratis. Nuestros especialistas evaluarán tu salud dental sin coste alguno. ¡Es el momento perfecto para comenzar tu cuidado dental profesional!";
+
+                  break;
+              case 2:
+                  titulo = "Limpiezas profesionales";
+                  texto = "¿Sabías que una limpieza dental profesional cada 6 meses puede prevenir el 90% de problemas bucales? En Didadent usamos tecnología de última generación para dejarte una sonrisa impecable y saludable.";
+
+                  break;
+              case 3:
+                  titulo = "Diagnóstico completo";
+                  texto = "Con nuestro equipamiento digital de radiografías 3D, podemos diagnosticar con precisión sin necesidad de desplazarte a otros centros. Todo en un mismo lugar, rápido y sin molestias.";
+
+                  break;
+              case 4:
+                  titulo = "Ortodoncia invisible";
+                  texto = "¿Sueñas con una sonrisa perfecta? Nuestros tratamientos de ortodoncia invisible son casi imperceptibles y extremadamente efectivos. ¡Pide cita para tu estudio personalizado sin compromiso!";
+
+                  break;
+              case 5:
+                  titulo = "Revisiones periódicas";
+                  texto = "La prevención es la mejor medicina. Revisiones cada 6 meses pueden detectar problemas a tiempo, ahorrándote dolor y tratamientos costosos. ¡Tu salud bucal es nuestra prioridad!";
+
+                  break;
+          }
+          %>
+          <h5 class="card-title"> <%= titulo %></h5>
+          <p class="card-text">
+              <%= texto %>
+          </p>
+          <div>
+              <a href="/zona/paciente/pedirCita" class="btn btn-primary btn-lg my-3">Pide tu cita aquí</a> <!-- Si no esta logueado va a llevar al login -->
+          </div>
       </div>
-    </div>
+  </div>
 
 
     <div class="container-fluid  p-3">
