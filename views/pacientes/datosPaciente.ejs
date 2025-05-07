@@ -51,11 +51,11 @@
                 </div>
 
                 <div class="col ">
-                    <input type="text" class="form-control " value="<%- paciente.correo %>" placeholder="Correo" name="correo" required readonly>
+                    <input type="text" class="form-control " value="<%- paciente.correo %>" placeholder="Correo" name="correo" pattern=".+@.+\..+" required readonly>
                 </div>
 
                 <div class="col-3">
-                    <input type="number" class="form-control" value="<%- paciente.tlf %>" name="tlf" placeholder="Teléfono" required>
+                    <input type="tel" class="form-control" value="<%- paciente.tlf %>" name="tlf" placeholder="Teléfono" maxlength="9" required>
                 </div>
 
             </div>

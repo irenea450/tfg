@@ -26,13 +26,13 @@
                 </div>
                 <div class="col">
                     <label for="dni">DNI:</label>
-                    <input type="text" class="form-control my-1" name="dni" placeholder="00000000A" required>
+                    <input type="text" class="form-control my-1" name="dni" placeholder="00000000A" pattern="^[0-9]{8}[A-HJ-NP-TV-Z]$" required>
                 </div>
                 <div class="col">
                     <label for="fecha_nacimiento">Fecha nacimiento</label>
                     <input type="date" class="form-control my-1" name="fecha_nacimiento" placeholder="Apellido 1 Apellido 2" required>
                 </div>
-
+                
             </div>
 
             <div class="row my-3">
@@ -47,11 +47,11 @@
                 </div>
 
                 <div class="col ">
-                    <input type="text" class="form-control " placeholder="Correo" name="correo" required>
+                    <input type="text" class="form-control " placeholder="Correo" name="correo" pattern=".+@.+\..+" required>
                 </div>
 
                 <div class="col-3">
-                    <input type="number" class="form-control" name="tlf" placeholder="Teléfono" required>
+                    <input type="tel" class="form-control" name="tlf" placeholder="Teléfono" maxlength="9" required>
                 </div>
 
             </div>
@@ -114,5 +114,7 @@
             });
         </script>
         <% } %>
+
+        
 
             <script src="/javascripts/bootstrap.bundle.min.js"></script>
