@@ -12,7 +12,8 @@
 <body>
     <%- include("../plantillas/header_trabajadores.ejs") %>
 
-        <h1>Horario del trabajador</h1>
+<!--     <h2 class="titulo bg-primary text-white p-2 m-2 rounded"> Horario del trabajador </h2>
+ -->
 
         <% 
             const algo = ['10:00:00', '11:00:00', '12:00:00', '13:00:00', '14:00:00','14:30:00', '15:00:00', '16:00:00', '17:00:00', '18:00:00', '19:00:00', '20:00:00'];
@@ -36,7 +37,7 @@
 
 
     
-        <table class="tabla-citas">
+        <table class="tabla-citas my-3">
             <thead>
                 <tr>
                     <th>Hora</th>
@@ -122,8 +123,8 @@
             </div>
 
             <div id="crearCita">
-                <p class="cerrado"><strong>+</strong></p>
-                <p class="amplio"><strong>Crear Cita</strong></p>
+                <a class="cerrado"><strong>+</strong></a>
+                <a class="amplio" href="/zona/trabajador/pacientes"><strong>Crear Cita</strong></a>
             </div>
 
 

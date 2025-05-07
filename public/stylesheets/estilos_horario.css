@@ -8,8 +8,17 @@
 table, th, td {
     border: 1px solid black;
     text-align: center;
-    padding: 1px 40px;
+    padding: 1px 35px;
     margin: 5px 20px;
+
+    /* background-color: #d9ffff; */
+}
+
+th{
+    border: 2px solid black;
+}
+.tabla-citas td:first-child{
+    border: 2px solid black;
 }
 
 h1{
@@ -22,19 +31,16 @@ h1{
 }
 
 
-.horario-activo-con-cita {
-    background-color: green;
-    /* Otros estilos que desees aplicar */
-}
-
-/* Asegúrate de que la clase .cita tenga un color diferente */
+/* Citas */
 .cita {
-    background-color: #add8e6 !important; /* Ejemplo: amarillo */
+    background-color: var(--color-primario) !important; 
+    color: white;
+    font-weight: 500;
 }
 
 /* Asegúrate de que la clase .horario-activo tenga un color */
 .horario-activo {
-    background-color: #8df59d; /* verde clarito */
+    background-color: #d9ffff; /* verde clarito */
 }
 .descanso{
     background-color: rgb(222, 222, 222);
@@ -43,11 +49,11 @@ h1{
 }
 
 .festivo {
-    background-color: #e73330; 
+    background-color: #dc0126; 
 }
 
 .vacaciones {
-    background-color: #e730b6; 
+    background-color: plum; 
 }
 
 /* caudro de citas */
@@ -111,18 +117,24 @@ h1{
     align-items: center;
     align-content: center;
     text-align: center;
+    color: white;
 
     border: solid 1px gainsboro;
     border-radius: 50px;
 
     background-color: var(--color-primario);
 }
-#crearCita p.amplio{
+#crearCita a{
+    text-decoration: none;
+    color: white;
+}
+
+#crearCita a.amplio{
     display: none;
     margin: 0;
     font-size: large;
 }
-#crearCita p.cerrado{
+#crearCita a.cerrado{
     margin: 0;
     font-size: x-large; 
 }
@@ -135,11 +147,11 @@ h1{
     
 }
 /* Cando s ehaga grande solo mostrar elk texto y no el + */
-#crearCita:hover p.amplio{
+#crearCita:hover a.amplio{
     display: block;
     margin: 0;
 }
-#crearCita:hover p.cerrado{
+#crearCita:hover a.cerrado{
     display: none;
     margin: 0;
 }

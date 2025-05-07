@@ -1,0 +1,15 @@
+
+.titulo {
+    border-left: 5px solid #0d6efd;
+    padding-left: 15px;
+    margin-bottom: 10px;
+}
+.titulo2 {
+    border-left: 5px solid #0d6efd;
+    border-right: 1px solid #0d6efd;
+    border-top: 1px solid #0d6efd;
+    border-bottom: 1px solid #0d6efd;
+    padding-left: 15px;
+    margin-bottom: 10px;
+}
+

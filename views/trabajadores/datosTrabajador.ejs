@@ -5,21 +5,23 @@
     <title>Clínica <%= title %>
     </title>
     <link rel="stylesheet" href="/stylesheets/bootstrap.min.css">
+    <link rel="stylesheet" href="/stylesheets/estilos_trabajadores.css">
+    <link rel="stylesheet" href="/stylesheets/font/bootstrap-icons.css"> <!-- Iconos -->
     <script src="/sweetalert2/sweetalert2.all.min.js"></script> <!-- Alertas -->
 </head>
 
 <body>
     <%- include("../plantillas/header_trabajadores.ejs") %>
-        <h1>Datos del trabajador</h1>
 
-        <div class="container-fluid ">
+        <div class="container mt-4">
+            <h2 class="titulo bg-primary text-white p-3 rounded"> <i class="bi bi-person"></i> Datos de la Cuenta</h2>
 
             <form action="/zona/trabajador/datos" method="POST">
     
                 <div class="row my-2">
     
                     <div class="col">
-                        <label for="rol">Rol del trabajador</label>
+                        <label for="rol" class="fw-bold">Rol del trabajador</label>
                         <select class="col my-1 form-select" name="rol">
                             <option selected>Selecciona el tipo de trabajador</option>
                             <option value="2" <%= trabajador.rol === 2 ? 'selected' : '' %> <%= trabajador.rol === 3 ? 'disabled' : '' %>>Trabajador</option>
@@ -29,7 +31,7 @@
                     </div>
                     
                     <div class="col">
-                        <label for="estado">Estado del trabajador</label>
+                        <label for="estado" class="fw-bold">Estado del trabajador</label>
                         <select class="col my-1 form-select" name="estado" required>
                             <option value="activo" <%= trabajador.estado === 'activo' ? 'selected' : '' %>>Activo</option>
                             <option value="inactivo" <%= trabajador.estado === 'inactivo' ? 'selected' : '' %>>Inactivo</option>
@@ -42,11 +44,11 @@
                 <div class="row">
     
                     <div class="col">
-                        <label for="nombre">Nombre</label>
+                        <label for="nombre" class="fw-bold">Nombre</label>
                         <input type="text" class="form-control my-1" name="nombre" placeholder="Nombre" value="<%= trabajador.nombre %>" required>
                     </div>
                     <div class="col">
-                        <label for="apellidos">Apellidos</label>
+                        <label for="apellidos" class="fw-bold">Apellidos</label>
                         <input type="text" class="form-control my-1" name="apellidos" placeholder="Apellido 1 Apellido 2" value="<%= trabajador.apellidos %>" required>
                     </div>
     
@@ -54,18 +56,20 @@
     
                 <div class="row my-3">
     
-                    <div class="col input-group ">
+                    <div class="col">
+                        <label for="correo" class="form-label fw-bold">Correo</label>
                         <input type="text" class="form-control " placeholder="Correo" name="correo" value="<%= trabajador.correo %>" readonly>
                     </div>
     
                     <div class="col">
+                        <label for="tlf" class="form-label fw-bold">Teléfono</label>
                         <input type="tel" class="form-control" name="tlf" placeholder="Teléfono" value="<%= trabajador.tlf %>" maxlength="9" required>
                     </div>
     
                 </div>
     
                 <div class="mb-3">
-                    <label for="especialidad" class="form-label">Especialidad</label>
+                    <label for="especialidad" class="form-label fw-bold">Especialidad</label>
                     <textarea class="form-control" name="especialidad" id="especialidad" rows="3"><%= trabajador.especialidad %></textarea>
                 </div>
     
@@ -82,7 +86,7 @@
             <form action="/zona/trabajador/contrasena" method="POST">
                 <div class="row g-3 align-items-center p-0 m-0">
                     <div class="col-auto">
-                        <label for="contraseña" class="col-form-label">Nueva contraseña</label>
+                        <label for="contraseña" class="col-form-label fw-bold">Nueva contraseña</label>
                     </div>
                     <div class="col-auto">
                         <input type="password" name="contraseña" id="contraseña" class="form-control" required>
@@ -93,7 +97,7 @@
                         </span>
                     </div>
                     <div class="col-auto">
-                        <label for="contraseña" class="col-form-label">Confirmar contraseña</label>
+                        <label for="contraseña" class="col-form-label fw-bold">Confirmar contraseña</label>
                     </div>
                     <div class="col-auto">
                         <input type="password" name="confrimarContraseña" id="confrimarContraseña" class="form-control" required>
