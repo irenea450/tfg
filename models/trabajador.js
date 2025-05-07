@@ -1,13 +1,13 @@
 const conectarDB = require('../conexion/conexion'); // Importar la conexión
 const bcrypt = require("bcryptjs"); // Para encriptar y comparar contraseñas
 
-//obtener los datos de todos los trabajadores
+//todo obtener los datos de todos los trabajadores
 async function obtenerTrabajadores() {
     try {
         const connection = await conectarDB(); // Conectar a la BBDD
         const [rows] = await connection.execute("SELECT * FROM trabajador"); // consulta con todos los datos de todos los trabajadores
-        await connection.end(); // Cerrar la conexión
-        return rows; // Retornar los resultados
+
+        return rows; 
     } catch (error) {
         console.error("❌ Error al obtener trabajadores:", error.message);
         throw error;
@@ -15,19 +15,19 @@ async function obtenerTrabajadores() {
 }
 
 //todo obtener trabajador por el id
-//obtener los datos de todos los trabajadores
 const obtenerTrabajadorId = async (id) => {
     try {
         const connection = await conectarDB(); // Conectar a la BBDD
-        const [rows] = await connection.execute("SELECT * FROM trabajador WHERE id_trabajador = ?" , [id]); // consulta el traabjador que se pasa el id
+        const [rows] = await connection.execute("SELECT * FROM trabajador WHERE id_trabajador = ?", [id]); // consulta el traabjador que se pasa el id
 
-        return rows; 
+        return rows;
     } catch (error) {
         console.error("❌ Error al obtener el trabajador:", error.message);
         throw error;
     }
 }
 
+//todo registrar nuevo trabajador
 const registrarTrabajador = async (rol, nombre, apellidos, correo, tlf, estado, especialidad, contraseña) => {
     try {
         const connection = await conectarDB();
@@ -98,11 +98,87 @@ const loginTrabajador = async (correo, contraseña) => {
 }
 
 /* -------------------------------------------------------------------------- */
+/*                             Buscador Pacientes                             */
+/* -------------------------------------------------------------------------- */
+//todo funcion para buscar al paciente según lo introducido en el buscador
+/* const buscarPacientes = async () => {
+    try {
+        const connection = await conectarDB(); // Conectar a la BBDD
+        //función donde devuelve los pacientes ordenados
+        const [rows] = await connection.execute("SELECT * FROM paciente ORDER BY apellidos ASC, nombre ASC"); 
+
+        return rows; // devuelve los resultados
+    } catch (error) {
+        console.error("❌ Error al obtener trabajadores:", error.message);
+        throw error;
+    }
+} */
+
+const buscarPacientes = async () => {
+    try {
+        const connection = await conectarDB();
+
+        // Obtener pacientes ordenados
+        const [pacientes] = await connection.execute(
+            "SELECT * FROM paciente ORDER BY apellidos ASC, nombre ASC"
+        );
+
+        // Para cada paciente, obtener su historial y citas pendientes
+        for (const paciente of pacientes) {
+            // Obtener historial (ajusta según tu esquema de base de datos)
+            const [historial] = await connection.execute(
+                "SELECT * FROM historial WHERE id_paciente = ? ORDER BY fecha DESC LIMIT 3",
+                [paciente.id_paciente]
+            );
+            paciente.historial = historial;
+
+            // Obtener citas pendientes (ajusta según tu esquema)
+            const [citas] = await connection.execute(
+                "SELECT * FROM cita WHERE id_paciente = ? AND estado = 'pendiente' ORDER BY fecha ASC",
+                [paciente.id_paciente]
+            );
+            paciente.citasPendientes = citas;
+
+            // Puedes agregar más información aquí si es necesario
+        }
+
+        return pacientes;
+    } catch (error) {
+        console.error("❌ Error al obtener pacientes con información:", error.message);
+        throw error;
+    }
+}
+
+/* ----------------------------- insertar citas ----------------------------- */
+//todo función donde se inserta la cita del paciente
+const insertarCitaEnTrabajador = async (id_paciente, fecha, hora_inicio, motivo, estado, hora_fin) => {
+    try {
+ //establezco el estado predeterminado de las citas
+
+        const connection = await conectarDB(); // Conectar a la BBDD
+        const [rows] = await connection.execute("INSERT INTO cita ( id_paciente, fecha, hora_inicio, motivo, estado, hora_fin)  VALUES (?, ?, ?, ?, ?, ?)" ,
+            [id_paciente, fecha, hora_inicio, motivo, estado, hora_fin]);
+
+            // guardamos el id de la cita qeu acabamos de introducir
+            const idCita = rows.insertId;
+
+        return idCita; //devulve el id de la cita, para ahroa insertar en cita_trabajador
+    } catch (error) {
+        console.error("❌ Error al insertar cita:", error.message);
+        throw error;
+    }
+}
+
+
+
+
+
+/* -------------------------------------------------------------------------- */
 /*                              Datos Trabajador                              */
 /* -------------------------------------------------------------------------- */
 
 //todo actualizar datos del trabajador
-const guardarDatosTrabajador = async (id,rol, nombre, apellidos, correo, tlf, estado, especialidad) => {
+const guardarDatosTrabajador = async (id, rol, nombre, apellidos, correo, tlf, estado, especialidad) => {
     try {
         const connection = await conectarDB();
 
@@ -119,7 +195,7 @@ const guardarDatosTrabajador = async (id,rol, nombre, apellidos, correo, tlf, es
 }
 
 //todo actualizar contarseñas
-const guardarContraseñaTrabajador = async (id,nuevaContraseña) => {
+const guardarContraseñaTrabajador = async (id, nuevaContraseña) => {
     try {
         const connection = await conectarDB();
 
@@ -138,7 +214,7 @@ const guardarContraseñaTrabajador = async (id,nuevaContraseña) => {
 }
 
 
-/* --------------------------- horarios trabajador -------------------------- */
+/* --------------------------- horarios trabajador para los horarios -------------------------- */
 const horarioTrabajador = async (id) => {
 
     try {
@@ -293,7 +369,7 @@ const citasTrabajador = async (id) => {
     }
 };
 
-
+//todo coosultar las citas con ese id
 const consultarCita = async (id) => {
     try {
         const connection = await conectarDB();
@@ -312,7 +388,8 @@ const consultarCita = async (id) => {
     }
 };
 
-const obtenerPaciente = async (id) => {
+//todo obtener paciente con ese id
+const obtenerPacienteId = async (id) => {
     try {
         const connection = await conectarDB();
         console.log("estoy consultando un paciente con id: " + id);
@@ -330,31 +407,33 @@ const obtenerPaciente = async (id) => {
     }
 };
 
-//funciones de modificar las citas de los pacientes
+//todo funciones de modificar las citas de los pacientes
 const actualizarCita = async (id, fecha, motivo, hora_inicio, hora_fin) => {
     //conexión  a la bbdd
     const connection = await conectarDB();
 
     //modificamos en la base de datos
-    const [update] = await connection.execute(`UPDATE cita SET fecha = ?, motivo = ?, hora_inicio = ?, hora_fin = ? WHERE id_cita = ?`, 
-        [fecha,motivo,hora_inicio,hora_fin, id]);
-    
+    const [update] = await connection.execute(`UPDATE cita SET fecha = ?, motivo = ?, hora_inicio = ?, hora_fin = ? WHERE id_cita = ?`,
+        [fecha, motivo, hora_inicio, hora_fin, id]);
+
     console.log("Se ha realizado la actualizacion" + update)
 
 }
 
+//todo anular la cita
 const anularCita = async (id) => {
     //conexión  a la bbdd
     const connection = await conectarDB();
 
     //modificamos en la base de datos
-    const [anular] = await connection.execute(`UPDATE cita SET estado = 'Anulada' WHERE id_cita = ?`, 
+    const [anular] = await connection.execute(`UPDATE cita SET estado = 'Anulada' WHERE id_cita = ?`,
         [id]);
-    
+
     console.log("Se ha realizado la anulación" + anular)
 
 }
 
+//todo marcar la cita como completada
 const completarCita = async (id) => {
     //conexión  a la bbdd
     const connection = await conectarDB();
@@ -363,21 +442,21 @@ const completarCita = async (id) => {
     const [completada] = await connection.execute(`UPDATE cita SET estado = 'Completada' WHERE cita.id_cita = ?`,
         [id]
     );
-    
+
     console.log("Se ha completado la cita" + completada)
 
 }
 
-//función para crear informes sobre la cita realizada
-const crearInforme = async (idPaciente,idCita,descripcion,fecha) => {
+//todo función para crear informes sobre la cita realizada
+const crearInforme = async (idPaciente, idCita, descripcion, fecha) => {
     //conexión  a la bbdd
     const connection = await conectarDB();
 
     //consulta
     const [informe] = await connection.execute(`INSERT INTO informes (id_paciente,id_cita,descripcion,fecha) VALUES (?, ?, ?, ?)`,
-        [idPaciente,idCita,descripcion,fecha]
+        [idPaciente, idCita, descripcion, fecha]
     );
-    
+
     console.log("Se ha generado el infroma:" + informe)
 
 }
@@ -392,9 +471,9 @@ const solicitarVacaciones = async (idTrabajador, fecha) => {
 
     //consulta
     const [vacaciones] = await connection.execute(`INSERT INTO vacaciones (id_trabajador,fecha) VALUES (?, ?)`,
-        [idTrabajador,fecha]
+        [idTrabajador, fecha]
     );
-    
+
     console.log("Se ha insrtado el día de vacaciones :" + vacaciones);
     //return vacaciones;
 
@@ -405,9 +484,9 @@ const solicitarVacaciones = async (idTrabajador, fecha) => {
 const obtenerVacacionesId = async (id) => {
     try {
         const connection = await conectarDB(); // Conectar a la BBDD
-        const [rows] = await connection.execute("SELECT * FROM vacaciones WHERE id_trabajador = ?" , [id]); // consulta vacaciones del trabajador que se pasa el id
+        const [rows] = await connection.execute("SELECT * FROM vacaciones WHERE id_trabajador = ?", [id]); // consulta vacaciones del trabajador que se pasa el id
 
-        return rows; 
+        return rows;
     } catch (error) {
         console.error("❌ Error al obtener el trabajador:", error.message);
         throw error;
@@ -428,9 +507,9 @@ const eliminarVacacion = async (id) => {
 const obtenerHorarioTrabajador = async (id) => {
     try {
         const connection = await conectarDB(); // Conectar a la BBDD
-        const [rows] = await connection.execute("SELECT * FROM horarios WHERE id_trabajador = ?" , [id]);
+        const [rows] = await connection.execute("SELECT * FROM horarios WHERE id_trabajador = ?", [id]);
 
-        return rows; 
+        return rows;
     } catch (error) {
         console.error("❌ Error al obtener horario del trabajador:", error.message);
         throw error;
@@ -438,24 +517,24 @@ const obtenerHorarioTrabajador = async (id) => {
 }
 
 const insertarHorarioTrabajador = async (id, dia, hora_inicio, hora_fin) => {
-        //conexión  a la bbdd
-        const connection = await conectarDB();
+    //conexión  a la bbdd
+    const connection = await conectarDB();
 
-        //consulta
-        const [horario] = await connection.execute(`INSERT INTO horarios (id_trabajador,dia, hora_inicio, hora_fin) VALUES (?, ?, ?, ?)`,
-            [id, dia, hora_inicio , hora_fin]
-        );
-        
-        console.log("Se ha insertado un horario nuevo :" + horario);
-        return horario;
+    //consulta
+    const [horario] = await connection.execute(`INSERT INTO horarios (id_trabajador,dia, hora_inicio, hora_fin) VALUES (?, ?, ?, ?)`,
+        [id, dia, hora_inicio, hora_fin]
+    );
+
+    console.log("Se ha insertado un horario nuevo :" + horario);
+    return horario;
 }
 
-const actualizarHorario = async (hora_inicio, hora_fin ,id) => {
+const actualizarHorario = async (hora_inicio, hora_fin, id) => {
     try {
         const connection = await conectarDB(); // Conectar a la BBDD
-        const [rows] = await connection.execute("UPDATE horarios SET hora_inicio = ?, hora_fin = ? WHERE id_horarios = ? " , [hora_inicio, hora_fin ,id]);
+        const [rows] = await connection.execute("UPDATE horarios SET hora_inicio = ?, hora_fin = ? WHERE id_horarios = ? ", [hora_inicio, hora_fin, id]);
 
-        return rows; 
+        return rows;
     } catch (error) {
         console.error("❌ Error al obtener horario del trabajador:", error.message);
         throw error;
@@ -473,15 +552,15 @@ const eliminarHorario = async (id) => {
 /*                           Festivos de la clinica                           */
 /* -------------------------------------------------------------------------- */
 //todo función para insertar vacaciones
-const solicitarFestivos = async (id, fecha ,descripcion) => {
+const solicitarFestivos = async (id, fecha, descripcion) => {
     //conexión  a la bbdd
     const connection = await conectarDB();
 
     //consulta
     const [festivos] = await connection.execute(`INSERT INTO festivos (id,fecha, descripcion) VALUES (?, ?, ?)`,
-        [id,fecha,descripcion]
+        [id, fecha, descripcion]
     );
-    
+
     console.log("Se ha insrtado el día de festivo :" + festivos);
     //return vacaciones;
 
@@ -494,7 +573,7 @@ const obtenerFestivos = async (id) => {
         const connection = await conectarDB(); // Conectar a la BBDD
         const [rows] = await connection.execute("SELECT * FROM festivos "); // obtener festivos de la clinica
 
-        return rows; 
+        return rows;
     } catch (error) {
         console.error("❌ Error al obtener festivos:", error.message);
         throw error;
@@ -510,22 +589,17 @@ const eliminarFestivos = async (id) => {
 }
 
 //* Exportar las funciones para usarlas en otros archivos
-module.exports = { 
-    obtenerTrabajadorId,
-    registrarTrabajador, 
+module.exports = {
+    obtenerTrabajadores,obtenerTrabajadorId,
+    registrarTrabajador,
     loginTrabajador,
     guardarDatosTrabajador,
-    horarioTrabajador, 
-    festivosTrabajador,
-    vacacionesTrabajador,
-    obtenerDiasLaborablesSemanaActual , 
-    citasTrabajador, 
-    consultarCita, 
-    obtenerPaciente,
-    actualizarCita,
-    anularCita,
-    completarCita,
-    crearInforme,
+    buscarPacientes,
+    insertarCitaEnTrabajador,
+    horarioTrabajador,festivosTrabajador,vacacionesTrabajador,
+    obtenerDiasLaborablesSemanaActual,
+    citasTrabajador,consultarCita,obtenerPacienteId,
+    actualizarCita,anularCita,completarCita,crearInforme,
     guardarContraseñaTrabajador,
     solicitarVacaciones, obtenerVacacionesId, eliminarVacacion,
     obtenerHorarioTrabajador, insertarHorarioTrabajador, actualizarHorario, eliminarHorario,

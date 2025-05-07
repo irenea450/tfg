@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Buscador pacientes <%= title %>
+    </title>
+    <link rel="stylesheet" href="/stylesheets/bootstrap.min.css">
+    <link rel="stylesheet" href="/stylesheets/estilos_pacientes.css">
+</head>
+
+<body>
+    <%- include("../plantillas/header_trabajadores.ejs") %>
+
+        <div class="container mt-4">
+            <h2 class="titulo bg-primary text-white p-3 rounded">Crear Cita a Paciente</h2>
+
+            <form action="/zona/trabajador/pedirCitaGuardar" id="formCrearCita" method="post">
+                <div class="row">
+                    <div class="col">
+                        <label class="form-label"><strong>DNI paciente:</strong></label>
+                        <input type="text" class="form-control" name="id_paciente" id="id_paciente" value="<%= paciente.id_paciente %>"  readonly>
+                    </div>
+                    <div class="col">
+                        <label class="form-label"><strong>Estado:</strong></label>
+                        <input type="text" class="form-control" name="estado" id="estado" value="Pendiente" disabled
+                            readonly>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <label class="form-label"><strong>Paciente:</strong></label>
+                        <input type="text" class="form-control" name="paciente" id="paciente"
+                            value="<%= paciente.nombre %> <%= paciente.apellidos %>" disabled readonly>
+                    </div>
+                </div>
+
+                <label class="form-label"><strong>Motivo:</strong></label>
+                <input type="text" class="form-control" name="motivo" id="motivo"><br>
+
+
+
+                <div class="row">
+                    <div class="col">
+                        <label class="form-label"><strong>Fecha:</strong></label>
+                        <input type="date" class="form-control" name="fecha" id="fecha">
+                    </div>
+                    <div class="col">
+                        <label class="form-label"><strong>Hora de inicio:</strong></label>
+                        <input type="time" class="form-control" name="hora_inicio" id="hora_inicio">
+                    </div>
+                    <div class="col">
+                        <label class="form-label"><strong>Hora final aproximada:</strong></label>
+                        <input type="time" class="form-control" name="hora_fin" id="hora_fin">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <label class="form-label"><strong>Añadir a otro profesional:</strong></label>
+                        <select class="form-select" name="id_trabajador2" id="selectTrabajadores" required>
+                            <!-- cargar dinamicamnete -->
+                        </select>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between mt-2">
+                    <button type="submit" class="btn btn-primary">Guardar cita</button>
+                </div>
+            </form>
+
+        </div>
+
+
+        <script src="/javascripts/bootstrap.bundle.min.js"></script>
+
+        <script src="/javascripts/buscadorPacientes.js"></script>
+</body>
+
+</html>

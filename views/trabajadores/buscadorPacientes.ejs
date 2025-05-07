@@ -5,16 +5,166 @@
     <title>Buscador pacientes <%= title %>
     </title>
     <link rel="stylesheet" href="/stylesheets/bootstrap.min.css">
+    <link rel="stylesheet" href="/stylesheets/estilos_pacientes.css">
 </head>
 
 <body>
     <%- include("../plantillas/header_trabajadores.ejs") %>
 
-        <h1>Buscador pacientes</h1>
+        <div class="container mt-4">
+            <h2 class="titulo bg-primary text-white p-3 rounded">Buscador de Pacientes</h2>
+
+            <div class="bg-light rounded  p-3 my-4 shadow">
+                <!-- Campo de búsqueda -->
+                <div class="mb-4">
+                    <input type="text" id="buscadorInput" class="form-control border-2 border-primary py-2"
+                        placeholder="Buscar por nombre, apellido o DNI..." autocomplete="off">
+                </div>
+
+                <!-- Contenedor de pacientes -->
+                <div class="accordion accordion-flush" id="pacientesAccordion">
+                    <% pacientes.forEach((paciente, index)=> { %>
+                        <div class="accordion-item paciente-item  bg-primary-subtle"
+                            data-nombre="<%= (paciente.nombre || '').toLowerCase() %>"
+                            data-apellidos="<%= (paciente.apellidos || '').toLowerCase() %>"
+                            data-dni="<%= (paciente.id_paciente || '').toLowerCase() %>">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#flush-collapse<%= index %>" aria-expanded="false"
+                                    aria-controls="flush-collapse<%= index %>">
+                                    <%= paciente.apellidos %>, <%= paciente.nombre %>
+                                            <span class="badge bg-secondary ms-2">
+                                                <%= paciente.id_paciente %>
+                                            </span>
+                                </button>
+                            </h2>
+                            <div id="flush-collapse<%= index %>" class="accordion-collapse collapse"
+                                data-bs-parent="#pacientesAccordion">
+                                <div class="accordion-body">
+                                    <div class="shadow p-2 rounded">
+                                        <p><strong>Teléfono:</strong>
+                                            <%= paciente.tlf || 'No registrado' %>
+                                        </p>
+                                        <p><strong>Correo:</strong>
+                                            <%= paciente.correo || 'No registrado' %>
+                                        </p>
+                                        <p><strong>Domicilio:</strong>
+                                            <%= paciente.domicilio || 'No registrado' %>
+                                        </p>
+                                        <p><strong>Fecha Nacimiento:</strong>
+                                            <%= new Date(paciente.fecha_nacimiento).toLocaleDateString('es-ES')
+                                                || 'No registrado' %>
+                                        </p>
+                                    </div>
+
+
+
+                                    <!-- Historial del paciente -->
+                                    <div
+                                        class=" bg-light-subtle border border-secondary-subtle rounded my-2 p-2 shadow">
+                                        <h4>Historial clínico/dental:</h4>
+                                        <% if (paciente.historial && paciente.historial.length> 0) { %>
+
+                                            <% paciente.historial.forEach(h=> { %>
+                                                <p><span class="fw-bold">Alergias:</span>
+                                                    <%= h.alergias %>
+                                                </p>
+                                                <p><span class="fw-bold">Antecedentes familiares:</span>
+                                                    <%= h.antecedentes_familiares %>
+                                                </p>
+                                                <p><span class="fw-bold">Otros datos de interés:</span>
+                                                    <%= h.descripcion %>
+                                                </p>
+                                                <p class="fw-lighter" style="text-align: end;">Ultima fecha de
+                                                    modificación:
+                                                    <%= new Date(h.fecha).toLocaleDateString('es-ES') %>
+                                                </p>
+                                                <% }); %>
+
+                                                    <% } else { %>
+                                                        <p>No hay registros en el historial</p>
+                                                        <% } %>
+                                    </div>
+
+                                    <!-- Citas pendientes del paciente -->
+                                    <div class="bg-light-subtle border border-secondary-subtle rounded my-1 p-2 shadow">
+                                        <h4>Citas pendientes:</h4>
+                                        <% if (paciente.citasPendientes && paciente.citasPendientes.length> 0) { %>
+                                            <div class="table-responsive m-2">
+                                                <table class="table table-hover table-bordered">
+                                                    <thead class="table-primary">
+                                                        <tr>
+                                                            <th class="align-middle">Fecha</th>
+                                                            <th class="align-middle">Hora</th>
+                                                            <th class="align-middle">Motivo</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody class="">
+                                                        <% paciente.citasPendientes.forEach(c=> { %>
+                                                            <tr>
+                                                                <td>
+                                                                    <%= new Date(c.fecha).toLocaleDateString('es-ES') %>
+                                                                </td>
+                                                                <td>
+                                                                    <%= c.hora_inicio.split(':').slice(0, 2).join(':')
+                                                                        %>
+                                                                </td>
+                                                                <td>
+                                                                    <%= c.motivo %>
+                                                                </td>
+                                                            </tr>
+                                                            <% }); %>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <% } else { %>
+                                                <div class="alert alert-info mb-0">
+                                                    No hay citas pendientes
+                                                </div>
+                                                <% } %>
+                                            <!-- Botón de crear cita -->
+                                            <section>
+                                                <div class="d-grid gap-2 col-md-3 mx-auto">
+                                                    <!-- formulario para pasar el id -->
+                                                    <form action="/zona/trabajador/pedirCita" method="POST">
+                                                        <input type="hidden" name="id_paciente" value="<%= paciente.id_paciente %>">
+                                                        <button type="submit" class="btn btn-primary btn-lg">
+                                                            <i class="fas fa-calendar-plus me-2"></i> Crear Cita
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </section>
+                                    </div>
+
+
+                                </div> <!-- acordeon body -->
+                            </div>
+                        </div> <!-- cierra acordeon -->
+                        <% }); %>
+                </div>
+
+            </div>
+        </div>
+
+
+                <!-- Alertas -->
+                <% if (typeof mensajeExito !== 'undefined') { %>
+                    <script>
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Éxito',
+                            text: '<%= mensajeExito %>',
+                            timer: 2500,
+                            showConfirmButton: false
+                        });
+                    </script>
+                <% } %>
+                
 
 
         <script src="/javascripts/bootstrap.bundle.min.js"></script>
 
+        <script src="/javascripts/buscadorPacientes.js"></script>
 </body>
 
 </html>

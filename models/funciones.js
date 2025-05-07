@@ -50,11 +50,28 @@ const horarioTrabajador = async (id) => {
     }
 }
 
+//todo función donde se inserta en la tabla cita_trabajador
+const insertarCitaTrabajador = async (cita, id_trabajador) => {
+    try {
+
+        const connection = await conectarDB(); // Conectar a la BBDD
+        const [rows] = await connection.execute("INSERT INTO cita_trabajador ( id_cita, id_trabajador)  VALUES (?, ?)" ,
+            [ cita , id_trabajador]);
+
+
+        return rows;
+    } catch (error) {
+        console.error("❌ Error al insertar cita_trabajador:", error.message);
+        throw error;
+    }
+}
+
 
 
 //* Exportar las funciones para usarlas en otros archivos
 module.exports = { 
     citasPendientesId,
-    anularCita
+    anularCita,
+    insertarCitaTrabajador
 };
 
