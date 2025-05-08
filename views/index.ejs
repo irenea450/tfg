@@ -5,7 +5,9 @@
   <title>
     <%= title %>
   </title>
+  <link rel="icon" href="/images/favicon.png" type="image/x-icon"><!-- Favicon -->
   <link rel="stylesheet" href="/stylesheets/bootstrap.min.css">
+  <link rel="stylesheet" href="/stylesheets/font/bootstrap-icons.css"> <!-- Iconos -->
   <script src="/sweetalert2/sweetalert2.all.min.js"></script>
 </head>
 
@@ -105,20 +107,12 @@
         </div>
       </div>
 
-      <!-- Color
-      background-color: #37AFE1;
-        -->
-
-      <div class="container-fluid bg-primary" >
-        <h5>Ubicación:</h5>
-        
-      </div>
-
-
-
-
-
     </div>
+
+
+  <!-- Footer -->
+  <%- include("plantillas/footer.ejs") %>
+
 
     <% if (typeof mensaje !=='undefined' ) { %>
       <script>
@@ -131,9 +125,7 @@
       <% } %>
 
 
-        <script src="/javascripts/bootstrap.bundle.min.js"></script>
-
-
+    <script src="/javascripts/bootstrap.bundle.min.js"></script>
 
 
 </body>

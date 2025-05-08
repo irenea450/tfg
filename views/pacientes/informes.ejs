@@ -4,17 +4,20 @@
 <head>
     <title>Informes <%= title %>
     </title>
+    <link rel="icon" href="/images/favicon.png" type="image/x-icon"><!-- Favicon -->
     <link rel="stylesheet" href="/stylesheets/bootstrap.min.css">
+    <link rel="stylesheet" href="/stylesheets/font/bootstrap-icons.css"> <!-- Iconos -->
     <link rel="stylesheet" href="/stylesheets/estilos_pacientes.css"><!-- estilos comunes en ejs de pacientes -->
-    <script src="/sweetalert2/sweetalert2.all.min.js"></script> <!-- Alertas -->
+    <script src="/sweetalert2/sweetalert2.all.min.js"></script> <!-- alertas -->
 
 </head>
 
 <body>
     <%- include("../plantillas/header_pacientes.ejs") %>
 
-    <div class="container" style="margin-top: 35px;">
-        <h2 class="titulo bg-primary text-white p-2 rounded">Informes Dentales</h2>
+    <main class="container my-4">
+
+        <h2 class="titulo bg-primary text-white p-2 rounded"><i class="bi bi-file-text"></i> Informes Dentales</h2>
 
         <div class="container bg-primary p-1 m-0 rounded" id="contenedorInformes" style="min-height: 75vh;">
             <div class="accordion accordion-flush m-2" id="accordionInformes">
@@ -50,6 +53,10 @@
         
 
     </div>
+    </main>
+
+        <!-- Footer -->
+        <%- include("../plantillas/footer.ejs") %>
 
 
         <script src="/javascripts/bootstrap.bundle.min.js"></script>

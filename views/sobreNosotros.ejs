@@ -4,22 +4,21 @@
 <head>
     <title>Sobre <%= title %>
     </title>
+    <link rel="icon" href="/images/favicon.png" type="image/x-icon">
     <link rel="stylesheet" href="/stylesheets/bootstrap.min.css">
 </head>
 
 <body>
     <%- include("plantillas/header_principal.ejs") %>
 
+    <h1>Sobre nosotros</h1>
 
-    <% if(login){ %>
-        <h2>El usuario conetado es: <%= name %> </h2>
-        <a href="/autenticacion/logout" class="a-logout">Logout</a>
-    <% }else{ %>
-        <h2>El usuario conetado es: <%= name %> </h2>
-        <a href="login" class="a-login">Login</a>
-    <% } %>
+      <!-- Footer -->
+  <%- include("plantillas/footer.ejs") %>
 
-        <script src="/javascripts/bootstrap.bundle.min.js"></script>
+
+
+    <script src="/javascripts/bootstrap.bundle.min.js"></script>
 
 </body>
 

@@ -3,7 +3,9 @@
 
 <head>
     <title>Citas <%= title %></title>
+    <link rel="icon" href="/images/favicon.png" type="image/x-icon"><!-- Favicon -->
     <link rel="stylesheet" href="/stylesheets/bootstrap.min.css">
+    <link rel="stylesheet" href="/stylesheets/font/bootstrap-icons.css"> <!-- Iconos -->
     <link rel="stylesheet" href="/stylesheets/estilos_pacientes.css"><!-- estilos comunes en ejs de pacientes -->
     <script src="/sweetalert2/sweetalert2.all.min.js"></script> <!-- alertas -->
 
@@ -12,12 +14,11 @@
 <body>
     <%- include("../plantillas/header_pacientes.ejs") %>
 
-    <main class="container my-4">
-        <h1 class="mb-4 text-primary">Mis Citas</h1>
+    <main class="container my-4" style="min-height: 80vh;">
 
         <!-- Sección de Citas Pendientes -->
         <section class="mb-5">
-            <h2 class="titulo bg-primary text-white p-2 rounded">Citas Pendientes</h2>
+            <h2 class="titulo bg-primary text-white p-2 rounded"><i class="bi bi-list-task"></i> Citas Pendientes</h2>
             
             <% if (citas && citas.length > 0) { %>
                 <div class="table-responsive">
@@ -64,7 +65,7 @@
 
         <!-- Sección de Pedir Nueva Cita -->
         <section>
-            <h2 class="titulo bg-primary text-white p-2 rounded">Solicitar Nueva Cita</h2>
+            <h2 class="titulo bg-primary text-white p-2 rounded"><i class="bi bi-calendar-plus"></i> Solicitar Nueva Cita</h2>
             <div class="d-grid gap-2 col-md-6 mx-auto">
                 <a href="/zona/paciente/pedirCita" class="btn btn-success btn-lg">
                     Pedir Cita Nueva
@@ -75,6 +76,9 @@
         <!-- Formulario oculto para anulación -->
         <form id="formAnular" method="POST" style="display:none;"></form>
     </main>
+
+        <!-- Footer -->
+        <%- include("../plantillas/footer.ejs") %>
 
     <script>
         function confirmarAnulacion(citaId) {

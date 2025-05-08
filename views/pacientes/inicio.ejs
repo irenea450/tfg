@@ -2,8 +2,9 @@
 <html lang="en">
 
 <head>
-    <title>inicio <%= title %>
+    <title>Inicio <%= title %>
     </title>
+    <link rel="icon" href="/images/favicon.png" type="image/x-icon"><!-- Favicon -->
     <link rel="stylesheet" href="/stylesheets/bootstrap.min.css">
     <script src="/sweetalert2/sweetalert2.all.min.js"></script> <!-- Alertas -->
 </head>
@@ -12,7 +13,7 @@
     <%- include("../plantillas/header_pacientes.ejs") %>
 
         <div class="card " style="border-radius: 0px; border: none;">
-            <img src="/images/silla.jpg" class="card-img" width="auto" height="550px"
+            <img src="/images/silla.jpg" class="card-img" width="auto" height="570px"
                 style="border: none; border-radius: 0px;">
             <div class="card-img-overlay"
                 style="background-color: rgba(0, 0, 0, 0.4); color: white; border: none; border-radius: 0px;"> <!-- Fondo transparente para resaltar letras -->
@@ -109,7 +110,8 @@
         </div>
 
 
-
+    <!-- Footer -->
+    <%- include("../plantillas/footer.ejs") %>
 
         <script src="/javascripts/bootstrap.bundle.min.js"></script>
 

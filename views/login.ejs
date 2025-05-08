@@ -2,28 +2,30 @@
 <html>
 
 <head>
-    <title>
-
-    </title>
+    <title> login </title>
+    <link rel="icon" href="/images/favicon.png" type="image/x-icon">
     <link rel="stylesheet" href="/stylesheets/bootstrap.min.css">
+    <link rel="stylesheet" href="/stylesheets/font/bootstrap-icons.css"> <!-- Iconos -->
     <script src="/sweetalert2/sweetalert2.all.min.js"></script>
 </head>
 
 <%- include("plantillas/header_principal.ejs") %>
 
-    <div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="container d-flex justify-content-center align-items-center" style="min-height: 87vh;">
         <div class="row justify-content-center bg-primary rounded" style="width: 400px;">
 
             <form action="/autenticacion/login" method="POST">
 
 
                 <div class="col ">
-                    <label for="usuario" class="my-2 fw-bold fs-5 text-light">Usuario</label>
+                    <label for="usuario" class="my-2 fw-bold fs-5 text-light"><i class="bi bi-person-fill"></i>
+                        Usuario</label>
                     <input type="text" class="form-control" placeholder="Correo" name="correo" required>
                 </div>
 
                 <div class="col">
-                    <label for="contraseña" class="my-2 fw-bold fs-5 text-light">Contraseña</label>
+                    <label for="contraseña" class="my-2 fw-bold fs-5 text-light"><i class="bi bi-eye-fill">
+                        </i>Contraseña</label>
                     <input type="password" name="contraseña" id="contraseña" class="form-control"
                         aria-describedby="passwordHelpInline">
                 </div>
@@ -39,29 +41,39 @@
             </form>
 
             <div class="row p-0 mt-0 mb-2">
-                <a href="/autenticacion/registrarPaciente" class="d-grid gap-2 col-6 mx-auto link-offset-2 link-underline link-underline-opacity-0"><button
+                <a href="/autenticacion/registrarPaciente"
+                    class="d-grid gap-2 col-6 mx-auto link-offset-2 link-underline link-underline-opacity-0"><button
                         class="btn btn-dark">Crear cuenta</button></a>
 
+            </div>
+
+            <div class="row my-1">
+                <p class="text-center">
+                    <a href="#" class="text-decoration-none text-light ">
+                        <i class="bi bi-question-circle"></i> ¿Olvidaste tu contraseña?
+                    </a>
+                </p>
             </div>
 
         </div>
     </div>
 
+    <!-- Footer -->
+    <%- include("plantillas/footer.ejs") %>
+
+        <% if (typeof mensaje !=='undefined' ) { %>
+            <script>
+                Swal.fire({
+                    icon: '<%= mensaje.tipo %>',
+                    title: '<%= mensaje.titulo %>',
+                    text: '<%= mensaje.texto %>',
+                    timer: '<%= mensaje.tiempo %>',
+                    showConfirmButton: false
+                }).then(() => {
+                    window.location = '/<%= mensaje.ruta %>';
+                });
+            </script>
+            <% } %>
 
 
-    <% if (typeof mensaje !=='undefined' ) { %>
-        <script>
-            Swal.fire({
-                icon: '<%= mensaje.tipo %>',
-                title: '<%= mensaje.titulo %>',
-                text: '<%= mensaje.texto %>',
-                timer: '<%= mensaje.tiempo %>',
-                showConfirmButton: false
-            }).then(() => {
-                window.location = '/<%= mensaje.ruta %>';
-            });
-        </script>
-        <% } %>
-
-
-            <script src="/javascripts/bootstrap.bundle.min.js"></script>
+                <script src="/javascripts/bootstrap.bundle.min.js"></script>
