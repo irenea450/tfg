@@ -4,6 +4,7 @@
 <head>
     <title>Clínica <%= title %>
     </title>
+    <link rel="icon" href="/images/favicon.png" type="image/x-icon"><!-- Favicon -->
     <link rel="stylesheet" href="/stylesheets/bootstrap.min.css">
     <link rel="stylesheet" href="/stylesheets/estilos_trabajadores.css">
     <link rel="stylesheet" href="/stylesheets/font/bootstrap-icons.css"> <!-- Iconos -->
@@ -13,10 +14,10 @@
 <body>
     <%- include("../plantillas/header_trabajadores.ejs") %>
 
-        <div class="container mt-4">
-            <h2 class="titulo bg-primary text-white p-3 rounded"> <i class="bi bi-gear"></i> Configuiración</h2>
+        <div class="container mt-4" style="min-height: 84vh;">
+            <h2 class="titulo bg-primary text-white p-3 rounded"> <i class="bi bi-gear"></i> Configuración</h2>
 
-            <div class="container p-2 rounded" style="background-color: #a1d2fe;">
+            <div class="container p-2 my-4 rounded" style="background-color: #b6dbfc;">
                 <h2 class="my-3">Solicitar vacaciones</h2>
                 <form action="/zona/trabajador/vacaciones" method="POST">
 
@@ -185,6 +186,10 @@
                                                     </script>
                                                     <% } %>
             </div>
+        </div>
+    <!-- Footer -->
+    <%- include("../plantillas/footer.ejs") %>
+
 
             <script src="/javascripts/horariosTurnosTrabajadores.js"></script>
             <script src="/javascripts/bootstrap.bundle.min.js"></script>

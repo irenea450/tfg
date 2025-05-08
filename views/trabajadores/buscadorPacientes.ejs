@@ -4,6 +4,7 @@
 <head>
     <title>Buscador pacientes <%= title %>
     </title>
+    <link rel="icon" href="/images/favicon.png" type="image/x-icon"><!-- Favicon -->
     <link rel="stylesheet" href="/stylesheets/bootstrap.min.css">
     <link rel="stylesheet" href="/stylesheets/estilos_trabajadores.css">
     <link rel="stylesheet" href="/stylesheets/font/bootstrap-icons.css"> <!-- Iconos -->
@@ -12,7 +13,7 @@
 <body>
     <%- include("../plantillas/header_trabajadores.ejs") %>
 
-        <div class="container mt-4">
+        <div class="container mt-4" style="min-height: 84vh;">
             <h2 class="titulo bg-primary text-white p-3 rounded"> <i class="bi bi-search"></i> Buscador de Pacientes</h2>
 
             <div class="bg-light rounded  p-3 my-4 shadow">
@@ -147,6 +148,9 @@
             </div>
         </div>
 
+
+    <!-- Footer -->
+    <%- include("../plantillas/footer.ejs") %>
 
                 <!-- Alertas -->
                 <% if (typeof mensajeExito !== 'undefined') { %>

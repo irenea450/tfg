@@ -4,6 +4,7 @@
 <head>
     <title>Clínica <%= title %>
     </title>
+    <link rel="icon" href="/images/favicon.png" type="image/x-icon"><!-- Favicon -->
     <link rel="stylesheet" href="/stylesheets/bootstrap.min.css">
     <link rel="stylesheet" href="/stylesheets/estilos_trabajadores.css">
     <link rel="stylesheet" href="/stylesheets/font/bootstrap-icons.css"> <!-- Iconos -->
@@ -111,8 +112,10 @@
                 </div>
             </form>
 
-
         </div>
+
+    <!-- Footer -->
+    <%- include("../plantillas/footer.ejs") %>
 
         <% if (typeof mensajeExito !== 'undefined') { %>
             <script>
