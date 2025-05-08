@@ -44,6 +44,14 @@ router.get('/sobreNosotros', function (req, res, next) {
   }
 });
 
+/* GET pagina derechosAutor */
+router.get('/derechosAutor', function (req, res, next) {
+
+  res.render('derechosAutor', { title: 'Didadent' });
+
+
+});
+
 
 
 

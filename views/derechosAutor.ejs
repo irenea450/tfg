@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Derechos de Autor - Clínica Dental Didadent</title>
+    <link rel="icon" href="/images/favicon.png" type="image/x-icon"><!-- Favicon -->
+    <link rel="stylesheet" href="/stylesheets/bootstrap.min.css">
+    <link rel="stylesheet" href="/stylesheets/font/bootstrap-icons.css"> <!-- Iconos -->
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .copyright-container {
+            max-width: 800px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="py-5">
+    <div class="container copyright-container p-4 p-md-5 my-5">
+        <h1 class="text-center mb-4 text-primary">
+            <i class="bi bi-c-circle"></i> Derechos de Autor
+        </h1>
+        
+        <div class="mb-4">
+            <h3 class="border-bottom pb-2">Sistema de Gestión Dental Didadent</h3>
+            <p>
+                Todo el contenido ha sido desarrollado por 
+                <strong>Irene del Álamo Ruano</strong> para el 
+                <strong>Ciclo Superior de Desarrollo de Aplicaciones Web (DAW)</strong>
+                en un centro educativo de cuyo nombre no quiero acordarme...
+            </p>
+        </div>
+
+        <div class="mb-4">
+            <h4 class="text-primary"><i class="bi bi-shield-lock"></i> Protección Legal</h4>
+            <p>
+                Este trabajo está protegido por las leyes de propiedad intelectual y derechos de autor. 
+                Queda prohibida su reproducción total o parcial, distribución o modificación sin 
+                autorización expresa del autor.
+            </p>
+            <p class="mb-0">
+                © <span id="current-year"></span> - Todos los derechos reservados.
+            </p>
+        </div>
+
+        <div class="mb-4">
+            <h4 class="text-primary"><i class="bi bi-code-square"></i> Tecnologías Utilizadas</h4>
+            <ul>
+                <li>Node.js + Express</li>
+                <li>Bootstrap 5</li>
+                <li>SweetAlert</li>
+                <li>Base de datos: MySQL</li>
+                <li>Otras tecnologías relevantes</li>
+            </ul>
+        </div>
+
+        <div class="alert alert-info mt-4">
+            <i class="bi bi-info-circle"></i> Este sistema fue desarrollado con fines académicos 
+            y forma parte de una investigación en el ámbito del desarrollo de aplicaciones web.
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="/" class="btn btn-primary">
+                <i class="bi bi-arrow-left"></i> Volver al inicio
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Año automático
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>

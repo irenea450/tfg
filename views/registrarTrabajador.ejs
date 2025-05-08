@@ -3,13 +3,17 @@
 
 <head>
     <title>Registrarse</title>
+    <link rel="icon" href="/images/favicon.png" type="image/x-icon"><!-- Favicon -->
     <link rel="stylesheet" href="/stylesheets/bootstrap.min.css">
+    <link rel="stylesheet" href="/stylesheets/estilos_trabajadores.css">
+    <link rel="stylesheet" href="/stylesheets/font/bootstrap-icons.css"> <!-- Iconos -->
     <script src="/sweetalert2/sweetalert2.all.min.js"></script>
 </head>
 
 <%- include("plantillas/header_trabajadores.ejs") %>
 
-    <div class="container-fluid ">
+<div class="container mt-4" style="min-height: 84vh;">
+    <h2 class="titulo bg-primary text-white p-3 rounded"> <i class="bi bi-person-add"></i> Crear Trabajador</h2>
 
         <form action="/autenticacion/registrarTrabajador" method="POST">
 
@@ -93,6 +97,9 @@
         </form>
 
     </div>
+
+    <!-- Footer -->
+    <%- include("plantillas/footer.ejs") %>
 
     <% if (typeof mensaje !=='undefined' ) { %>
         <script>

@@ -3,13 +3,17 @@
 
 <head>
     <title>Registrarse</title>
+    <link rel="icon" href="/images/favicon.png" type="image/x-icon"><!-- Favicon -->
     <link rel="stylesheet" href="/stylesheets/bootstrap.min.css">
+    <link rel="stylesheet" href="/stylesheets/estilos_pacientes.css">
+    <link rel="stylesheet" href="/stylesheets/font/bootstrap-icons.css"> <!-- Iconos -->
     <script src="/sweetalert2/sweetalert2.all.min.js"></script>
 </head>
 
 <%- include("plantillas/header_principal.ejs") %>
 
-    <div class="container-fluid ">
+    <div class="container mt-4" style="min-height: 84vh;">
+        <h2 class="titulo bg-primary text-white p-3 rounded"> <i class="bi bi-person-add"></i> Crear Cuenta</h2>
 
         <form action="/autenticacion/registrarPaciente" method="POST">
 
@@ -22,17 +26,20 @@
                 </div>
                 <div class="col">
                     <label for="apellidos">Apellidos</label>
-                    <input type="text" class="form-control my-1" name="apellidos" placeholder="Apellido 1 Apellido 2" required>
+                    <input type="text" class="form-control my-1" name="apellidos" placeholder="Apellido 1 Apellido 2"
+                        required>
                 </div>
                 <div class="col">
                     <label for="dni">DNI:</label>
-                    <input type="text" class="form-control my-1" name="dni" placeholder="00000000A" pattern="^[0-9]{8}[A-HJ-NP-TV-Z]$" required>
+                    <input type="text" class="form-control my-1" name="dni" placeholder="00000000A"
+                        pattern="^[0-9]{8}[A-HJ-NP-TV-Z]$" required>
                 </div>
                 <div class="col">
                     <label for="fecha_nacimiento">Fecha nacimiento</label>
-                    <input type="date" class="form-control my-1" name="fecha_nacimiento" placeholder="Apellido 1 Apellido 2" required>
+                    <input type="date" class="form-control my-1" name="fecha_nacimiento"
+                        placeholder="Apellido 1 Apellido 2" required>
                 </div>
-                
+
             </div>
 
             <div class="row my-3">
@@ -47,7 +54,8 @@
                 </div>
 
                 <div class="col ">
-                    <input type="text" class="form-control " placeholder="Correo" name="correo" pattern=".+@.+\..+" required>
+                    <input type="text" class="form-control " placeholder="Correo" name="correo" pattern=".+@.+\..+"
+                        required>
                 </div>
 
                 <div class="col-3">
@@ -65,10 +73,10 @@
                     <input type="number" class="form-control my-1" name="numero" placeholder="Numero" required>
                 </div>
                 <div class="col">
-                    <input type="text" class="form-control my-1" name="puerta" placeholder="Puerta" >
+                    <input type="text" class="form-control my-1" name="puerta" placeholder="Puerta">
                 </div>
                 <div class="col">
-                    <input type="number" class="form-control my-1" name="cp" placeholder="Código Postal" >
+                    <input type="number" class="form-control my-1" name="cp" placeholder="Código Postal">
                 </div>
 
             </div>
@@ -101,6 +109,9 @@
 
     </div>
 
+        <!-- Footer -->
+        <%- include("plantillas/footer.ejs") %>
+
     <% if (typeof mensaje !=='undefined' ) { %>
         <script>
             Swal.fire({
@@ -115,6 +126,6 @@
         </script>
         <% } %>
 
-        
+
 
             <script src="/javascripts/bootstrap.bundle.min.js"></script>
