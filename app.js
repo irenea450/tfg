@@ -6,7 +6,8 @@ var logger = require('morgan');
 const session = require('express-session'); //sesion
 const bcrypt = require("bcryptjs"); // Para encriptar y comparar contraseñas
 const conectarDB = require("./conexion/conexion"); // Conexión a la base de datos
-
+//? nodemailer
+require('dotenv').config(); // Debe ser lo PRIMERO en ejecutarse
 
 
 //* Importaciónes de routes

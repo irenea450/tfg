@@ -6,6 +6,9 @@ const { registrarPaciente, loginPaciente } = require('../models/paciente');
 
 const { estaLogueado } = require('../middlewares/acceso.js');
 
+const { registroEmail } = require('../services/email');
+
+
 
 // GET login
 // Ruta para el login
@@ -132,6 +135,11 @@ router.post('/registrarPaciente', async (req, res) => {
             });
         } else {
             // si Todo correcto
+            const nombreCompleto = nombre + " " + apellidos;
+
+            // Envía el correo de confirmación
+            await registroEmail(correo, nombreCompleto);
+
             res.render('registrarPaciente', {
                 title: 'Didadent',
                 mensaje: {

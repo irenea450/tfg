@@ -40,7 +40,7 @@ h1{
 
 /* Asegúrate de que la clase .horario-activo tenga un color */
 .horario-activo {
-    background-color: #d9ffff; /* verde clarito */
+    background-color: #d9ffff; 
 }
 .descanso{
     background-color: rgb(222, 222, 222);
