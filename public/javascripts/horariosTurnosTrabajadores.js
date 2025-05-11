@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (botonHorarios) {
         botonHorarios.addEventListener('click', async () => {
             contenedorHorarios.className = "d-flex justify-content-between align-items-center my-1 ps-2 px-5  rounded";
-            contenedorHorarios.style.backgroundColor="#ededed";
+            contenedorHorarios.style.backgroundColor = "#ededed";
             if (!horariosVisibles) {
                 try {
                     const response = await fetch('/zona/trabajador/obtener-horario-trabajo');
@@ -65,22 +65,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     if (Array.isArray(horarios) && horarios.length > 0) {
 
-                    //orden que quiero que siga
-                    const ordenDias = {
-                        'lunes': 1,
-                        'martes': 2,
-                        'miércoles': 3,
-                        'miercoles': 3, // por si acaso sin tilde
-                        'jueves': 4,
-                        'viernes': 5
-                    };
+                        //orden que quiero que siga
+                        const ordenDias = {
+                            'lunes': 1,
+                            'martes': 2,
+                            'miércoles': 3,
+                            'miercoles': 3, // por si acaso sin tilde
+                            'jueves': 4,
+                            'viernes': 5
+                        };
 
-                    // ordenamos
-                    horarios.sort((a, b) => {
-                        const ordenA = ordenDias[a.dia.toLowerCase()];
-                        const ordenB = ordenDias[b.dia.toLowerCase()];
-                        return ordenA - ordenB;
-                    });
+                        // ordenamos
+                        horarios.sort((a, b) => {
+                            const ordenA = ordenDias[a.dia.toLowerCase()];
+                            const ordenB = ordenDias[b.dia.toLowerCase()];
+                            return ordenA - ordenB;
+                        });
 
                         const listaHorarios = horarios.map(horario => {
                             return `
@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 </div>
                             </form>
                         `;
-                        
+
                         }).join('');
 
                         contenedorHorarios.innerHTML = `
@@ -231,4 +231,143 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-})
+});
+
+
+/* -------------------------------------------------------------------------- */
+/*                    cargar los trabajadores de la clinica                   */
+/* -------------------------------------------------------------------------- */
+document.addEventListener('DOMContentLoaded', async () => {
+    const contenedorTrabajadores = document.getElementById('trabajadores');
+    contenedorTrabajadores.className = "container my-1 px-5";
+
+    try {
+        const response = await fetch('/zona/trabajador/buscar-trabajadores');
+        const trabajadores = await response.json();
+
+        if (Array.isArray(trabajadores) && trabajadores.length > 0) {
+            // Ordenar por nombre ascendente
+            trabajadores.sort((a, b) => a.nombre.localeCompare(b.nombre));
+
+            const tabla = `
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Email</th>
+                                <th>Rol</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${trabajadores.map(trabajador => `
+                                <tr data-id="${trabajador.id_trabajador}">
+                                    <td>${trabajador.id_trabajador || 'fallo de id'}</td>
+                                    <td>${trabajador.nombre || 'nombre no registrado'} ${trabajador.apellidos || ''}</td>
+                                    <td>${trabajador.correo || 'correo no registrado'}</td>
+                                    <td>${obtenerNombreRol(trabajador.rol)}</td>
+                                    <td>
+                                        <span class="badge ${trabajador.estado === 'activo' ? 'bg-success' : 'bg-danger'}">
+                                            ${trabajador.estado === 'activo' ? 'Activo' : 'Inactivo'}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm ${trabajador.estado === 'activo' ? 'btn-warning' : 'btn-success'} btn-estado" 
+                                                onclick="cambiarEstadoTrabajador(${trabajador.id_trabajador}, ${trabajador.estado === 'activo' ? 'false' : 'true'})">
+                                            ${trabajador.estado === 'activo' ? 'Desactivar' : 'Activar'}
+                                        </button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            contenedorTrabajadores.innerHTML = tabla; //agregar tabla
+        } else {
+            //alerta de que no hay
+            contenedorTrabajadores.innerHTML = `
+                <div class="alert alert-info" role="alert">
+                    No hay trabajadores registrados en el sistema.
+                </div>
+            `;
+        }
+    } catch (error) {
+        contenedorTrabajadores.innerHTML = `
+            <div class="alert alert-danger" role="alert">
+                Error al cargar los trabajadores: ${error.message}
+            </div>
+        `;
+        console.error('Error al cargar trabajadores:', error);
+    }
+});
+
+// función para mostrar el nombre del rol
+function obtenerNombreRol(codigoRol) {
+    const roles = {
+        1: 'Paciente',
+        2: 'Trabajador',
+        3: 'Trabajador - Administrador'
+    };
+    return roles[codigoRol] || 'Desconocido';
+}
+
+// Función para cambiar el estado del trabajador
+async function cambiarEstadoTrabajador(id, nuevoEstado) {
+    try {
+        // Validación reforzada
+        if (isNaN(Number(id))) {
+            throw new Error('ID de trabajador inválido');
+        }
+
+        // esatdo como string
+        const estadoString = nuevoEstado ? 'activo' : 'inactivo';
+
+        const response = await fetch(`/zona/trabajador/cambiar-estado`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                id_trabajador: Number(id),
+                estado: estadoString // Enviamos el string directamente
+            })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || `Error HTTP: ${response.status}`);
+        }
+
+        const resultado = await response.json();
+
+        if (!resultado.success) {
+            throw new Error(resultado.message || 'Error al cambiar el estado');
+        }
+
+        // Actualización optimizada mostrar
+        const badgeElement = document.querySelector(`tr[data-id="${id}"] .badge`);
+        const buttonElement = document.querySelector(`tr[data-id="${id}"] .btn-estado`);
+
+        if (badgeElement && buttonElement) {
+            const esActivo = estadoString === 'activo';
+            badgeElement.className = esActivo ? 'badge bg-success' : 'badge bg-danger';
+            badgeElement.textContent = esActivo ? 'Activo' : 'Inactivo';
+
+            buttonElement.className = esActivo ? 'btn btn-sm btn-warning btn-estado' : 'btn btn-sm btn-success btn-estado';
+            buttonElement.textContent = esActivo ? 'Desactivar' : 'Activar';
+            buttonElement.onclick = () => cambiarEstadoTrabajador(id, !esActivo);
+        } else {
+            location.reload(); // recargar
+        }
+
+    } catch (error) {
+        console.error('Error en cambiarEstadoTrabajador:', error);
+        alert(`Error: ${error.message}`);
+    }
+}
+

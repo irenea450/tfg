@@ -5,7 +5,7 @@ const { obtenerTrabajadores, obtenerTrabajadorId, guardarDatosTrabajador, buscar
     horarioTrabajador, festivosTrabajador, vacacionesTrabajador, obtenerDiasLaborablesSemanaActual, citasTrabajador, consultarCita, obtenerPacienteId,
     actualizarCita, anularCita, completarCita, crearInforme, guardarContraseñaTrabajador, solicitarVacaciones, obtenerVacacionesId, eliminarVacacion,
     obtenerHorarioTrabajador, insertarHorarioTrabajador, actualizarHorario, eliminarHorario, solicitarFestivos, obtenerFestivos, eliminarFestivos,
-    insertarCitaEnTrabajador
+    insertarCitaEnTrabajador , cambiarEstadoTrabajador
 } = require('../models/trabajador');
 
 //para proteger las routes
@@ -257,7 +257,7 @@ router.post('/pedirCitaGuardar', estaLogueado, soloTrabajadores, async (req, res
 });
 
 
-//ruta para buscar los trabajadores que existe y se pueden agregar a la cita
+//ruta para buscar los trabajadores que existe excepto elq ue esta logueado en es emomento (usaddo para pedir cita deplegable y configuración)
 router.get('/buscar-trabajadores', estaLogueado, soloTrabajadores, async (req, res) => {
     try {
         const todosTrabajadores = await obtenerTrabajadores();
@@ -641,6 +641,47 @@ router.post('/festivos/eliminar', accesoAdmin, async (req, res) => {
             name: req.session.name,
             rol: req.session.rol,
             mensajeError: 'No se pudo eliminar el festivo.'
+        });
+    }
+});
+
+/* --------------------- Cambiar estado de un trabajador -------------------- */
+// Ruta para cambiar el estado activo/inactivo de un trabajador
+router.post('/cambiar-estado', async (req, res) => {
+    try {
+        const { id_trabajador, estado } = req.body;
+
+        // Validación exhaustiva
+        if (id_trabajador === undefined || estado === undefined) {
+            return res.status(400).json({
+                success: false,
+                message: 'Parámetros id_trabajador y estado son requeridos'
+            });
+        }
+
+        if (isNaN(Number(id_trabajador))) {
+            return res.status(400).json({
+                success: false,
+                message: 'id_trabajador debe ser un número válido'
+            });
+        }
+
+        if (!['activo', 'inactivo'].includes(estado)) {
+            return res.status(400).json({
+                success: false,
+                message: 'estado debe ser "activo" o "inactivo"'
+            });
+        }
+
+        const result = await cambiarEstadoTrabajador(id_trabajador, estado);
+        
+        res.json(result);
+        
+    } catch (error) {
+        console.error('Error en endpoint /cambiar-estado:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error interno del servidor'
         });
     }
 });

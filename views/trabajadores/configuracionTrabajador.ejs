@@ -136,55 +136,57 @@
                     </form>
                     <% } else { %>
                         <p class="fw-bold">No tienes permisos para acceder a la solicitud de festivos.</p>
-                        <% } %>
+                    <% } %>
 
-                            <!-- Contenedor donde mostrar dinamicamente los festivos -->
-                            <div id="contenedorFestivos">
+                        <!-- Contenedor donde mostrar dinamicamente los festivos -->
+                        <div id="contenedorFestivos">
 
+                        </div>
+
+
+                        <!-- la parte de festivos solo tienen acceso los adminisatrdores -->
+                        <h2 class="my-3">Administrar Trabajadores</h2>
+                        <% if (rol===3) { %>
+                            <div class="row my-3">
+                                <div class="col">
+                                    <a href="/autenticacion/registrarTrabajador" class="btn btn-primary">Agregar Nuevo Trabajador</a>
+                                </div>
                             </div>
 
+                            <!-- Contenedor done poner dinamicamente los trabajadores -->
+                            <div id="trabajadores">
 
-                            <!-- la parte de festivos solo tienen acceso los adminisatrdores -->
-                            <h2 class="my-3">Agregar nuevo trabajador</h2>
-                            <% if (rol===3) { %>
-                                <div class="row my-3">
+                            </div>
+                        <% } else { %>
+                            <p class="fw-bold">No tienes permisos para agregar nuevos usuarios a la plataforma.</p>
+                        <% } %>
 
-                                    <div class="col">
-                                        <a href="/autenticacion/registrarTrabajador" class="btn btn-primary">Agregar</a>
-                                    </div>
+                        <!-- Alertas -->
+                        <% if (typeof mensajeExito !=='undefined' ) { %>
+                            <script>
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Éxito',
+                                    text: '<%= mensajeExito %>',
+                                    timer: 2500,
+                                    showConfirmButton: false,
+                                    confirmButtonColor: '#3085d6'
+                                });
+                            </script>
+                        <% } %>
 
-                                </div>
-                                <% } else { %>
-                                    <p class="fw-bold">No tienes permisos para agregar nuevos usuarios a la plataforma.
-                                    </p>
-                                    <% } %>
-
-                                        <!-- Alertas -->
-                                        <% if (typeof mensajeExito !=='undefined' ) { %>
-                                            <script>
-                                                Swal.fire({
-                                                    icon: 'success',
-                                                    title: 'Éxito',
-                                                    text: '<%= mensajeExito %>',
-                                                    timer: 2500,
-                                                    showConfirmButton: false,
-                                                    confirmButtonColor: '#3085d6'
-                                                });
-                                            </script>
-                                            <% } %>
-
-                                                <% if (typeof mensajeError !=='undefined' ) { %>
-                                                    <script>
-                                                        Swal.fire({
-                                                            icon: 'error',
-                                                            title: 'Error',
-                                                            text: '<%= mensajeError %>',
-                                                            timer: 2500,
-                                                            showConfirmButton: false,
-                                                            confirmButtonColor: '#d33'
-                                                        });
-                                                    </script>
-                                                    <% } %>
+                        <% if (typeof mensajeError !=='undefined' ) { %>
+                            <script>
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: '<%= mensajeError %>',
+                                    timer: 2500,
+                                    showConfirmButton: false,
+                                    confirmButtonColor: '#d33'
+                                });
+                            </script>
+                        <% } %>
             </div>
         </div>
     <!-- Footer -->

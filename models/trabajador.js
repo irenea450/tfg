@@ -7,7 +7,7 @@ async function obtenerTrabajadores() {
         const connection = await conectarDB(); // Conectar a la BBDD
         const [rows] = await connection.execute("SELECT * FROM trabajador"); // consulta con todos los datos de todos los trabajadores
 
-        return rows; 
+        return rows;
     } catch (error) {
         console.error("❌ Error al obtener trabajadores:", error.message);
         throw error;
@@ -153,14 +153,14 @@ const buscarPacientes = async () => {
 //todo función donde se inserta la cita del paciente
 const insertarCitaEnTrabajador = async (id_paciente, fecha, hora_inicio, motivo, estado, hora_fin) => {
     try {
- //establezco el estado predeterminado de las citas
+        //establezco el estado predeterminado de las citas
 
         const connection = await conectarDB(); // Conectar a la BBDD
-        const [rows] = await connection.execute("INSERT INTO cita ( id_paciente, fecha, hora_inicio, motivo, estado, hora_fin)  VALUES (?, ?, ?, ?, ?, ?)" ,
+        const [rows] = await connection.execute("INSERT INTO cita ( id_paciente, fecha, hora_inicio, motivo, estado, hora_fin)  VALUES (?, ?, ?, ?, ?, ?)",
             [id_paciente, fecha, hora_inicio, motivo, estado, hora_fin]);
 
-            // guardamos el id de la cita qeu acabamos de introducir
-            const idCita = rows.insertId;
+        // guardamos el id de la cita qeu acabamos de introducir
+        const idCita = rows.insertId;
 
         return idCita; //devulve el id de la cita, para ahroa insertar en cita_trabajador
     } catch (error) {
@@ -588,20 +588,82 @@ const eliminarFestivos = async (id) => {
 
 }
 
+//todo cambiar estado de trabajador desde administrado
+/* const cambiarEstadoTrabajador = async (id, estado) => {
+    try {
+        const connection = await conectarDB(); // Conectar a la BBDD
+        const [rows] = await connection.execute("UPDATE trabajador SET estado = ? WHERE id_trabajador = ? ", [estado, id]);
+
+        return rows;
+    } catch (error) {
+        console.error("❌ Error al cambiar el esatdo:", error.message);
+        throw error;
+    }
+} */
+
+const cambiarEstadoTrabajador = async (id_trabajador, estado) => {
+    let connection;
+    try {
+        connection = await conectarDB();
+
+        // 1. Verificar que el trabajador existe
+        const [verificacion] = await connection.execute(
+            "SELECT estado FROM trabajador WHERE id_trabajador = ?",
+            [id_trabajador]
+        );
+
+        if (verificacion.length === 0) {
+            return { success: false, message: 'Trabajador no encontrado' };
+        }
+
+        const estadoActual = verificacion[0].estado;
+
+        // 2. Solo actualizar si el estado es diferente
+        if (estadoActual !== estado) {
+            const [result] = await connection.execute(
+                "UPDATE trabajador SET estado = ? WHERE id_trabajador = ?",
+                [estado, id_trabajador]
+            );
+
+            if (result.affectedRows === 0) {
+                return { success: false, message: 'No se actualizó ningún registro' };
+            }
+        }
+
+        return {
+            success: true,
+            message: `Estado cambiado a ${estado.toUpperCase()}`,
+            nuevoEstado: estado
+        };
+
+    } catch (error) {
+        console.error("Error en cambiarEstadoTrabajadorBD:", error);
+        return {
+            success: false,
+            message: 'Error en la base de datos: ' + error.message
+        };
+    } finally {
+        if (connection && connection.end) {
+            await connection.end();
+        }
+    }
+};
+
+
 //* Exportar las funciones para usarlas en otros archivos
 module.exports = {
-    obtenerTrabajadores,obtenerTrabajadorId,
+    obtenerTrabajadores, obtenerTrabajadorId,
     registrarTrabajador,
     loginTrabajador,
     guardarDatosTrabajador,
     buscarPacientes,
     insertarCitaEnTrabajador,
-    horarioTrabajador,festivosTrabajador,vacacionesTrabajador,
+    horarioTrabajador, festivosTrabajador, vacacionesTrabajador,
     obtenerDiasLaborablesSemanaActual,
-    citasTrabajador,consultarCita,obtenerPacienteId,
-    actualizarCita,anularCita,completarCita,crearInforme,
+    citasTrabajador, consultarCita, obtenerPacienteId,
+    actualizarCita, anularCita, completarCita, crearInforme,
     guardarContraseñaTrabajador,
     solicitarVacaciones, obtenerVacacionesId, eliminarVacacion,
     obtenerHorarioTrabajador, insertarHorarioTrabajador, actualizarHorario, eliminarHorario,
-    solicitarFestivos, obtenerFestivos, eliminarFestivos
+    solicitarFestivos, obtenerFestivos, eliminarFestivos, cambiarEstadoTrabajador
 };
