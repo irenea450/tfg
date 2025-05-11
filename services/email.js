@@ -1,6 +1,7 @@
 const nodemailer = require('nodemailer'); // Cambia el import a require
 require('dotenv').config(); // Carga las variables de entorno
 
+//? Transporter, obligatorio para poder enviar emails
 const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -11,7 +12,7 @@ const transporter = nodemailer.createTransport({
 
 
 
-// Función para enviar email de confirmación
+//todo función para enviar email de confirmación
 const registroEmail = async (userEmail, userName) => {
     try {
         const mailOptions = {
@@ -109,7 +110,7 @@ const registroEmail = async (userEmail, userName) => {
 }
 };
 
-// Función para enviar email de confirmación
+//todo función para enviar email de confirmación
 const recuperarContraseñaEmail = async (userEmail, userName, contraseña) => {
     try {
         const mailOptions = {
@@ -187,7 +188,86 @@ const recuperarContraseñaEmail = async (userEmail, userName, contraseña) => {
     }
 };
 
-// Función para enviar email de contacto
+
+//todo función para enviar email con la contarseña nueva al trabajador
+const enviarContraseñaTrabajadorEmail = async (userEmail, userName, contraseña) => {
+    try {
+        const mailOptions = {
+            from: '"Clínica Didadent" <irenedelalamo.alumno@gmail.com>',
+            to: userEmail,
+            subject: 'Acceso a Didadent',
+            html: `
+                <!DOCTYPE html>
+                <html>
+                <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f5f5f5;">
+                    <!-- Header con logo -->
+                    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #007bff;">
+                        <tr>
+                            <td align="center" style="padding: 20px 0;">
+                                <h1 style="color: white; margin: 0; font-size: 24px;">Clínica Dental Didadent</h1>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <!-- Contenido principal -->
+                    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #ffffff;">
+                        <tr>
+                            <td align="center" style="padding: 40px 20px;">
+                                <table width="100%" max-width="600">
+                                    <tr>
+                                        <td style="text-align: center;">
+                                            <h2 style="color: #007bff; font-size: 24px; margin-bottom: 20px;">Tu contraseña de acceso</h2>
+                                            <p style="color: #495057; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
+                                                Hola ${userName},
+                                            </p>
+                                            <p style="color: #495057; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
+                                                El sistema ha asignado tu nueva contraseña  de acceso para traabajar en Didadent.
+                                            </p>
+                                            <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; padding: 15px; margin: 20px 0; border-radius: 4px;">
+                                                <p style="margin: 0; font-size: 18px; font-weight: bold;">Tu clave de acceso:</p>
+                                                <p style="margin: 10px 0 0 0; font-size: 24px; color: #007bff;">${contraseña}</p>
+                                            </div>
+                                            <p style="color: #495057; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
+                                                Por seguridad, te recomendamos cambiar esta contraseña después de iniciar sesión.
+                                            </p>
+                                            <a href="${process.env.BASE_URL}/autenticacion/login" 
+                                                style="background-color: #272727; color: white; padding: 15px 30px; 
+                                                        text-decoration: none; font-size: 18px; border-radius: 4px; display: inline-block;
+                                                        font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+                                                Iniciar sesión
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <!-- Footer -->
+                    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #272727;">
+                        <tr>
+                            <td align="center" style="padding: 20px; color: white; font-size: 14px;">
+                                <p style="margin: 0; font-size: 16px;">Irene Del Álamo Ruano © ${new Date().getFullYear()}</p>
+                                <p style="margin: 10px 0 0 0;">
+                                    <a href="${process.env.BASE_URL}" style="color: white; text-decoration: underline; font-weight: bold;">Visita nuestro sitio web</a>
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+                </body>
+                </html>
+            `
+        };
+
+        await transporter.sendMail(mailOptions);
+        console.log('Email de generar contarseña enviado a:', userEmail);
+    } catch (error) {
+        console.error('Error enviando email de nueva contarseña al trabajador:', error);
+        throw new Error('No se pudo enviar el email con l acontarseñla del trabajador');
+    }
+};
+
+//todo función para enviar email de contacto
 const enviarEmailContacto = async (nombre, email, asunto, mensaje) => {
     try {
         const mailOptions = {
@@ -236,4 +316,4 @@ const enviarEmailContacto = async (nombre, email, asunto, mensaje) => {
 };
 
 
-module.exports = { registroEmail , recuperarContraseñaEmail , enviarEmailContacto};
+module.exports = { registroEmail , recuperarContraseñaEmail , enviarEmailContacto , enviarContraseñaTrabajadorEmail};

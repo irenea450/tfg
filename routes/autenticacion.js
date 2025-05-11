@@ -6,7 +6,7 @@ const { registrarPaciente, loginPaciente , guardarContraseñaPaciente, obtenerPa
 
 const { estaLogueado } = require('../middlewares/acceso.js');
 
-const { registroEmail , recuperarContraseñaEmail } = require('../services/email');
+const { registroEmail , recuperarContraseñaEmail , enviarContraseñaTrabajadorEmail } = require('../services/email');
 
 
 
@@ -183,13 +183,15 @@ router.post('/registrarTrabajador', async (req, res) => {
     const tlf = req.body.tlf;
     const estado = req.body.estado;
     const especialidad = req.body.especialidad;
-    const contraseña = req.body.contraseña;
+
+    // generamos contarseña aleatoria de 6 dígitos
+    const nuevaContraseña = String(Math.floor(Math.random() * 1000000)).padStart(6, '0');
 
     //console.log("Estoy en registro con" + correo);
 
     // Llamamos al modelo para registrar al trabajador
     try {
-        const resultado = await registrarTrabajador(rol, nombre, apellidos, correo, tlf, estado, especialidad, contraseña);
+        const resultado = await registrarTrabajador(rol, nombre, apellidos, correo, tlf, estado, especialidad, nuevaContraseña);
 
         if (resultado.error) {
             // Error si ya existe ese correo
@@ -205,7 +207,13 @@ router.post('/registrarTrabajador', async (req, res) => {
                 }
             });
         } else {
-            // si Todo correcto
+            // si esta todo correcto
+
+            //correo para enviar, este correo es el mío para ver los resultados al enviarlo
+            let correoPrueba = 'irenedelalamoruano@gmail.com';
+            //enviar email con la contarseña nueva al trabajador
+            const enviarEmail = await enviarContraseñaTrabajadorEmail(correo, `${nombre} ${apellidos}`, nuevaContraseña);
+
             res.render('registrarTrabajador', {
                 title: 'Didadent',
                 name: req.session.name,
