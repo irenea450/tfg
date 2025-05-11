@@ -17,50 +17,35 @@
     <!-- Card inicial con foto d ela clinica -->
     <div class="card " style="border-radius: 0px; border: none;">
       <img src="/images/silla.jpg" class="card-img" width="auto" height="700" alt="image-tienda"
-          style="border: none; border-radius: 0px;">
+        style="border: none; border-radius: 0px;">
       <div class="card-img-overlay"
-          style="background-color: rgba(0, 0, 0, 0.4); color: white; border: none; border-radius: 0px;"> <!-- Fondo transparente para resaltar letras -->
-          <!-- Hacer que saque un titulo y tema aleatorio -->
-          <% const numeroAleatorio = Math.floor(Math.random() * 5) + 1;
-          let titulo = "";
-          let texto = "";
-          switch(numeroAleatorio) {
-              case 1:
-                  titulo = "¡Primera revisión gratuita!";
-                  texto = "En Didadent, tu primera consulta es completamente gratis. Nuestros especialistas evaluarán tu salud dental sin coste alguno. ¡Es el momento perfecto para comenzar tu cuidado dental profesional!";
-
-                  break;
-              case 2:
-                  titulo = "Limpiezas profesionales";
-                  texto = "¿Sabías que una limpieza dental profesional cada 6 meses puede prevenir el 90% de problemas bucales? En Didadent usamos tecnología de última generación para dejarte una sonrisa impecable y saludable.";
-
-                  break;
-              case 3:
-                  titulo = "Diagnóstico completo";
-                  texto = "Con nuestro equipamiento digital de radiografías 3D, podemos diagnosticar con precisión sin necesidad de desplazarte a otros centros. Todo en un mismo lugar, rápido y sin molestias.";
-
-                  break;
-              case 4:
-                  titulo = "Ortodoncia invisible";
-                  texto = "¿Sueñas con una sonrisa perfecta? Nuestros tratamientos de ortodoncia invisible son casi imperceptibles y extremadamente efectivos. ¡Pide cita para tu estudio personalizado sin compromiso!";
-
-                  break;
-              case 5:
-                  titulo = "Revisiones periódicas";
-                  texto = "La prevención es la mejor medicina. Revisiones cada 6 meses pueden detectar problemas a tiempo, ahorrándote dolor y tratamientos costosos. ¡Tu salud bucal es nuestra prioridad!";
-
-                  break;
-          }
-          %>
-          <h5 class="card-title"> <%= titulo %></h5>
+        style="background-color: rgba(0, 0, 0, 0.4); color: white; border: none; border-radius: 0px;">
+        <!-- Fondo transparente para resaltar letras -->
+        <!-- Hacer que saque un titulo y tema aleatorio -->
+        <% const numeroAleatorio=Math.floor(Math.random() * 5) + 1; let titulo="" ; let texto="" ;
+          switch(numeroAleatorio) { case 1: titulo="¡Primera revisión gratuita!" ;
+          texto="En Didadent, tu primera consulta es completamente gratis. Nuestros especialistas evaluarán tu salud dental sin coste alguno. ¡Es el momento perfecto para comenzar tu cuidado dental profesional!"
+          ; break; case 2: titulo="Limpiezas profesionales" ;
+          texto="¿Sabías que una limpieza dental profesional cada 6 meses puede prevenir el 90% de problemas bucales? En Didadent usamos tecnología de última generación para dejarte una sonrisa impecable y saludable."
+          ; break; case 3: titulo="Diagnóstico completo" ;
+          texto="Con nuestro equipamiento digital de radiografías 3D, podemos diagnosticar con precisión sin necesidad de desplazarte a otros centros. Todo en un mismo lugar, rápido y sin molestias."
+          ; break; case 4: titulo="Ortodoncia invisible" ;
+          texto="¿Sueñas con una sonrisa perfecta? Nuestros tratamientos de ortodoncia invisible son casi imperceptibles y extremadamente efectivos. ¡Pide cita para tu estudio personalizado sin compromiso!"
+          ; break; case 5: titulo="Revisiones periódicas" ;
+          texto="La prevención es la mejor medicina. Revisiones cada 6 meses pueden detectar problemas a tiempo, ahorrándote dolor y tratamientos costosos. ¡Tu salud bucal es nuestra prioridad!"
+          ; break; } %>
+          <h5 class="card-title">
+            <%= titulo %>
+          </h5>
           <p class="card-text">
-              <%= texto %>
+            <%= texto %>
           </p>
           <div>
-              <a href="/zona/paciente/pedirCita" class="btn btn-primary btn-lg my-3">Pide tu cita aquí</a> <!-- Si no esta logueado va a llevar al login -->
+            <a href="/zona/paciente/pedirCita" class="btn btn-primary btn-lg my-3">Pide tu cita aquí</a>
+            <!-- Si no esta logueado va a llevar al login -->
           </div>
       </div>
-  </div>
+    </div>
 
 
     <div class="container-fluid  p-3">
@@ -71,11 +56,26 @@
             <div class="col-md-8">
               <!-- Tarjeta de presentación de la clinica -->
               <div class="card-body">
-                <h5 class="card-title">Card title</h5>
-                <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional
-                  content. This content is a little bit longer.</p>
-                <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
+                <h5 class="card-title">Tu Salud Dental es Nuestra Prioridad</h5>
+                <p class="card-text">Nos dedicamos a proporcionar cuidados dentales completos
+                  con un enfoque humano y personalizado. Nuestro equipo de especialistas, con más de
+                  15 años de experiencia, combina los últimos avances tecnológicos con técnicas
+                  mínimamente invasivas para garantizar tratamientos efectivos y confortables.</p>
               </div>
+              <p class="card-text">
+                Ofrecemos <strong>servicios especializados</strong> en:
+              </p>
+              <ul class="card-text">
+                <li><strong>Ortodoncia avanzada</strong>: Brackets estéticos, Invisalign® y ortodoncia lingual</li>
+                <li><strong>Implantología digital</strong>: Planificación 3D para resultados predecibles</li>
+                <li><strong>Estética dental</strong>: Carillas de porcelana, blanqueamientos LED y diseño de sonrisa
+                </li>
+                <li><strong>Odontopediatría</strong>: Ambiente amigable para los más pequeños</li>
+                <li><strong>Periodoncia</strong>: Tratamiento de encías con láser</li>
+                <li><strong>Prótesis dentales</strong>: Soluciones fijas y removibles</li>
+              </ul>
+              <p class="card-text"><small class="text-body-secondary">Certificados por la Sociedad Española de
+                  Odontología</small></p>
             </div>
             <div class="col-md-4">
               <!-- Carrusel de fotos -->
@@ -84,11 +84,11 @@
                   <div class="carousel-item active" data-bs-interval="7000">
                     <img src="/images/sala_espera.jpg" class="d-block w-100" alt="...">
                   </div>
-                  <div class="carousel-item" data-bs-interval="7000">
-                    <img src="/images/sala_1.jpg" class="d-block w-100" alt="...">
-                  </div>
                   <div class="carousel-item">
                     <img src="/images/sala_2.jpg" class="d-block w-100" alt="...">
+                  </div>
+                  <div class="carousel-item" data-bs-interval="7000">
+                    <img src="/images/dentadura.jpg" class="d-block w-100" alt="...">
                   </div>
                 </div>
                 <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleInterval"
@@ -110,22 +110,22 @@
     </div>
 
 
-  <!-- Footer -->
-  <%- include("plantillas/footer.ejs") %>
+    <!-- Footer -->
+    <%- include("plantillas/footer.ejs") %>
 
 
-    <% if (typeof mensaje !=='undefined' ) { %>
-      <script>
-        Swal.fire({
-          icon: '<%= mensaje.tipo %>',
-          title: '<%= mensaje.titulo %>',
-          text: '<%= mensaje.texto %>'
-        });
-      </script>
-      <% } %>
+      <% if (typeof mensaje !=='undefined' ) { %>
+        <script>
+          Swal.fire({
+            icon: '<%= mensaje.tipo %>',
+            title: '<%= mensaje.titulo %>',
+            text: '<%= mensaje.texto %>'
+          });
+        </script>
+        <% } %>
 
 
-    <script src="/javascripts/bootstrap.bundle.min.js"></script>
+          <script src="/javascripts/bootstrap.bundle.min.js"></script>
 
 
 </body>

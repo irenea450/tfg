@@ -5,6 +5,9 @@ var router = express.Router();
 
 var bd=require("../conexion/conexion"); //importar bbdd
 
+const { enviarEmailContacto } = require('../services/email');
+
+
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -24,24 +27,11 @@ router.get('/', function (req, res, next) {
 console.log("Estoy en app")
 
 /* GET pagina sobre Nosotros */
-router.get('/sobreNosotros', function (req, res, next) {
+router.get('/contacto', function (req, res, next) {
 
-  /* res.render('sobreNosotros', { title: 'Didadent' }); */
+  res.render('contacto', { title: 'Didadent' });
 
-  //!probar login y variables de sesión, solo se puede acceder si estas logueado
-  if(req.session.loggedin){
-    res.render('sobreNosotros', {
-      title: 'Didadent',
-      login: true,
-      name: req.session.name
-    })
-  }else{
-    res.render('sobreNosotros', {
-      title: 'Didadent',
-      login: true,
-      name: 'Debe iniciar sesión'
-    })
-  }
+
 });
 
 /* GET pagina derechosAutor */
@@ -52,6 +42,36 @@ router.get('/derechosAutor', function (req, res, next) {
 
 });
 
+// POST para el formulario de contacto
+router.post('/enviar-mensaje', async (req, res) => {
+    const { nombre, email, asunto, mensaje } = req.body;
+
+    try {
+        // Validación básica
+        if (!nombre || !email || !mensaje) {
+            return res.status(400).json({ 
+                success: false,
+                message: 'Todos los campos son requeridos' 
+            });
+        }
+
+        // Enviar email
+        await enviarEmailContacto(nombre, email, asunto, mensaje);
+
+        // Respuesta exitosa
+        res.json({ 
+            success: true,
+            message: 'Mensaje enviado correctamente. Nos pondremos en contacto contigo pronto.' 
+        });
+
+    } catch (error) {
+        console.error('Error al enviar mensaje:', error);
+        res.status(500).json({ 
+            success: false,
+            message: 'Hubo un error al enviar tu mensaje. Por favor inténtalo nuevamente.' 
+        });
+    }
+});
 
 
 

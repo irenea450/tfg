@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Registrarse</title>
+    <link rel="icon" href="/images/favicon.png" type="image/x-icon"><!-- Favicon -->
+    <link rel="stylesheet" href="/stylesheets/bootstrap.min.css">
+    <link rel="stylesheet" href="/stylesheets/estilos_pacientes.css">
+    <link rel="stylesheet" href="/stylesheets/font/bootstrap-icons.css"> <!-- Iconos -->
+    <script src="/sweetalert2/sweetalert2.all.min.js"></script>
+</head>
+
+<%- include("plantillas/header_principal.ejs") %>
+
+    <div class="container mt-4" style="min-height: 84vh;">
+        <h2 class="titulo bg-primary text-white p-3 rounded"> <i class="bi bi-person-add"></i> Recuperar Contraseña</h2>
+
+        <form action="/autenticacion/recuperarContrasena" method="POST" id="recuperarForm">
+
+
+            <div class="row my-2">
+
+                <div class="col">
+                    <label for="dni">DNI:</label>
+                    <input type="text" class="form-control my-1" name="dni" placeholder="00000000A"
+                        pattern="^[0-9]{8}[A-HJ-NP-TV-Z]$" required>
+                </div>
+
+            </div>
+
+
+            <div class="row p-0 my-5">
+                <div class="d-grid gap-2 col-6 mx-auto">
+                    <button type="button" class="btn btn-primary" onclick="confirmarRecuperarContraseña()">Recuperar Contraseña</button>
+                </div>
+            </div>
+
+
+        </form>
+
+    </div>
+
+        <!-- Footer -->
+        <%- include("plantillas/footer.ejs") %>
+
+    <% if (typeof mensaje !=='undefined' ) { %>
+        <script>
+            Swal.fire({
+                icon: '<%= mensaje.tipo %>',
+                title: '<%= mensaje.titulo %>',
+                text: '<%= mensaje.texto %>',
+                timer: '<%= mensaje.tiempo %>',
+                showConfirmButton: false
+            }).then(() => {
+                window.location = '/<%= mensaje.ruta %>';
+            });
+        </script>
+        <% } %>
+
+    <script>
+        // Función para confirmar el recuperar contraseña
+        function confirmarRecuperarContraseña() {
+            const form = document.getElementById('recuperarForm');
+            
+            // Si es válido, mostramos la confirmación
+            Swal.fire({
+                title: 'Recuperar Contraseña',
+                text: "¿Estás seguro que quieres que le enviemos una contraseña nueva?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, enviar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Enviamos el formulario solo si se confirma
+                    form.submit();
+                }
+            });
+        }
+    </script>
+
+
+
+            <script src="/javascripts/bootstrap.bundle.min.js"></script>

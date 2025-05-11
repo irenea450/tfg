@@ -2,11 +2,11 @@ const express = require('express');
 const router = express.Router();
 const session = require('express-session'); //sesion
 const { registrarTrabajador, loginTrabajador } = require('../models/trabajador');
-const { registrarPaciente, loginPaciente } = require('../models/paciente');
+const { registrarPaciente, loginPaciente , guardarContraseñaPaciente, obtenerPacienteId } = require('../models/paciente');
 
 const { estaLogueado } = require('../middlewares/acceso.js');
 
-const { registroEmail } = require('../services/email');
+const { registroEmail , recuperarContraseñaEmail } = require('../services/email');
 
 
 
@@ -234,6 +234,70 @@ router.post('/registrarTrabajador', async (req, res) => {
     }
 });
 
+/* ---------------------- recuperar contraseña paciente --------------------- */
+// GET registrar paciente
+// Ruta para registrar paciente
+router.get('/recuperarContrasena', (req, res) => {
+    res.render('recuperarContrasena', { title: 'Didadent' });
+});
+
+// POST recuperar contraseña
+router.post('/recuperarContrasena', async (req, res) => {
+    const dni = req.body.dni;
+
+    try {
+        // ver si el apciente exste y sacar datos
+        const paciente = await obtenerPacienteId(dni);
+
+        if (!paciente || paciente.length === 0) {
+            return res.render('recuperarContrasena', {
+                title: 'Didadent',
+                mensaje: {
+                    tipo: 'error',
+                    titulo: 'Error',
+                    texto: 'No existe un paciente con ese DNI',
+                    tiempo: 3000,
+                    ruta: 'autenticacion/recuperarContrasena'
+                }
+            });
+        }
+
+        // contarseña aleatoria de 6 dígitos
+        const nuevaContraseña = String(Math.floor(Math.random() * 1000000)).padStart(6, '0');
+
+        // guardar la nueva contrseña
+        const guardarContraseña = await guardarContraseñaPaciente(dni, nuevaContraseña);
+
+        // enviar emial con la nueva contraseña
+        const enviarEmail = await recuperarContraseñaEmail(paciente[0].correo, `${paciente[0].nombre} ${paciente[0].apellidos}`, nuevaContraseña);
+
+        // mensaje de exito
+        res.render('recuperarContrasena', {
+            title: 'Didadent',
+            mensaje: {
+                tipo: 'success',
+                titulo: 'Contraseña enviada',
+                texto: 'Se ha enviado una nueva contraseña a tu correo electrónico',
+                tiempo: 3000,
+                ruta: 'autenticacion/login'
+            }
+        });
+
+    } catch (err) {
+        //error
+        console.error('Error en recuperarContrasena:', err);
+        res.render('recuperarContrasena', {
+            title: 'Didadent',
+            mensaje: {
+                tipo: 'error',
+                titulo: 'Error del sistema',
+                texto: 'Hubo un problema al recuperar la contraseña. Inténtalo más tarde.',
+                tiempo: 3000,
+                ruta: 'autenticacion/login'
+            }
+        });
+    }
+});
 
 
 

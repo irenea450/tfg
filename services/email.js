@@ -109,4 +109,131 @@ const registroEmail = async (userEmail, userName) => {
 }
 };
 
-module.exports = { registroEmail };
+// Función para enviar email de confirmación
+const recuperarContraseñaEmail = async (userEmail, userName, contraseña) => {
+    try {
+        const mailOptions = {
+            from: '"Clínica Didadent" <irenedelalamo.alumno@gmail.com>',
+            to: userEmail,
+            subject: 'Recuperar contraseña en Didadent',
+            html: `
+                <!DOCTYPE html>
+                <html>
+                <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f5f5f5;">
+                    <!-- Header con logo -->
+                    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #007bff;">
+                        <tr>
+                            <td align="center" style="padding: 20px 0;">
+                                <h1 style="color: white; margin: 0; font-size: 24px;">Clínica Dental Didadent</h1>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <!-- Contenido principal -->
+                    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #ffffff;">
+                        <tr>
+                            <td align="center" style="padding: 40px 20px;">
+                                <table width="100%" max-width="600">
+                                    <tr>
+                                        <td style="text-align: center;">
+                                            <h2 style="color: #007bff; font-size: 24px; margin-bottom: 20px;">Recuperación de contraseña</h2>
+                                            <p style="color: #495057; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
+                                                Hola ${userName},
+                                            </p>
+                                            <p style="color: #495057; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
+                                                Has solicitado una nueva contraseña para tu cuenta en Didadent.
+                                            </p>
+                                            <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; padding: 15px; margin: 20px 0; border-radius: 4px;">
+                                                <p style="margin: 0; font-size: 18px; font-weight: bold;">Tu nueva contraseña:</p>
+                                                <p style="margin: 10px 0 0 0; font-size: 24px; color: #007bff;">${contraseña}</p>
+                                            </div>
+                                            <p style="color: #495057; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
+                                                Por seguridad, te recomendamos cambiar esta contraseña después de iniciar sesión.
+                                            </p>
+                                            <a href="${process.env.BASE_URL}/autenticacion/login" 
+                                                style="background-color: #272727; color: white; padding: 15px 30px; 
+                                                        text-decoration: none; font-size: 18px; border-radius: 4px; display: inline-block;
+                                                        font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+                                                Iniciar sesión
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <!-- Footer -->
+                    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #272727;">
+                        <tr>
+                            <td align="center" style="padding: 20px; color: white; font-size: 14px;">
+                                <p style="margin: 0; font-size: 16px;">Irene Del Álamo Ruano © ${new Date().getFullYear()}</p>
+                                <p style="margin: 10px 0 0 0;">
+                                    <a href="${process.env.BASE_URL}" style="color: white; text-decoration: underline; font-weight: bold;">Visita nuestro sitio web</a>
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+                </body>
+                </html>
+            `
+        };
+
+        await transporter.sendMail(mailOptions);
+        console.log('Email de recuperación enviado a:', userEmail);
+    } catch (error) {
+        console.error('Error enviando email de recuperación:', error);
+        throw new Error('No se pudo enviar el email de recuperación');
+    }
+};
+
+// Función para enviar email de contacto
+const enviarEmailContacto = async (nombre, email, asunto, mensaje) => {
+    try {
+        const mailOptions = {
+            from: '"Formulario de Contacto" <irenedelalamo.alumno@gmail.com>',
+            to: 'irenedelalamo.alumno@gmail.com',
+            subject: asunto || `Nuevo mensaje de ${nombre}`,
+            html: `
+                <!DOCTYPE html>
+                <html>
+                <body style="font-family: Arial, sans-serif; line-height: 1.6;">
+                    <div style="max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px;">
+                        <h2 style="color: #007bff;">Nuevo mensaje de contacto</h2>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <strong>Nombre:</strong> ${nombre}
+                        </div>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <strong>Email:</strong> ${email}
+                        </div>
+                        
+                        ${asunto ? `<div style="margin-bottom: 15px;">
+                            <strong>Asunto:</strong> ${asunto}
+                        </div>` : ''}
+                        
+                        <div style="margin-bottom: 15px;">
+                            <strong>Mensaje:</strong>
+                            <p style="background: #f4f4f4; padding: 10px; border-radius: 5px;">${mensaje}</p>
+                        </div>
+                        
+                        <div style="margin-top: 20px; font-size: 0.9em; color: #666;">
+                            <p>Este mensaje fue enviado desde el formulario de contacto de tu sitio web.</p>
+                        </div>
+                    </div>
+                </body>
+                </html>
+            `
+        };
+
+        await transporter.sendMail(mailOptions);
+        console.log(`Email de contacto enviado: ${email}`);
+    } catch (error) {
+        console.error('Error enviando email de contacto:', error);
+        throw new Error('No se pudo enviar el email de contacto');
+    }
+};
+
+
+module.exports = { registroEmail , recuperarContraseñaEmail , enviarEmailContacto};
