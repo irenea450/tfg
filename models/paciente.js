@@ -287,39 +287,53 @@ function generarHorasDescanso(inicio, fin, duracionCita) {
 //todo función donde se inserta la cita del paciente
 const insertarCitaPaciente = async (id_paciente, fecha_cita, hora_cita, duracion, motivoSelect) => {
     try {
+        const hora_fin = calcularHoraFinCita(hora_cita, duracion);
+        console.log('Datos de la cita:', {
+            hora_inicio: hora_cita,
+            duracion_minutos: duracion,
+            hora_fin_calculada: hora_fin,
+            diferencia_minutos: (new Date(`1970-01-01T${hora_fin}`) - new Date(`1970-01-01T${hora_cita}:00`)) / 60000
+        });
 
-        const estado = 'Pendiente'; //establezco el estado predeterminado de las citas
+        const connection = await conectarDB();
+        const [rows] = await connection.execute(
+            "INSERT INTO cita (id_paciente, fecha, hora_inicio, motivo, estado, hora_fin) VALUES (?, ?, ?, ?, ?, ?)",
+            [id_paciente, fecha_cita, hora_cita, motivoSelect, 'Pendiente', hora_fin]
+        );
 
-        const connection = await conectarDB(); // Conectar a la BBDD
-        const [rows] = await connection.execute("INSERT INTO cita ( id_paciente, fecha, hora_inicio, motivo, estado, hora_fin)  VALUES (?, ?, ?, ?, ?, ?)" ,
-            [                
-                id_paciente,
-                fecha_cita,
-                hora_cita, //hora de inicio
-                motivoSelect,
-                estado,
-                calcularHoraFinCita(hora_cita, duracion)
-            ]);
-
-            // guardamos el id de la cita qeu acabamos de introducir
-            const idCita = rows.insertId;
-
-            //console.log(idCita);
-            //console.log(calcularHoraFinCita(hora_cita, duracion));
-
-        return idCita; //devulve el id de la cita, para ahroa insertar en cita_trabajador
+        return rows.insertId;
     } catch (error) {
         console.error("❌ Error al insertar cita:", error.message);
         throw error;
     }
 }
 
-// Función  para calcular hora_fin según la duración de la cita
 function calcularHoraFinCita(horaInicio, duracionMinutos) {
+    // Convertir duración a número
+    const minutosTotales = parseInt(duracionMinutos);
+    if (isNaN(minutosTotales)) {
+        throw new Error("Duración inválida");
+    }
+
+    // Parsear hora de inicio
     const [horas, minutos] = horaInicio.split(':').map(Number);
-    const fecha = new Date();
-    fecha.setHours(horas, minutos + duracionMinutos, 0, 0);
-    return fecha.toTimeString().substring(0, 5);
+    
+    // Calcular nuevos minutos y horas
+    let nuevosMinutos = minutos + minutosTotales;
+    let nuevasHoras = horas;
+    
+    // Ajustar cuando los minutos pasan de 60
+    if (nuevosMinutos >= 60) {
+        nuevasHoras += Math.floor(nuevosMinutos / 60);
+        nuevosMinutos = nuevosMinutos % 60;
+    }
+    
+    // Formatear a HH:MM:SS para MySQL
+    return [
+        nuevasHoras.toString().padStart(2, '0'),
+        nuevosMinutos.toString().padStart(2, '0'),
+        '00'
+    ].join(':');
 }
 
 //todo función donde se inserta en la tabla cita_trabajador

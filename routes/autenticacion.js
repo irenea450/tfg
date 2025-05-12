@@ -44,9 +44,9 @@ router.post('/login', async (req, res) => {
                 title: 'Didadent',
                 mensaje: {
                     tipo: 'error',
-                    titulo: 'Error de autenticación!',
-                    texto: "Revise el usuario y la contraseña",
-                    tiempo: 3000,
+                    titulo: 'Revise el usuario y la contraseña',
+                    texto: "No hemos podido iniciar sesión con la información proporcionada. Asegúrate de que el usuario y la contraseña son correctos.",
+                    tiempo: 4000,
                     ruta: 'autenticacion/login'
                 }
             });
