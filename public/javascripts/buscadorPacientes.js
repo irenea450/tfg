@@ -24,11 +24,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 /* -------------------------------------------------------------------------- */
-/*                          Crear cita en trabajadors                         */
+/*                          Crear cita en trabajadores                         */
 /* -------------------------------------------------------------------------- */
 
 //?Crear inputs de los trabaajdores exixstentes para agregarlos a la cita
-
 document.addEventListener('DOMContentLoaded', () => {
     fetch('/zona/trabajador/buscar-trabajadores')
         .then(response => {
@@ -75,56 +74,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 });
 
-/* document.addEventListener('DOMContentLoaded', () => {
-    // Corregir la ruta para que coincida con el backend
-    fetch('/zona/trabajador/buscar-trabajadores')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`Error HTTP: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(trabajadores => {
-            const select = document.getElementById('selectTrabajadores');
-            
-            // Limpiar select
-            select.innerHTML = '';
-            
-            // Añadir opción por defecto
-            const defaultOption = new Option('Seleccionar trabajador extra', '', true, true);
-            defaultOption.disabled = true;
-            select.add(defaultOption);
-            
-            // Verificar y añadir trabajadores
-            if (Array.isArray(trabajadores) && trabajadores.length > 0) {
-                trabajadores.forEach(t => {
-                    // Verificar que el objeto tenga los campos necesarios
-                    if (t.id_trabajador && t.nombre && t.apellidos && t.especialidad) {
-                        const option = new Option(
-                            `${t.nombre} ${t.apellidos} (${t.especialidad})`, 
-                            t.id_trabajador
-                        );
-                        select.add(option);
-                    }
-                });
-            } else {
-                const noDataOption = new Option('No hay trabajadores disponibles', '', false, false);
-                noDataOption.disabled = true;
-                select.add(noDataOption);
-            }
-        })
-        .catch(error => {
-            console.error("Error al cargar trabajadores:", error);
-            
-            // Mostrar mensaje de error en el select
-            const select = document.getElementById('selectTrabajadores');
-            select.innerHTML = '';
-            const errorOption = new Option('Error al cargar datos', '', false, false);
-            errorOption.disabled = true;
-            select.add(errorOption);
-        });
-});
- */
 
 
 

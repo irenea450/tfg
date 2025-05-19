@@ -5,15 +5,18 @@
     <title>Historial</title>
     <link rel="icon" href="/images/favicon.png" type="image/x-icon"><!-- Favicon -->
     <link rel="stylesheet" href="/stylesheets/bootstrap.min.css">
+    <link rel="stylesheet" href="/stylesheets/style.css">
     <link rel="stylesheet" href="/stylesheets/font/bootstrap-icons.css"> <!-- Iconos -->
     <link rel="stylesheet" href="/stylesheets/estilos_pacientes.css"><!-- estilos comunes en ejs de pacientes -->
 
     <script src="/sweetalert2/sweetalert2.all.min.js"></script>
 </head>
+<body class="d-flex flex-column min-vh-100">
+
 
 <%- include("../plantillas/header_pacientes.ejs") %>
 
-    <main class="container my-4" style="min-height: 80vh;">
+    <main class="container my-4 flex-grow-1">
 
         <h3 class="titulo bg-primary text-white p-2 my-4 rounded"><i class="bi bi-archive"></i> Historial Médico Dental</h3>
 

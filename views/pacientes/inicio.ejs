@@ -6,12 +6,14 @@
     </title>
     <link rel="icon" href="/images/favicon.png" type="image/x-icon"><!-- Favicon -->
     <link rel="stylesheet" href="/stylesheets/bootstrap.min.css">
+    <link rel="stylesheet" href="/stylesheets/style.css">
     <script src="/sweetalert2/sweetalert2.all.min.js"></script> <!-- Alertas -->
 </head>
 
-<body>
+<body class="d-flex flex-column min-vh-100">
     <%- include("../plantillas/header_pacientes.ejs") %>
 
+    <main class="flex-grow-1">
         <div class="card " style="border-radius: 0px; border: none;">
             <img src="/images/silla.jpg" class="card-img" width="auto" height="570px"
                 style="border: none; border-radius: 0px;">
@@ -108,6 +110,8 @@
             <% } %>
 
         </div>
+
+        </main>
 
 
     <!-- Footer -->

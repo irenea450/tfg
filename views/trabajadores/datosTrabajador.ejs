@@ -6,15 +6,16 @@
     </title>
     <link rel="icon" href="/images/favicon.png" type="image/x-icon"><!-- Favicon -->
     <link rel="stylesheet" href="/stylesheets/bootstrap.min.css">
+    <link rel="stylesheet" href="/stylesheets/style.css">
     <link rel="stylesheet" href="/stylesheets/estilos_trabajadores.css">
     <link rel="stylesheet" href="/stylesheets/font/bootstrap-icons.css"> <!-- Iconos -->
     <script src="/sweetalert2/sweetalert2.all.min.js"></script> <!-- Alertas -->
 </head>
 
-<body>
+<body class="d-flex flex-column min-vh-100">
     <%- include("../plantillas/header_trabajadores.ejs") %>
 
-        <div class="container mt-4">
+        <div class="container mt-4 flex-grow-1">
             <h2 class="titulo bg-primary text-white p-3 rounded"> <i class="bi bi-person"></i> Datos de la Cuenta</h2>
 
             <form action="/zona/trabajador/datos" method="POST">

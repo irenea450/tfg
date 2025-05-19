@@ -275,7 +275,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                                         </span>
                                     </td>
                                     <td>
-                                        <button class="btn btn-sm ${trabajador.estado === 'activo' ? 'btn-warning' : 'btn-success'} btn-estado" 
+                                        <button class="btn btn-sm ${trabajador.estado === 'activo' ? 'btn-danger' : 'btn-success'} btn-estado" 
                                                 onclick="cambiarEstadoTrabajador(${trabajador.id_trabajador}, ${trabajador.estado === 'activo' ? 'false' : 'true'})">
                                             ${trabajador.estado === 'activo' ? 'Desactivar' : 'Activar'}
                                         </button>
@@ -358,7 +358,7 @@ async function cambiarEstadoTrabajador(id, nuevoEstado) {
             badgeElement.className = esActivo ? 'badge bg-success' : 'badge bg-danger';
             badgeElement.textContent = esActivo ? 'Activo' : 'Inactivo';
 
-            buttonElement.className = esActivo ? 'btn btn-sm btn-warning btn-estado' : 'btn btn-sm btn-success btn-estado';
+            buttonElement.className = esActivo ? 'btn btn-sm btn-danger btn-estado' : 'btn btn-sm btn-success btn-estado';
             buttonElement.textContent = esActivo ? 'Desactivar' : 'Activar';
             buttonElement.onclick = () => cambiarEstadoTrabajador(id, !esActivo);
         } else {
