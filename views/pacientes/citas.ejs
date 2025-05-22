@@ -15,7 +15,7 @@
 <body class="d-flex flex-column min-vh-100">
     <%- include("../plantillas/header_pacientes.ejs") %>
 
-    <main class="container my-4" style="min-height: 80vh;">
+        <main class="flex-grow-1 container my-4">
 
         <!-- Sección de Citas Pendientes -->
         <section class="mb-5">
@@ -24,9 +24,9 @@
             <% if (citas && citas.length > 0) { %>
                 <div class="table-responsive">
                     <table class="table table-hover table-bordered">
-                        <thead class="table-primary">
+                        <thead class="table-primary ">
                             <tr>
-                                <th class="align-middle">Fecha</th>
+                                <th class="align-middle rounded">Fecha</th>
                                 <th class="align-middle">Hora</th>
                                 <th class="align-middle">Motivo</th>
                                 <th class="align-middle text-center">Acción</th>
@@ -66,10 +66,10 @@
 
         <!-- Sección de Pedir Nueva Cita -->
         <section>
-            <h2 class="titulo bg-primary text-white p-2 rounded"><i class="bi bi-calendar-plus"></i> Solicitar Nueva Cita</h2>
+            <h2 class="titulo bg-primary text-white p-2 my-5 rounded"><i class="bi bi-calendar-plus"></i> Solicitar Nueva Cita</h2>
             <div class="d-grid gap-2 col-md-6 mx-auto">
-                <a href="/zona/paciente/pedirCita" class="btn btn-success btn-lg">
-                    Pedir Cita Nueva
+                <a href="/zona/paciente/pedirCita" class="btn btn-primary btn-lg">
+                    Solicitar
                 </a>
             </div>
         </section>

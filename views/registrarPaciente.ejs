@@ -10,122 +10,128 @@
     <script src="/sweetalert2/sweetalert2.all.min.js"></script>
 </head>
 
-<%- include("plantillas/header_principal.ejs") %>
+<body class="d-flex flex-column min-vh-100">
 
-    <div class="container mt-4" style="min-height: 84vh;">
-        <h2 class="titulo bg-primary text-white p-3 rounded"> <i class="bi bi-person-add"></i> Crear Cuenta</h2>
+    <%- include("plantillas/header_principal.ejs") %>
 
-        <form action="/autenticacion/registrarPaciente" method="POST">
+        <main class="flex-grow-1">
+            <div class="container mt-4" style="min-height: 84vh;">
+                <h2 class="titulo bg-primary text-white p-3 rounded"> <i class="bi bi-person-add"></i> Crear Cuenta</h2>
+
+                <form action="/autenticacion/registrarPaciente" method="POST">
 
 
-            <div class="row my-2">
+                    <div class="row my-2">
 
-                <div class="col">
-                    <label for="nombre">Nombre</label>
-                    <input type="text" class="form-control my-1" name="nombre" placeholder="Nombre" required>
-                </div>
-                <div class="col">
-                    <label for="apellidos">Apellidos</label>
-                    <input type="text" class="form-control my-1" name="apellidos" placeholder="Apellido 1 Apellido 2"
-                        required>
-                </div>
-                <div class="col">
-                    <label for="dni">DNI:</label>
-                    <input type="text" class="form-control my-1" name="dni" placeholder="00000000A"
-                        pattern="^[0-9]{8}[A-HJ-NP-TV-Z]$" required>
-                </div>
-                <div class="col">
-                    <label for="fecha_nacimiento">Fecha nacimiento</label>
-                    <input type="date" class="form-control my-1" name="fecha_nacimiento"
-                        placeholder="Apellido 1 Apellido 2" required>
-                </div>
+                        <div class="col">
+                            <label for="nombre">Nombre</label>
+                            <input type="text" class="form-control my-1" name="nombre" placeholder="Nombre" required>
+                        </div>
+                        <div class="col">
+                            <label for="apellidos">Apellidos</label>
+                            <input type="text" class="form-control my-1" name="apellidos"
+                                placeholder="Apellido 1 Apellido 2" required>
+                        </div>
+                        <div class="col">
+                            <label for="dni">DNI:</label>
+                            <input type="text" class="form-control my-1" name="dni" placeholder="00000000A"
+                                pattern="^[0-9]{8}[A-HJ-NP-TV-Z]$" required>
+                        </div>
+                        <div class="col">
+                            <label for="fecha_nacimiento">Fecha nacimiento</label>
+                            <input type="date" class="form-control my-1" name="fecha_nacimiento"
+                                placeholder="Apellido 1 Apellido 2" required>
+                        </div>
+
+                    </div>
+
+                    <div class="row my-3">
+
+                        <div class="col-3">
+                            <select class="col form-select" name="sexo">
+                                <option selected>Selecciona el sexo</option>
+                                <option value="Hombre">Hombre</option>
+                                <option value="Mujer">Mujer</option>
+                                <option value="No especificado">No especificado</option>
+                            </select>
+                        </div>
+
+                        <div class="col ">
+                            <input type="text" class="form-control " placeholder="Correo" name="correo"
+                                pattern=".+@.+\..+" required>
+                        </div>
+
+                        <div class="col-3">
+                            <input type="tel" class="form-control" name="tlf" placeholder="Teléfono" maxlength="9"
+                                required>
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <label>Datos del domicilio</label>
+                        <div class="col-4">
+                            <input type="text" class="form-control my-1" name="calle" placeholder="Calle" required>
+                        </div>
+                        <div class="col">
+                            <input type="number" class="form-control my-1" name="numero" placeholder="Numero" required>
+                        </div>
+                        <div class="col">
+                            <input type="text" class="form-control my-1" name="puerta" placeholder="Puerta">
+                        </div>
+                        <div class="col">
+                            <input type="number" class="form-control my-1" name="cp" placeholder="Código Postal">
+                        </div>
+
+                    </div>
+
+                    <div class="row g-3 align-items-center p-0 m-0">
+                        <div class="col-auto">
+                            <label for="contraseña" class="col-form-label">Contraseña</label>
+                        </div>
+                        <div class="col-auto">
+                            <input type="password" name="contraseña" id="contraseña" class="form-control"
+                                aria-describedby="passwordHelpInline">
+                        </div>
+                        <div class="col-auto">
+                            <span id="passwordHelpInline" class="form-text">
+                                Establece una contraseña segura
+                            </span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="row p-0 my-5">
+                        <div class="d-grid gap-2 col-6 mx-auto">
+                            <button type="submit" class="btn btn-primary">Crear usuario</button>
+                        </div>
+                    </div>
+
+
+                </form>
 
             </div>
-
-            <div class="row my-3">
-
-                <div class="col-3">
-                    <select class="col form-select" name="sexo">
-                        <option selected>Selecciona el sexo</option>
-                        <option value="Hombre">Hombre</option>
-                        <option value="Mujer">Mujer</option>
-                        <option value="No especificado">No especificado</option>
-                    </select>
-                </div>
-
-                <div class="col ">
-                    <input type="text" class="form-control " placeholder="Correo" name="correo" pattern=".+@.+\..+"
-                        required>
-                </div>
-
-                <div class="col-3">
-                    <input type="tel" class="form-control" name="tlf" placeholder="Teléfono" maxlength="9" required>
-                </div>
-
-            </div>
-
-            <div class="row">
-                <label>Datos del domicilio</label>
-                <div class="col-4">
-                    <input type="text" class="form-control my-1" name="calle" placeholder="Calle" required>
-                </div>
-                <div class="col">
-                    <input type="number" class="form-control my-1" name="numero" placeholder="Numero" required>
-                </div>
-                <div class="col">
-                    <input type="text" class="form-control my-1" name="puerta" placeholder="Puerta">
-                </div>
-                <div class="col">
-                    <input type="number" class="form-control my-1" name="cp" placeholder="Código Postal">
-                </div>
-
-            </div>
-
-            <div class="row g-3 align-items-center p-0 m-0">
-                <div class="col-auto">
-                    <label for="contraseña" class="col-form-label">Contraseña</label>
-                </div>
-                <div class="col-auto">
-                    <input type="password" name="contraseña" id="contraseña" class="form-control"
-                        aria-describedby="passwordHelpInline">
-                </div>
-                <div class="col-auto">
-                    <span id="passwordHelpInline" class="form-text">
-                        Establece una contraseña segura
-                    </span>
-                </div>
-
-            </div>
-
-
-            <div class="row p-0 my-5">
-                <div class="d-grid gap-2 col-6 mx-auto">
-                    <button type="submit" class="btn btn-primary">Crear usuario</button>
-                </div>
-            </div>
-
-
-        </form>
-
-    </div>
-
+        </main>
         <!-- Footer -->
         <%- include("plantillas/footer.ejs") %>
 
-    <% if (typeof mensaje !=='undefined' ) { %>
-        <script>
-            Swal.fire({
-                icon: '<%= mensaje.tipo %>',
-                title: '<%= mensaje.titulo %>',
-                text: '<%= mensaje.texto %>',
-                timer: '<%= mensaje.tiempo %>',
-                showConfirmButton: false
-            }).then(() => {
-                window.location = '/<%= mensaje.ruta %>';
-            });
-        </script>
-        <% } %>
+</body>
+
+<% if (typeof mensaje !=='undefined' ) { %>
+    <script>
+        Swal.fire({
+            icon: '<%= mensaje.tipo %>',
+            title: '<%= mensaje.titulo %>',
+            text: '<%= mensaje.texto %>',
+            timer: '<%= mensaje.tiempo %>',
+            showConfirmButton: false
+        }).then(() => {
+            window.location = '/<%= mensaje.ruta %>';
+        });
+    </script>
+    <% } %>
 
 
 
-            <script src="/javascripts/bootstrap.bundle.min.js"></script>
+        <script src="/javascripts/bootstrap.bundle.min.js"></script>
