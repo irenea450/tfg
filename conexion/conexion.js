@@ -22,11 +22,6 @@ module.exports = conectarDB;
 
 
 
-//consulta a la base de datos
-/* connection.query("SELECT * FROM `trabajador` ", function(err, resultados){
-    console.log(resultados); //muestra los resultados
-}); */
-
 
 //^ Cierra conexión
 //connection.end()

@@ -84,21 +84,21 @@
                         </div>
 
                     </div>
-
                     <div class="row g-3 align-items-center p-0 m-0">
                         <div class="col-auto">
                             <label for="contraseña" class="col-form-label">Contraseña</label>
                         </div>
                         <div class="col-auto">
                             <input type="password" name="contraseña" id="contraseña" class="form-control"
-                                aria-describedby="passwordHelpInline">
+                                aria-describedby="passwordHelpInline" pattern=".{8,}"
+                                title="La contraseña debe tener al menos 8 caracteres (letras, números o símbolos)."
+                                required>
                         </div>
                         <div class="col-auto">
                             <span id="passwordHelpInline" class="form-text">
-                                Establece una contraseña segura
+                                Mínimo 8 caracteres (pueden ser letras, números o símbolos).
                             </span>
                         </div>
-
                     </div>
 
 

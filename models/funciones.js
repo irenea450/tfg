@@ -24,7 +24,7 @@ const anularCita = async (id) => {
     const [anular] = await connection.execute(`UPDATE cita SET estado = 'Anulada' WHERE id_cita = ?`, 
         [id]);
     
-    console.log("Se ha realizado la anulación" + anular)
+    //console.log("Se ha realizado la anulación" + anular)
 
 }
 
@@ -34,7 +34,7 @@ const horarioTrabajador = async (id) => {
     try {
         const connection = await conectarDB(); // Conectar a la BBDD
 
-        console.log("estoy en horarioTrabajador: " + id);
+        //console.log("estoy en horarioTrabajador: " + id);
 
         //? sacar el horario de ese trabajador
         const [rows] = await connection.execute("SELECT * FROM horarios WHERE id_trabajador = ?", [id]);

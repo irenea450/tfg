@@ -91,11 +91,12 @@
                         <label for="contraseña" class="col-form-label fw-bold">Nueva contraseña</label>
                     </div>
                     <div class="col-auto">
-                        <input type="password" name="contraseña" id="contraseña" class="form-control" required>
+                        <input type="password" name="contraseña" id="contraseña" class="form-control" pattern=".{8,}"
+                            title="Mínimo 8 caracteres (letras, números o símbolos)." required>
                     </div>
                     <div class="col-auto">
-                        <span id="passwordHelpInline" class="form-text">
-                            Establece una contraseña segura
+                        <span class="form-text">
+                            Mínimo 8 caracteres (pueden ser letras, números o símbolos).
                         </span>
                     </div>
                     <div class="col-auto">

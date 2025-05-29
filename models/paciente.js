@@ -4,8 +4,7 @@ const bcrypt = require("bcryptjs"); // Para encriptar y comparar contraseñas
 const registrarPaciente = async (rol,id, nombre, apellidos, correo, tlf, domicilio, fecha_nacimiento, sexo, contraseña) => {
     try {
         const connection = await conectarDB();
-
-        console.log("Estoy registrando al paciente con usuario " + correo)
+        //console.log("Estoy registrando al paciente con usuario " + correo)
 
         // Verificar si el correo ya está registrado
         const [rows] = await connection.execute(
@@ -21,15 +20,13 @@ const registrarPaciente = async (rol,id, nombre, apellidos, correo, tlf, domicil
         // Encriptar la contraseña antes de guardarla
         const contraseñaHaash = await bcrypt.hash(contraseña, 8);
 
-
         const query = "INSERT INTO paciente (rol, id_paciente, nombre, apellidos, correo, tlf, domicilio, fecha_nacimiento, sexo, contraseña) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         const [result] = await connection.execute(query, [rol, id , nombre, apellidos, correo, tlf, domicilio, fecha_nacimiento, sexo, contraseñaHaash]);
-
         
         return  result;  // Devolver el resultado de la inserción si todo fue bien
 
     }catch (error) {
-        console.error("❌ Error al insertar trabajador:", error.message);
+        console.error("❌ Error al insertar paciente:", error.message);
         throw error;
     }
 }
@@ -38,15 +35,14 @@ const registrarPaciente = async (rol,id, nombre, apellidos, correo, tlf, domicil
 const loginPaciente = async (correo, contraseña) => {
     try {
         const connection = await conectarDB(); // Conectar a la BBDD
-
-        console.log("comprobando en login paciente");
+        //console.log("comprobando en login paciente");
 
         //? comporbar si existe el usuario y contraseña introducidos son correctos
         const [results] = await connection.execute("SELECT * FROM paciente WHERE correo = ?", [correo]);
 
         //comprobar si existe el usuario con el correo introducido
         if (results.length == 0) {
-            console.log("usuario con correo: " + correo + " incorrecto ❌");
+            //console.log("usuario con correo: " + correo + " incorrecto ❌");
             return { error: "El correo introducido no esta registrado" };
         }
 
@@ -56,7 +52,7 @@ const loginPaciente = async (correo, contraseña) => {
         const compararContarseña = await bcrypt.compare(contraseña, usuario.contraseña);
 
         if (!compararContarseña) {
-            console.log("Contraseña incorrecta ❌");
+            //console.log("Contraseña incorrecta ❌");
             return { error: " contraseña incorrecta, vuelve a intentarlo" }; 
         }
 
@@ -100,7 +96,7 @@ const obtenerTrabajadoresParaCita = async (trabajador1 , trabajador2=null) => {
         consulta += ") AND estado = 'activo'"; // solo los activos
 
         const [rows] = await connection.execute(consulta, parametros);
-        console.log("En obtener tarabajador encuentro a " + rows);
+        //console.log("En obtener tarabajador encuentro a " + rows);
         return rows;
     } catch (error) {
         console.error("❌ Error al obtener los tarbajadores:", error.message);
@@ -188,7 +184,7 @@ async function obtenerHorasDisponibles(idTrabajador, fecha, duracionMinutos) {
             [idTrabajador, fecha]
         );
         
-        console.log('Citas existentes:', citas);
+        //console.log('Citas existentes:', citas);
         
         // 4. Generar bloques disponibles
 
@@ -288,12 +284,12 @@ function generarHorasDescanso(inicio, fin, duracionCita) {
 const insertarCitaPaciente = async (id_paciente, fecha_cita, hora_cita, duracion, motivoSelect) => {
     try {
         const hora_fin = calcularHoraFinCita(hora_cita, duracion);
-        console.log('Datos de la cita:', {
+        /* console.log('Datos de la cita:', {
             hora_inicio: hora_cita,
             duracion_minutos: duracion,
             hora_fin_calculada: hora_fin,
             diferencia_minutos: (new Date(`1970-01-01T${hora_fin}`) - new Date(`1970-01-01T${hora_cita}:00`)) / 60000
-        });
+        }); */
 
         const connection = await conectarDB();
         const [rows] = await connection.execute(

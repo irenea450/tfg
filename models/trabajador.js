@@ -66,14 +66,14 @@ const loginTrabajador = async (correo, contraseña) => {
     try {
         const connection = await conectarDB(); // Conectar a la BBDD
 
-        console.log("comprobando en login trabajador");
+        //console.log("comprobando en login trabajador");
 
         //? comporbar si existe el usuario y contraseña introducidos son correctos
         const [results] = await connection.execute("SELECT * FROM trabajador WHERE correo = ?", [correo]);
 
         //comprobar si existe el usuario con el correo introducido
         if (results.length == 0) {
-            console.log("usuario trabajador con correo: " + correo + " incorrecto ❌");
+            //console.log("usuario trabajador con correo: " + correo + " incorrecto ❌");
             return { error: "El correo introducido no esta registrado" };
         }
 
@@ -83,10 +83,10 @@ const loginTrabajador = async (correo, contraseña) => {
         const compararContarseña = await bcrypt.compare(contraseña, usuario.contraseña);
 
         if (!compararContarseña) {
-            console.log("Contraseña incorrecta ❌");
+            //console.log("Contraseña incorrecta ❌");
             return { error: " contraseña incorrecta, vuelve a intentarlo" };
         }
-        console.log(usuario);
+        //console.log(usuario);
         // Todo correcto
         return usuario;
 
@@ -220,7 +220,7 @@ const horarioTrabajador = async (id) => {
     try {
         const connection = await conectarDB(); // Conectar a la BBDD
 
-        console.log("estoy en horarioTrabajador: " + id);
+        //console.log("estoy en horarioTrabajador: " + id);
 
         //? sacar el horario de ese trabajador
         const [rows] = await connection.execute("SELECT * FROM horarios WHERE id_trabajador = ?", [id]);
@@ -242,7 +242,7 @@ const festivosTrabajador = async (diasLaborablesSemanaActual) => {
     try {
         const connection = await conectarDB(); // Conectar a la BBDD
 
-        console.log("Estoy en festivosTrabajador");
+        //console.log("Estoy en festivosTrabajador");
 
         // Crear un string de placeholders ?,?,?,...? dependiendo del número de fechas
         const placeholders = Array(diasLaborablesSemanaActual.length).fill('?').join(',');
@@ -279,7 +279,7 @@ const vacacionesTrabajador = async (diasLaborablesSemanaActual, id_trabajador) =
     try {
         const connection = await conectarDB(); // Conectar a la BBDD
 
-        console.log("Buscando las vacaciones del trabajador");
+        //console.log("Buscando las vacaciones del trabajador");
 
         // Crear un string de placeholders ?,?,?,...? dependiendo del número de fechas
         const placeholders = Array(diasLaborablesSemanaActual.length).fill('?').join(',');
@@ -339,7 +339,7 @@ function obtenerDiasLaborablesSemanaActual() {
 const citasTrabajador = async (id) => {
     try {
         const connection = await conectarDB();
-        console.log("estoy en citasTrabajador: " + id);
+        //console.log("estoy en citasTrabajador: " + id);
 
         // obtenemos realcionadas con el trabaajdor logueado
         const [relaciones] = await connection.execute(
@@ -373,7 +373,7 @@ const citasTrabajador = async (id) => {
 const consultarCita = async (id) => {
     try {
         const connection = await conectarDB();
-        console.log("estoy consultando una cita con id: " + id);
+        //console.log("estoy consultando una cita con id: " + id);
 
 
         //buscamos cita con el id
@@ -416,7 +416,7 @@ const actualizarCita = async (id, fecha, motivo, hora_inicio, hora_fin) => {
     const [update] = await connection.execute(`UPDATE cita SET fecha = ?, motivo = ?, hora_inicio = ?, hora_fin = ? WHERE id_cita = ?`,
         [fecha, motivo, hora_inicio, hora_fin, id]);
 
-    console.log("Se ha realizado la actualizacion" + update)
+    //console.log("Se ha realizado la actualizacion" + update)
 
 }
 
@@ -429,7 +429,7 @@ const anularCita = async (id) => {
     const [anular] = await connection.execute(`UPDATE cita SET estado = 'Anulada' WHERE id_cita = ?`,
         [id]);
 
-    console.log("Se ha realizado la anulación" + anular)
+    //console.log("Se ha realizado la anulación" + anular)
 
 }
 
@@ -443,7 +443,7 @@ const completarCita = async (id) => {
         [id]
     );
 
-    console.log("Se ha completado la cita" + completada)
+    //console.log("Se ha completado la cita" + completada)
 
 }
 
@@ -457,7 +457,7 @@ const crearInforme = async (idPaciente, idCita, descripcion, fecha) => {
         [idPaciente, idCita, descripcion, fecha]
     );
 
-    console.log("Se ha generado el infroma:" + informe)
+    //console.log("Se ha generado el infroma:" + informe)
 
 }
 
@@ -474,7 +474,7 @@ const solicitarVacaciones = async (idTrabajador, fecha) => {
         [idTrabajador, fecha]
     );
 
-    console.log("Se ha insrtado el día de vacaciones :" + vacaciones);
+    //console.log("Se ha insrtado el día de vacaciones :" + vacaciones);
     //return vacaciones;
 
 }
@@ -497,7 +497,7 @@ const obtenerVacacionesId = async (id) => {
 const eliminarVacacion = async (id) => {
     const connection = await conectarDB(); // Conectar a la BBDD
     const [rows] = await connection.execute('DELETE FROM `vacaciones` WHERE `vacaciones`.`id_vacaciones` = ?', [id]);
-    console.log("Se ha eliminado el día de vacaiones: " + rows);
+    //console.log("Se ha eliminado el día de vacaiones: " + rows);
 
 }
 
@@ -525,7 +525,7 @@ const insertarHorarioTrabajador = async (id, dia, hora_inicio, hora_fin) => {
         [id, dia, hora_inicio, hora_fin]
     );
 
-    console.log("Se ha insertado un horario nuevo :" + horario);
+    //console.log("Se ha insertado un horario nuevo :" + horario);
     return horario;
 }
 
@@ -544,7 +544,7 @@ const actualizarHorario = async (hora_inicio, hora_fin, id) => {
 const eliminarHorario = async (id) => {
     const connection = await conectarDB(); // Conectar a la BBDD
     const [rows] = await connection.execute('DELETE FROM `horarios` WHERE `horarios`.`id_horarios` = ?', [id]);
-    console.log("Se ha eliminado el turnop de horario: " + rows);
+    //console.log("Se ha eliminado el turnop de horario: " + rows);
 
 }
 
@@ -561,8 +561,7 @@ const solicitarFestivos = async (id, fecha, descripcion) => {
         [id, fecha, descripcion]
     );
 
-    console.log("Se ha insrtado el día de festivo :" + festivos);
-    //return vacaciones;
+    //console.log("Se ha insrtado el día de festivo :" + festivos);
 
 }
 
@@ -584,7 +583,7 @@ const obtenerFestivos = async (id) => {
 const eliminarFestivos = async (id) => {
     const connection = await conectarDB(); // Conectar a la BBDD
     const [rows] = await connection.execute('DELETE FROM `festivos` WHERE `festivos`.`id` = ?', [id]);
-    console.log("Se ha eliminado el día de festivos: " + rows);
+    //console.log("Se ha eliminado el día de festivos: " + rows);
 
 }
 

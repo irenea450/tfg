@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function () {
             })
                 .then(res => res.json())
                 .then(data => {
-                    console.log('Datos recibidos:', data);  // Ver todos los datos en consola
+                    //console.log('Datos recibidos:', data);  // Ver todos los datos en consola
 
                     if (data.cita && data.paciente && data.paciente.length > 0) {
                         const cita = data.cita;  // Obtenemos la cita
@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 })
                                     .then(res => res.json())
                                     .then(data => {
-                                        console.log('Cita actualizada:', data);
+                                        //console.log('Cita actualizada:', data);
                                         return Swal.fire({ // Importante: devuelve la promesa de Swal.fire
                                             icon: 'success',
                                             title: 'Actualizada',
@@ -152,7 +152,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 })
                                     .then(res => res.json())
                                     .then(data => {
-                                        console.log('Cita completada:', data);
+                                        //console.log('Cita completada:', data);
                                         Swal.fire({
                                             icon: 'success',
                                             title: 'Completada',
@@ -233,7 +233,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                     })
                                         .then(res => res.json())
                                         .then(data => {
-                                            console.log('Informe generado:', data);
+                                            //console.log('Informe generado:', data);
                                             Swal.fire({
                                                 icon: 'success',
                                                 title: 'Informe creado',

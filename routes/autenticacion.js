@@ -36,7 +36,7 @@ router.post('/login', async (req, res) => {
         } else {
             tipoUsuario = 'trabajador';
         }
-        console.log("soy de tipo" + tipoUsuario);
+        //console.log("soy de tipo" + tipoUsuario);
 
         //En caso de que la autenticación sea rechazada lanzar mensaje de error de autenticación
         if (usuario.error) {
@@ -55,7 +55,7 @@ router.post('/login', async (req, res) => {
             //? variables de sesión
             req.session.loggedin = true;
             req.session.usuarioId = usuario.id_trabajador || usuario.id_paciente  ;
-            console.log("autenticado con el usuario con id: " + req.session.usuarioId);
+            //console.log("autenticado con el usuario con id: " + req.session.usuarioId);
             req.session.rol = usuario.rol;
             req.session.name = usuario.nombre;
             req.session.tipo = tipoUsuario; // tipo de usuario en la app
@@ -114,7 +114,7 @@ router.post('/registrarPaciente', async (req, res) => {
     const cp = req.body.cp;
     const domicilio = calle + ", " + numero + ", " + puerta + ", cp:" + cp;
 
-    console.log("He recogidos los datos del usuario " + correo);
+    //console.log("He recogidos los datos del usuario " + correo);
 
 
     // Llamamos al modelo para registrar al trabajador

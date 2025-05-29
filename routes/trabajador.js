@@ -18,7 +18,7 @@ const { insertarCitaTrabajador } = require('../models/funciones.js');
 // GET horario
 // Ruta para el horario del trabajador
 router.get('/horario', estaLogueado, soloTrabajadores, async (req, res) => {
-    console.log("con el usaurio de id: " + req.session.usuarioId);
+    //console.log("con el usaurio de id: " + req.session.usuarioId);
 
     //?sacar horario semanal del trabajador
     let horario = await horarioTrabajador(req.session.usuarioId);
@@ -72,14 +72,14 @@ router.get('/consultar-cita/:id', estaLogueado, soloTrabajadores, async (req, re
     try {
         // Obtener los datos de la cita
         const cita = await consultarCita(id);
-        console.log('Cita obtenida:', cita);
+        //console.log('Cita obtenida:', cita);
 
         if (cita && cita.length > 0) {
             const idPaciente = cita[0].id_paciente; // Asegurarse de que 'cita' es un array y acceder al primer elemento
 
             // Consultar el paciente asociado a la cita
             const paciente = await obtenerPacienteId(idPaciente);
-            console.log('Paciente Obtenido:', paciente);
+            //console.log('Paciente Obtenido:', paciente);
 
             // Enviar los datos de la cita y el paciente en una sola respuesta
             res.setHeader('Cache-Control', 'no-store');
@@ -228,7 +228,7 @@ router.post('/pedirCitaGuardar', estaLogueado, soloTrabajadores, async (req, res
     const motivo = req.body.motivo;
     const estado = "Pendiente";
 
-    console.log(id_paciente,fecha, hora_inicio, motivo,estado, hora_fin , id_trabajador1 ,id_trabajador2)
+    //console.log(id_paciente,fecha, hora_inicio, motivo,estado, hora_fin , id_trabajador1 ,id_trabajador2)
 
     //función que devuelve los datos del paciente selecionado para crear la cita
     const cita = await insertarCitaEnTrabajador(id_paciente,fecha, hora_inicio, motivo,estado, hora_fin);
@@ -242,7 +242,7 @@ router.post('/pedirCitaGuardar', estaLogueado, soloTrabajadores, async (req, res
         const insertTrabajador2 = await insertarCitaTrabajador(cita,id_trabajador2);
     }
 
-    console.log("Se han realizado la cita" + cita);
+    //console.log("Se han realizado la cita" + cita);
 
     //devolver al buscador
     const pacientes = await buscarPacientes();
@@ -482,7 +482,7 @@ router.post('/insertar-horario-trabajo', async (req, res) => {
 
     try {
 
-        console.log(id + dia + hora_inicio + hora_fin)
+        //console.log(id + dia + hora_inicio + hora_fin)
         //llamar a funcíon de insert
         let insertarDiaHora = await insertarHorarioTrabajador(id, dia, hora_inicio, hora_fin);
 
@@ -522,7 +522,7 @@ router.post('/actualizar-horario-trabajo', async (req, res) => {
     const hora_inicio = req.body.hora_inicio;
     const hora_fin = req.body.hora_fin;
 
-    console.log(id_horarios + dia + hora_inicio + hora_fin)
+    //console.log(id_horarios + dia + hora_inicio + hora_fin)
 
     let horarios = await obtenerHorarioTrabajador(id_horarios, dia, hora_inicio, hora_fin);
 

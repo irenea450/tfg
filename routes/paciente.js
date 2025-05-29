@@ -20,7 +20,7 @@ const { estaLogueado, soloPacientes } = require('../middlewares/acceso.js');
 router.get('/inicio',estaLogueado, async(req, res) => {
 
     let citasPendientes = await citasPendientesId(req.session.usuarioId);
-    console.log("Citas pendientes:" + citasPendientes);
+    //console.log("Citas pendientes:" + citasPendientes);
     //Sacar solo la primera cita
     const primeraCita = citasPendientes.length > 0 ? citasPendientes[0] : null;
 
@@ -42,8 +42,7 @@ router.get('/citas',estaLogueado, async (req, res) => {
     //sacar las citas que tiene pendiente el paciente
     let citasPendientes = await citasPendientesId(req.session.usuarioId);
 
-    console.log("Citas pendientes:" + citasPendientes)
-
+    //console.log("Citas pendientes:" + citasPendientes)
 
     res.render('pacientes/citas', 
         {
@@ -85,8 +84,8 @@ router.post('/pedirCitaPaciente', estaLogueado, async (req, res) => {
             id_auxiliar //en caso de ser una ortodoncia
         } = req.body;
 
-        console.log("Recibo al enviar el formualrio lo siguinete: " + " IdPaciente: " + id_paciente + " IdTrabajador: " + id_trabajador 
-            + " motivo: " + motivoSelect + " fecha: " + fecha_cita + " hora: " + hora_cita + " duración: " + duracion);
+        /* console.log("Recibo al enviar el formualrio lo siguinete: " + " IdPaciente: " + id_paciente + " IdTrabajador: " + id_trabajador 
+            + " motivo: " + motivoSelect + " fecha: " + fecha_cita + " hora: " + hora_cita + " duración: " + duracion); */
 
         // Validar los datos recibidos
         if (!id_paciente || !motivoSelect || !id_trabajador || !fecha_cita || !hora_cita) {
@@ -212,7 +211,7 @@ router.post('/datos',estaLogueado, soloPacientes, async (req, res) => {
     const domicilio = req.body.domicilio;
 
 
-    console.log({ id, rol, nombre, apellidos, correo, fecha_nacimiento, sexo,tlf,domicilio });
+    //console.log({ id, rol, nombre, apellidos, correo, fecha_nacimiento, sexo,tlf,domicilio });
 
     const guadarDatos = guardarDatosPaciente(id,rol,nombre,apellidos,correo,tlf,domicilio,fecha_nacimiento,sexo);
 
@@ -304,7 +303,7 @@ router.get('/historial',estaLogueado, soloPacientes, async (req, res) => {
     };
 
 
-    console.log(historial);
+    //console.log(historial);
 
     res.render('pacientes/historial', {title: 'Didadent',
         name: req.session.name,
@@ -320,12 +319,12 @@ router.post('/historial',estaLogueado, soloPacientes, async (req, res) => {
         const antecedentes = req.body.antecedentes;
         const descripcion = req.body.descripcion;
 
-        console.log("datos recogidos de los inputs" + { id, alergias,antecedentes, descripcion});
+        //console.log("datos recogidos de los inputs" + { id, alergias,antecedentes, descripcion});
 
         const historialObtener = await obtenerHistorialPacienteId(id);
         const tieneHistorial = historialObtener && historialObtener.length > 0;
 
-        console.log("El historial existe? :" + tieneHistorial);
+        //console.log("El historial existe? :" + tieneHistorial);
 
         if(!tieneHistorial || tieneHistorial.length === 0){
             //si no existe se inserta por primera vez
